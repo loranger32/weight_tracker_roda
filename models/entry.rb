@@ -6,7 +6,9 @@ class Entry < Sequel::Model
   end
 
   def self.most_recent_weight
-    all_desc.first.weight.to_f
+    if (most_recent = all_desc.first)
+      most_recent.weight.to_f
+    end
   end
 
   def self.all_desc_with_deltas
