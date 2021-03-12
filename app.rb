@@ -35,8 +35,9 @@ class App < Roda
   plugin :assets,
     css: %w[lg_utilities_20201112.css style.css],
     js: %w[main.js],
-    group_subdirs: false
-  plugin :public
+    group_subdirs: false,
+    gzip: true
+  plugin :public, gzip: true
   plugin :flash
 
   # Request / response
