@@ -46,6 +46,8 @@ class App < Roda
   route do |r|
     r.assets
 
+    r.public
+
     r.root do
       r.redirect 'entries/new'
     end
