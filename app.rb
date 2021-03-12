@@ -8,6 +8,7 @@ class App < Roda
   plugin :sessions, key: 'weight_tracker.session', secret: ENV['SESSION_SECRET']
   plugin :content_security_policy do |csp|
     csp.default_src :none
+    csp.font_src 'https://fonts.googleapis.com'
     csp.img_src :self
     csp.object_src :self
     csp.frame_src :self
