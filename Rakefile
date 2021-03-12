@@ -1,7 +1,9 @@
 require 'rake/testtask'
 
-require 'dotenv'
-Dotenv.load
+unless ENV['RACK_ENV'] == 'production'
+  require 'dotenv'
+  Dotenv.load
+end
 
 MIGRATIONS_PATH = File.expand_path('db/migrations', __dir__)
 SCHEMA_PATH = File.expand_path('db/schema', __dir__)
