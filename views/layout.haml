@@ -1,0 +1,21 @@
+!!! 5
+%head
+  %meta{ charset: 'utf-8' }
+  %meta{ 'http-equiv' => 'x-ua-compatible', content: 'ie=edge' }
+  %meta{ name: 'viewport', content: 'width=device-width, initial-scale=1, shrink-to-fit=no' }
+  %meta{ name: 'language', content: 'fr' }
+  %meta{ name: 'author', content: 'Laurent Guinotte' }
+  %link{ rel: 'shortcut icon', href: '/images/favicon.ico', type: 'image/x-icon' }
+  %link{ rel: 'icon', href: '/images/favicon.ico', type: 'image/x-icon' }
+  %link{ rel: 'stylesheet', href: "https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" }
+  != assets(:css)
+
+  %title Weight Tracker
+
+%body
+  %h1.w-200.center-block.center-text.mt-25.fs-3.fw-300
+    %a{href: '/entries' } Weight Tracker
+
+  != yield
+
+!= assets(:js)

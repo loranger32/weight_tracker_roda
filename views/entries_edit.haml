@@ -1,0 +1,7 @@
+%h2.w-250.mt-50.center-block.center-text.fs-2.bg-gold.white.p-15 Edit Entry
+
+!= partial 'entry_form'
+
+%form{ action: "/entries/#{@entry.id}/delete", method: :post }
+  %input.w-200.mt-25.center-block.center-text.p-8.bg-danger.white.rounded-5{type: :submit, value: "Delete"}
+

@@ -1,0 +1,11 @@
+.env
+.env.development
+.env.test
+database.db
+
+public/*.js
+public/*.css
+public/assets/*.js
+public/assets/*.css
+
+.bundle

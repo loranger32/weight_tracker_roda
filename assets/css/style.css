@@ -1,0 +1,9 @@
+body {
+  font-family: 'Ubuntu', sans-serif;
+}
+
+footer {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+}
