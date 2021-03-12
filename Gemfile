@@ -1,3 +1,5 @@
+ruby "3.0.0"
+
 source 'https://rubygems.org'
 
 gem 'haml', '~> 5.2', '>= 5.2.1'
