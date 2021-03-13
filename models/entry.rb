@@ -2,7 +2,7 @@ class Entry < Sequel::Model
   attr_accessor :delta
 
   def self.all_desc
-    order(:day).reverse.all
+    reverse_order(:day).all
   end
 
   def self.most_recent_weight
