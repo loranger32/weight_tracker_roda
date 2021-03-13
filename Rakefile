@@ -78,7 +78,7 @@ namespace :db do
   end
 
   desc "Reset database, run all migrations and seed the database"
-  task fresh: [:reset, :migrate]
+  task fresh: [:reset, :migrate, :seed]
 
   desc "Check pending migrations"
   task :pending do |t|
