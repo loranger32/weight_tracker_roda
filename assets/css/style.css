@@ -2,8 +2,25 @@ body {
   font-family: 'Ubuntu', sans-serif;
 }
 
-footer {
+.tooltip {
+  position: relative;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  top: -5px;
+  right: 105%;
+}
+
+.tooltip-text {
+  display: inline-block;
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: white;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
   position: absolute;
-  bottom: 20px;
-  width: 100%;
+  z-index: 1;
 }
