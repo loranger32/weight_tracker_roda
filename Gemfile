@@ -2,10 +2,12 @@ ruby "3.0.0"
 
 source 'https://rubygems.org'
 
+gem 'bcrypt', '~> 3.1', '>= 3.1.16'
 gem 'haml', '~> 5.2', '>= 5.2.1'
 gem 'pg', '~> 1.2', '>= 1.2.3'
 gem 'rake', '~> 13.0', '>= 13.0.1'
 gem 'roda', '~> 3.41'
+gem 'rodauth', '~> 2.10'
 gem 'sequel', '~> 5.42'
 gem 'sequel_pg', '~> 1.14', require: 'sequel'
 gem 'puma', '~> 5.2', '>= 5.2.2'
