@@ -16,5 +16,5 @@
               %span.tooltip-text= entry.note
             %a{href: "/entries/#{entry.id}/edit"}= entry.day.strftime("%a %d %b %Y")
           %td= entry.weight.to_f
-          %td{ class: weight_delta_color(entry.delta) }= entry.delta
+          %td{ class: weight_delta_color(entry.delta) }= format_delta(entry.delta)
     
