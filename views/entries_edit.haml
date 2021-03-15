@@ -3,5 +3,6 @@
 != partial 'entry_form'
 
 %form{ action: "/entries/#{@entry.id}/delete", method: :post }
+  != csrf_tag("/entries/#{@entry.id}/delete")
   %input.w-200.mt-25.center-block.center-text.p-8.bg-danger.white.rounded-5{type: :submit, value: "Delete"}
 

@@ -21,6 +21,7 @@ class App < Roda
     csp.upgrade_insecure_requests
     csp.block_all_mixed_content
   end
+  plugin :route_csrf
 
   # Routing
 
@@ -63,6 +64,7 @@ class App < Roda
         end
 
         r.post do
+          check_csrf!
           submitted = { day: tp.date('day'),
                         weight: tp.float('weight'),
                         note: tp.str('note') }
@@ -90,6 +92,7 @@ class App < Roda
 
         r.is do
           r.post do
+            check_csrf!
             submitted = { day: tp.date('day'),
                           weight: tp.float('weight'),
                           note: tp.str('note') }
@@ -110,6 +113,7 @@ class App < Roda
         end
 
         r.post 'delete' do
+          check_csrf!
           @entry.delete
 
           r.redirect '/entries'
