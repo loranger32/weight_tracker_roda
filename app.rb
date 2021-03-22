@@ -51,6 +51,9 @@ module WeightTracker
         end
       end
       close_account_redirect "/auth/login"
+      audit_log_metadata_default do
+        {'ip' => scope.request.ip}
+      end
     end
 
     # Routing
