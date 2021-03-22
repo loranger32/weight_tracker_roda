@@ -1,15 +1,16 @@
-require 'rake/testtask'
+require "rake/testtask"
+require "standard/rake"
 
-unless ENV['RACK_ENV'] == 'production'
-  require 'dotenv'
+unless ENV["RACK_ENV"] == "production"
+  require "dotenv"
   Dotenv.load
 end
 
-MIGRATIONS_PATH = File.expand_path('db/migrations', __dir__)
-SCHEMA_PATH = File.expand_path('db/schema', __dir__)
+MIGRATIONS_PATH = File.expand_path("db/migrations", __dir__)
+SCHEMA_PATH = File.expand_path("db/schema", __dir__)
 
 Rake::TestTask.new do |t|
-  t.pattern = 'test/*_test.rb'
+  t.pattern = "test/*_test.rb"
   t.warning = false
 end
 
@@ -23,17 +24,17 @@ task :random do
   puts secret
 end
 
-desc 'Start interactive console'
+desc "Start interactive console"
 task :c do |t|
   system "irb -r ./db/db.rb"
 end
 
 desc "Start development server"
 task :ds do |t|
-  exec "RACK_ENV=development rerun --ignore 'test/*' rackup config.ru "
+  exec "RACK_ENV=development rerun --ignore 'test/*' rackup config.ru"
 end
 
-desc 'Start classic development server'
+desc "Start classic development server"
 task :s do |t|
   system "RACK_ENV=development rackup config.ru"
 end
@@ -44,14 +45,14 @@ namespace :db do
     require "sequel/core"
     Sequel.extension :migration
     version = args[:version].to_i if args[:version]
-    Sequel.connect(ENV['DATABASE_URL']) do |db|
+    Sequel.connect(ENV["DATABASE_URL"]) do |db|
       Sequel::Migrator.run(db, MIGRATIONS_PATH, target: version)
     end
 
     puts "All migrations applied"
 
-    if ENV['TEST_DATABASE_URL']
-      Sequel.connect(ENV['TEST_DATABASE_URL']) do |db|
+    if ENV["TEST_DATABASE_URL"]
+      Sequel.connect(ENV["TEST_DATABASE_URL"]) do |db|
         Sequel::Migrator.run(db, MIGRATIONS_PATH, target: version)
         puts "Migrations also applied to test database"
       end
@@ -63,14 +64,14 @@ namespace :db do
     require "sequel/core"
     Sequel.extension :migration
 
-    Sequel.connect(ENV['DATABASE_URL']) do |db|
+    Sequel.connect(ENV["DATABASE_URL"]) do |db|
       Sequel::Migrator.run(db, MIGRATIONS_PATH, target: 0)
     end
 
     puts "All migrations have been reverted"
 
-    if ENV['TEST_DATABASE_URL']
-      Sequel.connect(ENV['TEST_DATABASE_URL']) do |db|
+    if ENV["TEST_DATABASE_URL"]
+      Sequel.connect(ENV["TEST_DATABASE_URL"]) do |db|
         Sequel::Migrator.run(db, MIGRATIONS_PATH, target: 0)
         puts "Also on test database"
       end
@@ -84,7 +85,7 @@ namespace :db do
   task :pending do |t|
     require "sequel/core"
     Sequel.extension :migration
-    Sequel.connect(ENV['DATABASE_URL']) do |db|
+    Sequel.connect(ENV["DATABASE_URL"]) do |db|
       if Sequel::Migrator.is_current?(db, MIGRATIONS_PATH)
         puts "No pending migration."
       else
@@ -92,8 +93,8 @@ namespace :db do
       end
     end
 
-    if ENV['TEST_DATABASE_URL']
-      Sequel.connect(ENV['TEST_DATABASE_URL']) do |db|
+    if ENV["TEST_DATABASE_URL"]
+      Sequel.connect(ENV["TEST_DATABASE_URL"]) do |db|
         if Sequel::Migrator.is_current?(db, MIGRATIONS_PATH)
           puts "No pending migration on test database."
         else
