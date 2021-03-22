@@ -1,7 +1,7 @@
 class Account < Sequel::Model
   plugin :validation_helpers
 
-  one_to_many: entries
+  one_to_many :entries
 
   def validate
     super
