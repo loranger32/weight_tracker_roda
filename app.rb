@@ -26,6 +26,32 @@ class App < Roda
     csp.block_all_mixed_content
   end
   plugin :route_csrf
+  plugin :rodauth do
+    enable :login, :logout, :create_account, :change_login, :change_password, 
+           :close_account, :active_sessions
+    skip_status_checks? true
+    account_password_hash_column :password_hash
+    hmac_secret secret
+    prefix '/auth'
+    title_instance_variable :@page_title
+    login_redirect '/entries'
+    before_create_account do
+      unless user_name = param_or_nil("user_name")
+        throw_error_status(422, "user_name", "must be present")
+      end
+      account[:user_name] = user_name
+    end
+    after_login do
+      logger.write "#{account[:email]} logged in!"
+    end
+    before_close_account do
+      unless param_or_nil("confirm-delete-data") == "confirm"
+        flash[:error] = "You did not confirm you made a backup of your data"
+        scope.request.redirect close_account_path
+      end
+    end
+    close_account_redirect "/auth/login"
+  end
 
   # Routing
 
@@ -40,23 +66,61 @@ class App < Roda
   plugin :partials
   plugin :assets,
     css: %w[lg_utilities_20201112.css style.css],
-    js: %w[main.js],
+    js: {main: "main.js", close_account: "close_account.js"},
     group_subdirs: false,
     gzip: true
   plugin :public, gzip: true
   plugin :flash
+  plugin :content_for
 
   # Request / response
   plugin :typecast_params
   alias_method :tp, :typecast_params
 
+
   route do |r|
+    r.public
     r.assets
 
-    r.public
+
+    r.on "auth" do
+      r.rodauth
+      r.is "change_user_name" do
+        rodauth.require_authentication
+
+        r.get do
+          view "change-user-name"
+        end
+
+        r.post do
+          check_csrf!
+          account = Account[rodauth.account_from_session[:id]]
+          account.set(user_name: r.params["user_name"])
+          if account.valid?
+            account.save
+            flash[:notice] = "User Name successfully changed"
+            r.redirect "/accounts/#{account[:id]}"
+          else
+            flash[:error] = account.errors.full_messages.join("\n- ")
+            r.redirect
+          end
+        end
+      end
+    end
+    
+    rodauth.check_active_session
+    rodauth.require_authentication
+    check_csrf!
 
     r.root do
       r.redirect 'entries/new'
+    end
+
+    r.on "accounts" do
+      r.get Integer do |account_id|
+        @account = Account[account_id.to_i]
+        view 'account_show'
+      end
     end
 
     r.on "entries" do
@@ -68,7 +132,6 @@ class App < Roda
         end
 
         r.post do
-          check_csrf!
           submitted = { day: tp.date('day'),
                         weight: tp.float('weight'),
                         note: tp.str('note') }
@@ -96,7 +159,6 @@ class App < Roda
 
         r.is do
           r.post do
-            check_csrf!
             submitted = { day: tp.date('day'),
                           weight: tp.float('weight'),
                           note: tp.str('note') }
@@ -117,7 +179,6 @@ class App < Roda
         end
 
         r.post 'delete' do
-          check_csrf!
           @entry.delete
 
           r.redirect '/entries'

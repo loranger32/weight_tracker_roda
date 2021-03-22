@@ -5,18 +5,24 @@
   %meta{ name: 'viewport', content: 'width=device-width, initial-scale=1, shrink-to-fit=no' }
   %meta{ name: 'language', content: 'fr' }
   %meta{ name: 'author', content: 'Laurent Guinotte' }
-  %link{ rel: 'shortcut icon', href: '/images/favicon.ico', type: 'image/x-icon' }
-  %link{ rel: 'icon', href: '/images/favicon.ico', type: 'image/x-icon' }
   %link{ rel: "preconnect", href: "https://fonts.gstatic.com" }
-  %link{ href: "https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap", rel: "stylesheet" } 
+  %link{ href: "https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap", rel: "stylesheet" }
+
   != assets(:css)
 
-  %title Weight Tracker
+  %title!= set_page_title(@page_title)
 
 %body
   %h1.w-200.center-block.center-text.mt-25.fs-3.fw-300
     %a{href: '/entries' } Weight Tracker
+  != partial("partials/flash")
 
+  - if rodauth.authenticated?
+    .block.mt-40.w-200.center-block.center-text
+      %a.btn.btn-sm.bg-light{href: "/accounts/#{rodauth.account_from_session[:id]}"}= rodauth.account_from_session[:user_name]
+  
   != yield
 
-!= assets(:js)
+  .mt-50
+  != assets([:js, :main])
+  != content_for(:js)

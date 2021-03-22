@@ -11,4 +11,5 @@ module MyApp
   DB.loggers << Logger.new($stdout) unless ENV['RACK_ENV'] == 'test'
 
   require_relative "../models/entry"
+  require_relative "../models/account"
 end

@@ -1,0 +1,25 @@
+.mt-30.w-300.center-block.btn.bg-warning.white
+  %h2.center-text Close Account
+  %p.mt-15.center-text This will permanently delete your account and all your data.
+  %p.mt-15.center-text Make sure you made a backup
+
+%a.block.mt-30.w-300.center-block.btn.bg-primary.white{href: "#"} Take me to the export data page
+%a.block.mt-30.w-300.center-block.btn.bg-primary.white{href: "/accounts/#{rodauth.account_from_session[:id]}"} I don't want to close my account
+
+
+%form.rodauth#close-account-form{action: rodauth.close_account_path, method: :post, role: "form"}
+  
+  != csrf_tag(rodauth.close_account_path)
+
+  .mx-5.center-text  
+    %input.inline#confirm-delete-data{type: :checkbox, name: "confirm-delete-data", value: "confirm",  checked: false}
+    %label.inline{for: "confirm-delete-data"} I have backed up my data
+
+  .form-group
+    %label{for: "password"} Password
+    %input.form-control#password{type: :password, name: "password", autocomplete: "current-password", required: true, claue: ""}
+
+  .form-group
+    %input.btn.btn-danger.btn-disabled#close_account_button{type: :submit, value: "Close Account"}
+
+- content_for :js, assets([:js, :close_account])

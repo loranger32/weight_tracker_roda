@@ -1,0 +1,25 @@
+- @page_title = "Change Email"
+
+%h2.mt-40.center-text Current Email
+%p.mt-10.center-text= rodauth.account_from_session[:email]
+
+%form.rodauth#change-login-form{ action: rodauth.change_login_path, method: :post, role: "form" }
+  
+  != csrf_tag(rodauth.change_login_path)
+  
+  .form-group
+    %label{ for: "login" } New Email
+    %input.form-control#login{type: :email, name: 'login', autocomplete: "email", required: true, value: "" }
+
+  .form-group
+    %label{ for: "login-confirm" } Confirm New Email
+    %input.form-control#login-confirm{ type: :email, name: "login-confirm", autocomplete: "email", required: true, value: "" } 
+
+  .form-group
+    %label{ for: "password" } Password
+    %input.form-control#password{ type: :password, name: "password", autocomplete: "current-password", required: true, value: "" } 
+
+  .form-group
+    %input.btn.btn-primary{ type: :submit, value: "Change Email" }
+
+!= partial("partials/rodauth_cancel_btn")

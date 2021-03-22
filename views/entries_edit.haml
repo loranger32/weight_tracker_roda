@@ -1,6 +1,8 @@
+- @page_title = "Edit Entry"
+
 %h2.w-250.mt-50.center-block.center-text.fs-2.bg-gold.white.p-15 Edit Entry
 
-!= partial 'entry_form'
+= partial "partials/entry_form"
 
 %form{ action: "/entries/#{@entry.id}/delete", method: :post }
   != csrf_tag("/entries/#{@entry.id}/delete")

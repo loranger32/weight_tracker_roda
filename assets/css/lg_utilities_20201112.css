@@ -72,7 +72,7 @@ input[type=submit] {
   --info-color: #0dcaf0;
   --warning-color: #ffc107;
   --danger-color: #dc3545;
-  --light-color: #f8f9fa;
+  --light-color: #e8e9ea;
   --dark-color: #212529;
 }
 
@@ -433,35 +433,35 @@ input[type=submit] {
 /* ================================ Bootstrap ================================*/
 
 .bg-primary {
-  background-color:  #0d6efd;
+  background-color:  var(--primary-color);
 }
 
 .bg-secondary {
-  background-color: #6c757d;
+  background-color: var(--secondary-color);
 }
 
 .bg-success {
-  background-color: #198754;
+  background-color: var(--success-color);
 }
 
 .bg-info {
-  background-color: #0dcaf0;
+  background-color: var(--info-color);
 }
 
 .bg-warning {
-  background-color: #ffc107;
+  background-color: var(--warning-color);
 }
 
 .bg-danger {
-  background-color:  #dc3545;
+  background-color:  var(--danger-color);
 }
 
 .bg-light {
-  background-color: #f8f9fa;
+  background-color: var(--light-color);
 }
 
 .bg-dark {
-  background-color: #212529;
+  background-color: var(--dark-color);
 }
 
 /* ================================ Normal colors ============================*/
@@ -6061,6 +6061,11 @@ input[type=submit] {
 
 .btn-sm {
   padding: 5px 10px;
+}
+
+.btn-xs {
+  padding: 3px 6px;
+  font-size: 0.9rem !important;
 }
 
 .btn-lg {
