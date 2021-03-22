@@ -19,11 +19,11 @@
     %li.mt-10.btn.bg-primary.white  Change Email
   %a{ href: rodauth.change_password_path }
     %li.mt-10.btn.bg-primary.white Change Password
-  %li.mt-20.btn.bg-danger
+  %li.mt-10.btn.bg-danger
     %form{ action: rodauth.logout_path, method: :post }
       != csrf_tag(rodauth.logout_path)
       %input.block.w-150.center-block.bg-danger.center-text.white{ type: :submit, value: "Log Out" }
   %a{ href: rodauth.close_account_path }
-    %li.mt-10.btn.bg-danger.white Close Account
+    %li.mt-30.btn.bg-danger.white Close Account
 
 
