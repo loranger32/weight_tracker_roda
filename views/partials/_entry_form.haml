@@ -1,16 +1,15 @@
-%form.w-250.mt-50.center-block{ action: create_or_update_entry_action(@entry), method: :post }
+%form.w-250.mt-50.center-block{action: create_or_update_entry_action(@entry), method: :post}
   != csrf_tag(create_or_update_entry_action(@entry))
   .flex.justify-between.items-center
-    %label.w-50{ for: "day" } Day
-    %input.w-150{ type: :date, id: "day", name: "day", value: @entry.day || Date.today }
+    %label.w-50{for: "day"} Day
+    %input.w-150.lh-2{type: :date, id: "day", name: "day", value: @entry.day || Date.today}
 
   .mt-30.flex.justify-between.items-center
-    %label.w-50{ for: "weight" } Weight
-    %input.w-100{ type: :number, id: "weight", name: "weight", min: 50, max: 100,
-                  step: 0.1, autofocus: true, value: @most_recent_weight || @entry.weight.to_f || 50 }
+    %label.w-50{for: "weight"} Weight
+    %input.w-100{type: :number, id: "weight", name: "weight", min: 50, max: 100, step: 0.1, autofocus: true, value: @most_recent_weight || @entry.weight.to_f || 50}
   
   .mt-30.flex.flex-col
-    %label{ for: "note" } Note
-    %textarea.mt-10{ id: "note", name: "note", rows: '8', cols: '3' }= @entry.note
+    %label{for: "note"} Note
+    %textarea.mt-10{id: "note", name: "note", rows: '8', cols: '3'}= @entry.note
 
-  %input.block.w-200.mt-50.center-block.p-10.bg-primary.white.rounded-5{ type: :submit, value: "Validate" }
+  %input.block.w-200.mt-50.center-block.p-10.bg-primary.white.rounded-5{type: :submit, value: "Validate"}

@@ -2,31 +2,31 @@
 
 %h2.w-250.mt-50.center-block.center-text.fs-2.bg-gold.white.p-15 Create Account
 
-%form.rodauth#create-account-form{ action: rodauth.create_account_path, method: "post", role: "form"}
+%form.rodauth#create-account-form{action: rodauth.create_account_path, method: "post", role: "form"}
   
   != csrf_tag(rodauth.create_account_path)
 
   .form-group
-    %label{ for: "user_name" } User name
-    %input.form-control#user_name{ type: :text, name: "user_name", required: true, value: "" }
+    %label{for: "user_name"} User name
+    %input.form-control#user_name{type: :text, name: "user_name", required: true, value: ""}
 
   .form-group
-    %label{ for: "login" } email
-    %input.form-control#login{ type: :email, name: "login", autocomplete: "email", required: true, value: "" }
+    %label{for: "login"} email
+    %input.form-control#login{type: :email, name: "login", autocomplete: "email", required: true, value: ""}
 
   .form-group
-    %label{ for: "login-confirm" } Confirm email
-    %input.form-control#login-confirm{ type: :email, name: "login-confirm", autocomplete: "email", required: true, value: "" } 
+    %label{for: "login-confirm"} Confirm email
+    %input.form-control#login-confirm{type: :email, name: "login-confirm", autocomplete: "email", required: true, value: ""} 
 
   .form-group
-    %label{ for: "password" } Password
-    %input.form-control#password{type: :password, name: "password", autocomplete: "new-password", required: true, value: "" }
+    %label{for: "password"} Password
+    %input.form-control#password{type: :password, name: "password", autocomplete: "new-password", required: true, value: ""}
 
   .form-group
-    %label{ for: "password-confirm" } Confirm Password
-    %input.form-control#password-confirm{ type: :password, name: "password-confirm", autocomplete: "new-password", required: true, value: "" }
+    %label{for: "password-confirm"} Confirm Password
+    %input.form-control#password-confirm{type: :password, name: "password-confirm", autocomplete: "new-password", required: true, value: ""}
 
   .form-group
-    %input.btn.btn-primary{ type: :submit, value: "Create Account" }
+    %input.btn.btn-primary{type: :submit, value: "Create Account"}
 
 != partial("partials/rodauth_cancel_btn")
