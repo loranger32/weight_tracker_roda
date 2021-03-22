@@ -36,7 +36,7 @@ module WeightTracker
       title_instance_variable :@page_title
       login_redirect "/entries"
       before_create_account do
-        unless user_name = param_or_nil("user_name")
+        unless param_or_nil("user_name")
           throw_error_status(422, "user_name", "must be present")
         end
         account[:user_name] = user_name
