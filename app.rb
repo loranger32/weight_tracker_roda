@@ -64,6 +64,10 @@ module WeightTracker
       view "error_404"
     end
 
+    status_handler(403) do
+      view "error_403"      
+    end
+
     # Rendering
     plugin :render, engine: "haml", template_opts: {escape_html: true}
     plugin :partials
@@ -119,13 +123,13 @@ module WeightTracker
       end
 
       r.on "accounts" do
-        # TODO : handle access to non existing accounts + admin access
         r.get Integer do |account_id|
-          if (@account = Account[account_id.to_i])
+          if (@account = Account[account_id.to_i]) && (account_id == account[:id] || is_admin?(account))
             view "account_show"
           else
-            flash[:error] = "An error occured and you've been redirected"
-            r.redirect "/entries"
+            flash.now['error'] = "An error occured and you've been redirected"
+            response.status = 403
+            r.halt
           end
         end
       end
