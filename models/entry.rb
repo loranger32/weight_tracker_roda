@@ -21,4 +21,15 @@ class Entry < Sequel::Model
       end
     end 
   end
+
+  def validate
+    super
+    validates_presence [:day, :weight, :account_id]
+    validates_integer :account_id
+    validates_type Date, :day
+    validates_numeric :weight
+    validates_type String, :note
+    validates_max_length 600, :note
+    validates_unique [:day, :account_id], message: "Can't have two entries for the same day"
+  end
 end
