@@ -4,15 +4,19 @@ module WeightTracker
 class App < Roda
   opts[:root] = File.dirname(__FILE__)
 
+  logger = $stderr
+  plugin :common_logger, logger unless ENV['RACK_ENV'] == 'test'
+
   # Security
-  plugin :sessions, key: 'weight_tracker.session', secret: ENV['SESSION_SECRET']
+  secret = ENV['SESSION_SECRET']
+  plugin :sessions, key: 'weight_tracker.session', secret: secret
   plugin :content_security_policy do |csp|
     csp.default_src :self
     csp.font_src :self, 'fonts.gstatic.com'
     csp.img_src :self
     csp.object_src :self
     csp.frame_src :self
-    csp.style_src :self, 'fonts.googleapis.com'
+    csp.style_src :self, 'fonts.googleapis.com', 'stackpath.bootstrapcdn.com'
     csp.form_action :self
     csp.script_src :self
     csp.connect_src :self
