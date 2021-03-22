@@ -13,17 +13,17 @@
 %h2.w-200.center-block.mt-40.center-text Options
 
 %ul.mt-20.w-200.center-block
-  %li.btn.bg-primary.white
-    %a{href: "/auth/change_user_name"} Change User Name
-  %li.mt-10.btn.bg-primary.white
-    %a{ href: rodauth.change_login_path } Change Email
-  %li.mt-10.btn.bg-primary.white
-    %a{ href: rodauth.change_password_path } Change Password
+  %a{href: "/auth/change_user_name"}
+    %li.btn.bg-primary.white  Change User Name
+  %a{ href: rodauth.change_login_path }
+    %li.mt-10.btn.bg-primary.white  Change Email
+  %a{ href: rodauth.change_password_path }
+    %li.mt-10.btn.bg-primary.white Change Password
   %li.mt-20.btn.bg-danger
     %form{ action: rodauth.logout_path, method: :post }
       != csrf_tag(rodauth.logout_path)
       %input.block.w-150.center-block.bg-danger.center-text.white{ type: :submit, value: "Log Out" }
-  %li.mt-10.btn.bg-danger.white
-    %a{ href: rodauth.close_account_path } Close Account
+  %a{ href: rodauth.close_account_path }
+    %li.mt-10.btn.bg-danger.white Close Account
 
 
