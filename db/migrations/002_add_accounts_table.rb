@@ -1,4 +1,5 @@
 # Extracted from Rodauth README
+# Configured for Postgresql
 
 Sequel.migration do
   up do

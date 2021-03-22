@@ -28,7 +28,7 @@ module WeightTracker
     plugin :route_csrf
     plugin :rodauth do
       enable :login, :logout, :create_account, :change_login, :change_password,
-        :close_account, :active_sessions
+        :close_account, :active_sessions, :audit_logging
       skip_status_checks? true
       account_password_hash_column :password_hash
       hmac_secret secret
