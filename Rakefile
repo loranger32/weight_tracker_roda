@@ -1,7 +1,7 @@
 require "rake/testtask"
-require "standard/rake"
 
 unless ENV["RACK_ENV"] == "production"
+  require "standard/rake"
   require "dotenv"
   Dotenv.load
 end
