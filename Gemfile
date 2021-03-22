@@ -29,5 +29,3 @@ end
 group :test do
   gem "minitest", "~> 5.14", ">= 5.14.4"
 end
-
-

@@ -15,7 +15,7 @@ Rake::TestTask.new do |t|
 end
 
 desc "Run tests"
-task :default => :test
+task default: :test
 
 desc "Generate random base64 64 length string (for sessions secret)"
 task :random do
@@ -99,7 +99,7 @@ namespace :db do
           puts "No pending migration on test database."
         else
           puts "There are pending migrations on the test database. Run 'rake db:migrate' to apply them"
-        end 
+        end
       end
     end
   end
@@ -114,7 +114,7 @@ namespace :db do
   task :schema do |t|
     timestamp = Time.now.strftime("%Y%m%d%H%M%S")
     destination = File.join(SCHEMA_PATH, "001_schema_#{timestamp}.rb")
-    system("sequel -D #{ENV['DATABASE_URL']} > #{destination}")
+    system("sequel -D #{ENV["DATABASE_URL"]} > #{destination}")
     puts "Schema dumped to #{destination}"
   end
 end

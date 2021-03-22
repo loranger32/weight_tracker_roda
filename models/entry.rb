@@ -18,12 +18,12 @@ class Entry < Sequel::Model
   def self.all_desc_with_deltas(account_id)
     entries = all_desc(account_id)
     entries.each_with_index do |entry, index|
-      if entries[index + 1]
-        entry.delta = (entry.weight - entries[index + 1].weight).to_f
+      entry.delta = if entries[index + 1]
+        (entry.weight - entries[index + 1].weight).to_f
       else
-        entry.delta = 0
+        0
       end
-    end 
+    end
   end
 
   def validate

@@ -1,5 +1,4 @@
 module WeightTracker
-class App
-
-end
+  class App
+  end
 end
