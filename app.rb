@@ -101,7 +101,7 @@ class App < Roda
             flash[:notice] = "User Name successfully changed"
             r.redirect "/accounts/#{account[:id]}"
           else
-            flash[:error] = account.errors.full_messages.join("\n- ")
+            flash[:error] = account.errors.values.join("\n")
             r.redirect
           end
         end
