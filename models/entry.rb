@@ -1,18 +1,22 @@
 class Entry < Sequel::Model
+  plugin :validation_helpers
+
+  many_to_one :account
+
   attr_accessor :delta
 
-  def self.all_desc
-    reverse_order(:day).all
+  def self.all_desc(account_id)
+    where(account_id: account_id).reverse_order(:day).all
   end
 
-  def self.most_recent_weight
-    if (most_recent = all_desc.first)
+  def self.most_recent_weight(account_id)
+    if (most_recent = all_desc(account_id).first)
       most_recent.weight.to_f
     end
   end
 
-  def self.all_desc_with_deltas
-    entries = all_desc
+  def self.all_desc_with_deltas(account_id)
+    entries = all_desc(account_id)
     entries.each_with_index do |entry, index|
       if entries[index + 1]
         entry.delta = (entry.weight - entries[index + 1].weight).to_f

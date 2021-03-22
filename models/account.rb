@@ -1,6 +1,8 @@
 class Account < Sequel::Model
   plugin :validation_helpers
 
+  one_to_many: entries
+
   def validate
     super
     validates_presence [:user_name, :email, :password_hash]

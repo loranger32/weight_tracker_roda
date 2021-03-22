@@ -110,6 +110,7 @@ class App < Roda
     
     rodauth.check_active_session
     rodauth.require_authentication
+    account = rodauth.account_from_session
     check_csrf!
 
     r.root do
@@ -117,39 +118,49 @@ class App < Roda
     end
 
     r.on "accounts" do
+      # TODO : handle access to non existing accounts + admin access
       r.get Integer do |account_id|
-        @account = Account[account_id.to_i]
-        view 'account_show'
+        if (@account = Account[account_id.to_i])
+          view 'account_show'
+        else
+          flash[:error] = "An error occured and you've been redirected"
+          r.redirect "/entries"
+        end
       end
     end
 
     r.on "entries" do
+
       r.is do
         r.get do
-          @entries = Entry.all_desc_with_deltas
+          @entries = Entry.all_desc_with_deltas(account[:id])
 
           view 'entries_index'
         end
 
         r.post do
-          submitted = { day: tp.date('day'),
-                        weight: tp.float('weight'),
-                        note: tp.str('note') }
+          submitted = {day: tp.date('day'),
+                       weight: tp.float('weight'),
+                       note: tp.str('note'),
+                       account_id: account[:id]}
 
-          errors = validate_entry_params(submitted)
+          @entry = Entry.new
+          @entry.set(submitted)
 
-          if errors.empty?
-            Entry.insert(submitted)
+          if @entry.valid?
+            @entry.save
+            flash[:notice] = "New entry saved"
             r.redirect
           else
-            render 'entries_new'
+            flash.now['error'] = @entry.errors.values.join("\n")
+            view 'entries_new'
           end
         end
       end
 
       r.is 'new' do
         @entry = Entry.new
-        @most_recent_weight = Entry.most_recent_weight
+        @most_recent_weight = Entry.most_recent_weight(account[:id])
 
         view 'entries_new'
       end
@@ -159,17 +170,20 @@ class App < Roda
 
         r.is do
           r.post do
-            submitted = { day: tp.date('day'),
-                          weight: tp.float('weight'),
-                          note: tp.str('note') }
+            submitted = {day: tp.date('day'),
+                         weight: tp.float('weight'),
+                         note: tp.str('note'),
+                         account_id: account[:id]}
 
-            errors = validate_entry_params(submitted)
+            @entry.set(submitted)
 
-            if errors.empty?
-              @entry.update(submitted)
+            if @entry.valid?
+              @entry.save
+              flash[:notice] = "Entry has been updated"
               r.redirect '/entries'
             else
-              render 'entries_edit'
+              flash.now[:error] = @entry.errors.values.join("\n")
+              view 'entries_edit'
             end 
           end
         end

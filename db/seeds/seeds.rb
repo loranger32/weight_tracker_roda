@@ -15,10 +15,10 @@ accounts = [ { email: 'bob@example.com',
 
 accounts.each { |account| DB[:accounts].insert(account) }
 
-entries = [ { weight: 85.0, day: "2021-01-01", note: 'First day' },
-            { weight: 84.0, day: "2021-01-02", note: '' },
-            { weight: 83.5, day: "2021-01-03", note: 'Great !' },
-            { weight: 83.2, day: "2021-01-04", note: 'Keep going' },
-            { weight: 84.0, day: "2021-01-05", note: "Don't give up"} ]
+entries = [ { weight: 85.0, day: "2021-01-01", note: 'First day', account_id: 1 },
+            { weight: 84.0, day: "2021-01-02", note: '', account_id: 1 },
+            { weight: 83.5, day: "2021-01-03", note: 'Great !', account_id: 1 },
+            { weight: 83.2, day: "2021-01-04", note: 'Keep going', account_id: 1 },
+            { weight: 84.0, day: "2021-01-05", note: "Don't give up", account_id: 1} ]
 
 entries.each { |entry| DB[:entries].insert(entry) }
