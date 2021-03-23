@@ -117,7 +117,7 @@ module WeightTracker
 
       rodauth.check_active_session
       rodauth.require_authentication
-      account = rodauth.account_from_session
+      account_ds = rodauth.account_from_session
       check_csrf!
 
       r.root do
@@ -126,7 +126,7 @@ module WeightTracker
 
       r.on "accounts" do
         r.get Integer do |account_id|
-          if (@account = Account[account_id.to_i]) && (account_id == account[:id] || is_admin?(account))
+          if (@account = Account[account_id.to_i]) && (account_id == account_ds[:id] || is_admin?(account_ds))
             view "account_show"
           else
             flash.now['error'] = "An error occured and you've been redirected"
@@ -139,7 +139,7 @@ module WeightTracker
       r.on "entries" do
         r.is do
           r.get do
-            @entries = Entry.all_desc_with_deltas(account[:id])
+            @entries = Entry.all_desc_with_deltas(account_ds[:id])
 
             view "entries_index"
           end
@@ -148,7 +148,7 @@ module WeightTracker
             submitted = {day: tp.date("day"),
                          weight: tp.float("weight"),
                          note: tp.str("note"),
-                         account_id: account[:id]}
+                         account_id: account_ds[:id]}
 
             @entry = Entry.new
             @entry.set(submitted)
@@ -166,7 +166,7 @@ module WeightTracker
 
         r.is "new" do
           @entry = Entry.new
-          @most_recent_weight = Entry.most_recent_weight(account[:id])
+          @most_recent_weight = Entry.most_recent_weight(account_ds[:id])
 
           view "entries_new"
         end
@@ -179,7 +179,7 @@ module WeightTracker
               submitted = {day: tp.date("day"),
                            weight: tp.float("weight"),
                            note: tp.str("note"),
-                           account_id: account[:id]}
+                           account_id: account_ds[:id]}
 
               @entry.set(submitted)
 
