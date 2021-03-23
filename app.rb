@@ -76,6 +76,7 @@ module WeightTracker
       js: {main: "main.js", close_account: "close_account.js"},
       group_subdirs: false,
       gzip: true
+    compile_assets if ENV['RACK_ENV'] == "production"
     plugin :public, gzip: true
     plugin :flash
     plugin :content_for
@@ -86,7 +87,7 @@ module WeightTracker
 
     route do |r|
       r.public
-      r.assets
+      r.assets unless ENV["RACK_ENV"] == "production"
 
       r.on "auth" do
         r.rodauth
