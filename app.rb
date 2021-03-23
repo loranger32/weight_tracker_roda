@@ -128,6 +128,7 @@ module WeightTracker
         r.get "security_log" do
           @security_logs = DB[:account_authentication_audit_logs]
                             .where(account_id: account_ds[:id])
+                            .reverse(:id)
                             .select_map([:at, :message, :metadata])
 
           view "security_log"
