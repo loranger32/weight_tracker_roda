@@ -1,0 +1,21 @@
+- @page_title = "Security Log"
+
+%h2.w-250.mt-50.center-block.center-text.fs-2.bg-gold.white.p-15 Security Log
+
+%p.mt-30.center-text Review the access to your account
+
+%table.mt-50.w-350.center-block.center-text
+  %thead.lh-2
+    %td.fw-600 DATE
+    %td.fw-600 ACTION
+    %td.fw-600 IP
+  %tbody
+    - @security_logs.each do |sl|
+      %tr.lh-1-5
+        %td!= sl[0].strftime("%a %d %b %Y - %k:%M:%S")
+        %td!= sl[1]
+        %td!= JSON.parse(sl[2])["ip"]
+
+
+
+

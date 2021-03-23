@@ -125,6 +125,14 @@ module WeightTracker
       end
 
       r.on "accounts" do
+        r.get "security_log" do
+          @security_logs = DB[:account_authentication_audit_logs]
+                            .where(account_id: account_ds[:id])
+                            .select_map([:at, :message, :metadata])
+
+          view "security_log"
+        end
+
         r.get Integer do |account_id|
           if (@account = Account[account_id.to_i]) && (account_id == account_ds[:id] || is_admin?(account_ds))
             view "account_show"
