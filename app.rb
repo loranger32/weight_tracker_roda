@@ -90,15 +90,17 @@ module WeightTracker
 
       r.on "auth" do
         r.rodauth
-        r.is "change_user_name" do
-          rodauth.require_authentication
 
+        rodauth.check_active_session
+        rodauth.require_authentication
+        check_csrf!
+
+        r.is "change_user_name" do
           r.get do
             view "change-user-name"
           end
 
           r.post do
-            check_csrf!
             account = Account[rodauth.account_from_session[:id]]
             account.set(user_name: r.params["user_name"])
             if account.valid?
