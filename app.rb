@@ -4,9 +4,9 @@ module WeightTracker
   class App < Roda
     opts[:root] = File.dirname(__FILE__)
 
-    logger = $stderr
-    plugin :common_logger, logger unless ENV["RACK_ENV"] == "test"
-
+    # logger = $stderr
+    # plugin :common_logger, logger unless ENV["RACK_ENV"] == "test"
+    plugin :enhanced_logger, filter: ->(path) { path.start_with?("/assets") }
     # Security
     secret = ENV["SESSION_SECRET"]
     plugin :sessions, key: "weight_tracker.session", secret: secret
@@ -41,9 +41,6 @@ module WeightTracker
         end
         account[:user_name] = user_name
       end
-      after_login do
-        logger.write "#{account[:email]} logged in!"
-      end
       before_close_account do
         unless param_or_nil("confirm-delete-data") == "confirm"
           flash[:error] = "You did not confirm you made a backup of your data"
@@ -57,7 +54,6 @@ module WeightTracker
     end
 
     # Routing
-
     plugin :status_handler
 
     status_handler(404) do

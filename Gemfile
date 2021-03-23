@@ -9,7 +9,8 @@ gem "pg", "~> 1.2", ">= 1.2.3"
 gem "puma", "~> 5.2", ">= 5.2.2"
 gem "rake", "~> 13.0", ">= 13.0.1"
 gem "roda", "~> 3.42"
-gem "rodauth", "~> 2.10"
+gem 'roda-enhanced_logger', '~> 0.4.0'
+gem 'rodauth', '~> 2.11'
 gem "sequel", "~> 5.42"
 gem "sequel_pg", "~> 1.14", require: "sequel"
 
