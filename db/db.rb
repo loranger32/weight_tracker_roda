@@ -1,7 +1,7 @@
 require "sequel"
 require "logger"
 
-module MyApp
+module WeightTracker
   DB = if ENV["RACK_ENV"] == "test"
     Sequel.connect(ENV.fetch("TEST_DATABASE_URL"))
   else
@@ -13,3 +13,6 @@ module MyApp
   require_relative "../models/entry"
   require_relative "../models/account"
 end
+
+# In the irb console, save some typing when accessing the DB object
+DB = WeightTracker::DB
