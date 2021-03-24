@@ -4,9 +4,7 @@ module WeightTracker
   class App < Roda
     opts[:root] = File.dirname(__FILE__)
 
-    # logger = $stderr
-    # plugin :common_logger, logger unless ENV["RACK_ENV"] == "test"
-    plugin :enhanced_logger, filter: ->(path) { path.start_with?("/assets") }
+    plugin :enhanced_logger, filter: ->(path) { path.start_with?("/assets") }, trace_missed: true
     # Security
     secret = ENV["SESSION_SECRET"]
     plugin :sessions, key: "weight_tracker.session", secret: secret
@@ -36,7 +34,7 @@ module WeightTracker
       title_instance_variable :@page_title
       login_redirect "/entries"
       before_create_account do
-        unless param_or_nil("user_name")
+        unless user_name = param_or_nil("user_name")
           throw_error_status(422, "user_name", "must be present")
         end
         account[:user_name] = user_name
@@ -134,9 +132,12 @@ module WeightTracker
         r.get Integer do |account_id|
           if (@account = Account[account_id.to_i]) && (account_id == account_ds[:id] || is_admin?(account_ds))
             view "account_show"
-          else
-            flash.now['error'] = "An error occured and you've been redirected"
+          elsif @account
+            flash.now['error'] = "You're not authorized to see this page"
             response.status = 403
+            r.halt
+          else
+            response.status = 404
             r.halt
           end
         end
