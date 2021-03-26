@@ -29,5 +29,15 @@ module WeightTracker
     def account_cancel_link
       rodauth.logged_in? ? "/accounts/#{rodauth.account_from_session[:id]}" : "/"
     end
+
+    def format_auth_log_action(action)
+      case action
+      when "login" then "bg-success"
+      when "logout" then "bg-warning"
+      when "login_failure" then "bg-danger"
+      else
+        "bg-secondary" 
+      end
+    end
   end
 end

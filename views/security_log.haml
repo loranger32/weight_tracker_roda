@@ -6,15 +6,15 @@
 
 %table.mt-50.w-350.center-block.center-text
   %thead.lh-2
-    %td.fw-600 DATE
     %td.fw-600 ACTION
+    %td.fw-600 DATE
     %td.fw-600 IP
   %tbody
     - @security_logs.each do |sl|
-      %tr.lh-1-5
+      %tr.lh-2
+        %td.px-6.rounded-5.white{class: format_auth_log_action(sl[1])}!= sl[1] 
         %td!= sl[0].strftime("%a %d %b %Y - %k:%M:%S")
-        %td!= sl[1]
-        %td!= JSON.parse(sl[2])["ip"]
+        %td.rounded-5.px-2.bg-info.white!= JSON.parse(sl[2])["ip"]
 
 
 
