@@ -36,7 +36,7 @@ module WeightTracker
       when "logout" then "bg-warning"
       when "login_failure" then "bg-danger"
       else
-        "bg-secondary" 
+        "bg-secondary"
       end
     end
   end

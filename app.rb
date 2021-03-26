@@ -48,7 +48,7 @@ module WeightTracker
       end
       close_account_redirect "/auth/login"
       audit_log_metadata_default do
-        {'ip' => scope.request.ip}
+        {"ip" => scope.request.ip}
       end
     end
 
@@ -60,7 +60,7 @@ module WeightTracker
     end
 
     status_handler(403) do
-      view "error_403"      
+      view "error_403"
     end
 
     # Rendering
@@ -71,7 +71,7 @@ module WeightTracker
       js: {main: "main.js", close_account: "close_account.js"},
       group_subdirs: false,
       gzip: true
-    compile_assets if ENV['RACK_ENV'] == "production"
+    compile_assets if ENV["RACK_ENV"] == "production"
     plugin :public, gzip: true
     plugin :flash
     plugin :content_for
@@ -84,7 +84,7 @@ module WeightTracker
     route do |r|
       r.public
       r.assets unless ENV["RACK_ENV"] == "production"
-      
+
       r.rodauth
       check_csrf!
       rodauth.check_active_session
@@ -115,7 +115,6 @@ module WeightTracker
       end
 
       r.is "export-data" do
-     
         r.get do
           view "export_data"
         end
@@ -148,9 +147,9 @@ module WeightTracker
       r.on "accounts" do
         r.get "security_log" do
           @security_logs = DB[:account_authentication_audit_logs]
-                            .where(account_id: @account_ds[:id])
-                            .reverse(:id)
-                            .select_map([:at, :message, :metadata])
+            .where(account_id: @account_ds[:id])
+            .reverse(:id)
+            .select_map([:at, :message, :metadata])
 
           view "security_log"
         end
@@ -159,7 +158,7 @@ module WeightTracker
           if (@account = Account[account_id.to_i]) && (account_id == @account_ds[:id] || is_admin?(@account_ds))
             view "account_show"
           elsif @account
-            flash.now['error'] = "You're not authorized to see this page"
+            flash.now["error"] = "You're not authorized to see this page"
             response.status = 403
             r.halt
           else
