@@ -5,6 +5,7 @@ source "https://rubygems.org"
 gem "bcrypt", "~> 3.1", ">= 3.1.16"
 gem "haml", "~> 5.2", ">= 5.2.1"
 gem "mail", "~> 2.7", ">= 2.7.1"
+gem 'nokogiri', '~> 1.11', '>= 1.11.2'
 gem "pg", "~> 1.2", ">= 1.2.3"
 gem "puma", "~> 5.2", ">= 5.2.2"
 gem "rake", "~> 13.0", ">= 13.0.1"

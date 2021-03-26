@@ -4,7 +4,9 @@ module WeightTracker
   class App < Roda
     opts[:root] = File.dirname(__FILE__)
 
+    # Logging
     plugin :enhanced_logger, filter: ->(path) { path.start_with?("/assets") }, trace_missed: true
+
     # Security
     secret = ENV["SESSION_SECRET"]
     plugin :sessions, key: "weight_tracker.session", secret: secret
@@ -30,7 +32,6 @@ module WeightTracker
       skip_status_checks? true
       account_password_hash_column :password_hash
       hmac_secret secret
-      prefix "/auth"
       title_instance_variable :@page_title
       login_redirect "/entries"
       before_create_account do
@@ -78,51 +79,75 @@ module WeightTracker
     # Request / response
     plugin :typecast_params
     alias_method :tp, :typecast_params
+    plugin :sinatra_helpers
 
     route do |r|
       r.public
       r.assets unless ENV["RACK_ENV"] == "production"
-
-      r.on "auth" do
-        r.rodauth
-
-        rodauth.check_active_session
-        rodauth.require_authentication
-        check_csrf!
-
-        r.is "change_user_name" do
-          r.get do
-            view "change-user-name"
-          end
-
-          r.post do
-            account = Account[rodauth.account_from_session[:id]]
-            account.set(user_name: r.params["user_name"])
-            if account.valid?
-              account.save
-              flash[:notice] = "User Name successfully changed"
-              r.redirect "/accounts/#{account[:id]}"
-            else
-              flash[:error] = account.errors.values.join("\n")
-              r.redirect
-            end
-          end
-        end
-      end
-
+      
+      r.rodauth
+      check_csrf!
       rodauth.check_active_session
       rodauth.require_authentication
-      account_ds = rodauth.account_from_session
-      check_csrf!
+      @account_ds = rodauth.account_from_session
 
       r.root do
         r.redirect "entries/new"
       end
 
+      r.is "change_user_name" do
+        r.get do
+          view "change-user-name"
+        end
+
+        r.post do
+          account = Account[@account_ds[:id]]
+          account.set(user_name: r.params["user_name"])
+          if account.valid?
+            account.save
+            flash[:notice] = "User Name successfully changed"
+            r.redirect "/accounts/#{account[:id]}"
+          else
+            flash[:error] = format_flash_error(account)
+            r.redirect
+          end
+        end
+      end
+
+      r.is "export-data" do
+     
+        r.get do
+          view "export_data"
+        end
+
+        r.post do
+          @data = Entry.where(account_id: @account_ds[:id]).order(:id).select(:day, :weight, :note)
+
+          if r.params["file_format"] == "json"
+            file_name = "wt_data_#{@account_ds[:user_name]}_#{Time.now.strftime("%Y%m%d%H%M%S")}.json"
+            data_file_path = File.join(opts[:root], "tmp", file_name)
+            File.open(data_file_path, "w") { |f| f.write @data.to_json }
+            send_file data_file_path, type: "application/json", filename: file_name
+          elsif r.params["file_format"] == "csv"
+            file_name = "wt_data_#{@account_ds[:user_name]}_#{Time.now.strftime("%Y%m%d%H%M%S")}.csv"
+            data_file_path = File.join(opts[:root], "tmp", file_name)
+            File.open(data_file_path, "w") { |f| f.write @data.to_csv(write_headers: true) }
+            send_file data_file_path, type: "text/csv", filename: file_name
+          elsif r.params["file_format"] == "xml"
+            file_name = "wt_data_#{@account_ds[:user_name]}_#{Time.now.strftime("%Y%m%d%H%M%S")}.xml"
+            data_file_path = File.join(opts[:root], "tmp", file_name)
+            File.open(data_file_path, "w") { |f| f.write @data.to_xml }
+            send_file data_file_path, type: "text/xml", filename: file_name
+          else
+            response.status = 404
+          end
+        end
+      end
+
       r.on "accounts" do
         r.get "security_log" do
           @security_logs = DB[:account_authentication_audit_logs]
-                            .where(account_id: account_ds[:id])
+                            .where(account_id: @account_ds[:id])
                             .reverse(:id)
                             .select_map([:at, :message, :metadata])
 
@@ -130,7 +155,7 @@ module WeightTracker
         end
 
         r.get Integer do |account_id|
-          if (@account = Account[account_id.to_i]) && (account_id == account_ds[:id] || is_admin?(account_ds))
+          if (@account = Account[account_id.to_i]) && (account_id == @account_ds[:id] || is_admin?(@account_ds))
             view "account_show"
           elsif @account
             flash.now['error'] = "You're not authorized to see this page"
@@ -146,7 +171,7 @@ module WeightTracker
       r.on "entries" do
         r.is do
           r.get do
-            @entries = Entry.all_desc_with_deltas(account_ds[:id])
+            @entries = Entry.all_desc_with_deltas(@account_ds[:id])
 
             view "entries_index"
           end
@@ -155,7 +180,7 @@ module WeightTracker
             submitted = {day: tp.date("day"),
                          weight: tp.float("weight"),
                          note: tp.str("note"),
-                         account_id: account_ds[:id]}
+                         account_id: @account_ds[:id]}
 
             @entry = Entry.new
             @entry.set(submitted)
@@ -165,7 +190,7 @@ module WeightTracker
               flash[:notice] = "New entry saved"
               r.redirect
             else
-              flash.now["error"] = @entry.errors.values.join("\n")
+              flash.now["error"] = format_flash_error(@entry)
               view "entries_new"
             end
           end
@@ -173,7 +198,7 @@ module WeightTracker
 
         r.is "new" do
           @entry = Entry.new
-          @most_recent_weight = Entry.most_recent_weight(account_ds[:id])
+          @most_recent_weight = Entry.most_recent_weight(@account_ds[:id])
 
           view "entries_new"
         end
@@ -186,7 +211,7 @@ module WeightTracker
               submitted = {day: tp.date("day"),
                            weight: tp.float("weight"),
                            note: tp.str("note"),
-                           account_id: account_ds[:id]}
+                           account_id: @account_ds[:id]}
 
               @entry.set(submitted)
 

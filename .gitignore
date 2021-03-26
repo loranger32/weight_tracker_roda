@@ -8,4 +8,5 @@ public/*.css
 public/assets/*.js
 public/assets/*.css
 
+tmp/*
 .bundle

@@ -1,5 +1,8 @@
 class Entry < Sequel::Model
   plugin :validation_helpers
+  plugin :json_serializer
+  plugin :csv_serializer
+  plugin :xml_serializer
 
   many_to_one :account
 

@@ -118,3 +118,14 @@ namespace :db do
     puts "Schema dumped to #{destination}"
   end
 end
+
+desc "Cleanup the temp files"
+task :clean_tmp do
+  temp_directory = File.expand_path("tmp", __dir__)
+  number_tmp_files = Dir.entries(temp_directory).length
+  unless number_tmp_files == 2 # "." and ".."
+    Dir[File.join(temp_directory, "*")].each { |f| FileUtils.remove_entry_secure(f) }
+    puts "Temporary Directory cleaned - #{number_tmp_files - 2} removed"
+  end
+  puts "Temp directory was empty"
+end

@@ -19,7 +19,8 @@
 
   - if rodauth.authenticated?
     .block.mt-40.w-200.center-block.center-text
-      %a.btn.btn-sm.bg-light{href: "/accounts/#{rodauth.account_from_session[:id]}"}= rodauth.account_from_session[:user_name]
+      - @account_ds ||= rodauth.account_from_session # @account_ds is not always set on when on rodauth branch
+      %a.btn.btn-sm.bg-light{href: "/accounts/#{@account_ds[:id]}"}= @account_ds[:user_name]
   
   != yield
 

@@ -1,8 +1,8 @@
 - @page_title = "Change User Name"
 
-%form.rodauth#change-user-name-form{action: "/auth/change_user_name", method: :post, role: "form"}
+%form.rodauth#change-user-name-form{action: "/change_user_name", method: :post, role: "form"}
   
-  != csrf_tag("/auth/change_user_name")
+  != csrf_tag("/change_user_name")
   
   .form-group
     %label{for: "user_name"} New User Name

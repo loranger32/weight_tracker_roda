@@ -1,6 +1,6 @@
 - @page_title = @account.user_name
 
-%h2.w-250.mt-50.center-block.center-text.fs-2.bg-gold.white.p-15 Profile
+%h2.w-200.mt-50.center-block.center-text.fs-2.bg-gold.white.p-15 Profile
 
 .mt-50.w-250.center-block
   .center-text
@@ -14,17 +14,19 @@
 
 %ul.mt-20.w-200.center-block
   %li
-    %a.block.btn.bg-primary.white{href: "/auth/change_user_name"} Change User Name
-  %li
-    %a.block.mt-10.btn.bg-primary.white{href: rodauth.change_login_path} Change Email
-  %li
-    %a.block.mt-10.btn.bg-primary.white{href: rodauth.change_password_path} Change Password
-  %li
-    %a.block.mt-10.btn.bg-primary.white{href: "/accounts/security_log"} Security Log
-  %li.mt-10.btn.bg-warning
+    %a.block.btn.bg-primary.white{href: "/change_user_name"} Change User Name
+  %li.mt-10
+    %a.block.btn.bg-primary.white{href: rodauth.change_login_path} Change Email
+  %li.mt-10
+    %a.block.btn.bg-primary.white{href: rodauth.change_password_path} Change Password
+  %li.mt-10
+    %a.block.btn.bg-primary.white{href: "/accounts/security_log"} Security Log
+  %li.mt-10
+    %a.block.btn.bg-primary.white{href: "/export-data"} Export data
+  %li.mt-10
     %form{action: rodauth.logout_path, method: :post}
       != csrf_tag(rodauth.logout_path)
-      %input.block.w-150.center-block.bg-warning.center-text.white{type: :submit, value: "Log Out"}
+      %input.w-200.btn.bg-warning.white{type: :submit, value: "Log Out"}
   %li
     %a.block.mt-30.btn.bg-danger.white{href: rodauth.close_account_path} Close Account
 
