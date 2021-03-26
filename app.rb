@@ -80,6 +80,11 @@ module WeightTracker
     plugin :typecast_params
     alias_method :tp, :typecast_params
     plugin :sinatra_helpers
+    plugin :hooks
+    before do
+      tmp_dir = File.join(opts[:root], "tmp")
+      Dir[tmp_dir + "/*"].each { |f| FileUtils.remove_entry_secure(f) } unless Dir.empty?(tmp_dir)
+    end
 
     route do |r|
       r.public
@@ -139,7 +144,8 @@ module WeightTracker
             File.open(data_file_path, "w") { |f| f.write @data.to_xml }
             send_file data_file_path, type: "text/xml", filename: file_name
           else
-            response.status = 404
+            response.status = 400
+            response.body = view("error_400")
           end
         end
       end
