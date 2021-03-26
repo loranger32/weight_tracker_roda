@@ -80,11 +80,6 @@ module WeightTracker
     plugin :typecast_params
     alias_method :tp, :typecast_params
     plugin :sinatra_helpers
-    plugin :hooks
-    before do
-      tmp_dir = File.join(opts[:root], "tmp")
-      Dir[tmp_dir + "/*"].each { |f| FileUtils.remove_entry_secure(f) } unless Dir.empty?(tmp_dir)
-    end
 
     route do |r|
       r.public
