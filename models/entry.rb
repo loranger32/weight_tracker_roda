@@ -8,23 +8,25 @@ class Entry < Sequel::Model
 
   attr_accessor :delta
 
-  def self.all_desc(account_id)
-    where(account_id: account_id).reverse_order(:day).all
-  end
-
-  def self.most_recent_weight(account_id)
-    if (most_recent = all_desc(account_id).first)
-      most_recent.weight.to_f
+  dataset_module do
+    def all_desc(account_id)
+      where(account_id: account_id).reverse_order(:day).all
     end
-  end
 
-  def self.all_desc_with_deltas(account_id)
-    entries = all_desc(account_id)
-    entries.each_with_index do |entry, index|
-      entry.delta = if entries[index + 1]
-        (entry.weight - entries[index + 1].weight).to_f
-      else
-        0
+    def most_recent_weight(account_id)
+      if (most_recent = all_desc(account_id).first)
+        most_recent.weight.to_f
+      end
+    end
+
+    def all_desc_with_deltas(account_id)
+      entries = all_desc(account_id)
+      entries.each_with_index do |entry, index|
+        entry.delta = if entries[index + 1]
+          (entry.weight - entries[index + 1].weight).to_f
+        else
+          0
+        end
       end
     end
   end

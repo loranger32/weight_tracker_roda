@@ -15,7 +15,5 @@ else
 end
 
 require_relative "app"
-require_relative "helpers/app_helpers"
-require_relative "helpers/view_helpers"
 
 run WeightTracker::App.freeze.app

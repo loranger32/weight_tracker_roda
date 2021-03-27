@@ -1,5 +1,5 @@
 module WeightTracker
-  class App
+  module ViewHelpers
     def set_page_title(title)
       if title.nil? || title.empty?
         "Weight Tracker"

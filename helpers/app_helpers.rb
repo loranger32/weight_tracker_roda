@@ -1,5 +1,5 @@
 module WeightTracker
-  class App
+  module AppHelpers
     # Temporary Hack
     def is_admin?(account)
       account[:id] == 1

@@ -1,6 +1,7 @@
 require "rake/testtask"
 
 unless ENV["RACK_ENV"] == "production"
+  require "bcrypt"
   require "standard/rake"
   require "dotenv"
   Dotenv.load
@@ -10,7 +11,7 @@ MIGRATIONS_PATH = File.expand_path("db/migrations", __dir__)
 SCHEMA_PATH = File.expand_path("db/schema", __dir__)
 
 Rake::TestTask.new do |t|
-  t.pattern = "test/*_test.rb"
+  t.pattern = "test/**/*_test.rb"
   t.warning = false
 end
 
@@ -128,4 +129,9 @@ task :clean_tmp do
     puts "Temporary Directory cleaned - #{number_tmp_files - 2} removed"
   end
   puts "Temp directory was empty"
+end
+
+desc "Generate a password hash"
+task :gen_ph, [:pw] do |pw|
+  puts BCrypt::Password.create(pw, cost: 2)
 end

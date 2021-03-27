@@ -1,7 +1,14 @@
 require_relative "db/db"
+require_relative "helpers/app_helpers"
+require_relative "helpers/view_helpers"
 
 module WeightTracker
+
   class App < Roda
+
+    include AppHelpers
+    include ViewHelpers
+
     opts[:root] = File.dirname(__FILE__)
 
     # Logging
@@ -147,9 +154,9 @@ module WeightTracker
       r.on "accounts" do
         r.get "security_log" do
           @security_logs = DB[:account_authentication_audit_logs]
-            .where(account_id: @account_ds[:id])
-            .reverse(:id)
-            .select_map([:at, :message, :metadata])
+                            .where(account_id: @account_ds[:id])
+                            .reverse(:id)
+                            .select_map([:at, :message, :metadata])
 
           view "security_log"
         end
