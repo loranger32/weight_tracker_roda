@@ -1,19 +1,23 @@
 require_relative "../test_helpers"
 
 class EntryBasicTest < HookedTestClass
-  def setup
+  def before_all
+    super
     @valid_params= {day: Date.parse("2021-01-01"), weight: 50.0, account_id: 1, note: "A good note"}
   end
 
   def load_fixtures
+    clean_fixtures
     Account.insert(user_name: "Alice", email: "alice@example.com",
                    # password = 'foobar'
                    password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva")
   end
 
-  def clean_fixtures 
-    DB[:accounts].delete
-    DB.reset_primary_key_sequence(:accounts)
+  def clean_fixtures
+    [:entries, :accounts].each do |table|
+      DB[table].delete
+      DB.reset_primary_key_sequence(table)
+    end
   end
 
   def test_has_day_weight_note_and_delta_attributes
@@ -32,8 +36,8 @@ class EntryBasicTest < HookedTestClass
   end
 
   def test_entry_is_valid_with_valid_params
-    entry1 = Entry.new(@valid_params)
-    assert entry1.valid?
+    entry = Entry.new(@valid_params)
+    assert entry.valid?
   end
 
   def test_day_must_be_present
@@ -106,6 +110,7 @@ end
 
 class EntryQueryingTest < HookedTestClass
   def load_fixtures
+    clean_fixtures
     Account.insert(user_name: "Alice", email: "alice@example.com",
                    # password = 'foobar'
                    password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva") 
@@ -117,10 +122,10 @@ class EntryQueryingTest < HookedTestClass
   end
 
   def clean_fixtures
-    DB[:entries].delete
-    DB[:accounts].delete
-    DB.reset_primary_key_sequence(:accounts)
-    DB.reset_primary_key_sequence(:entries)
+    [:entries, :accounts].each do |table|
+      DB[table].delete
+      DB.reset_primary_key_sequence(table)
+    end
   end
 
   def test_all_desc

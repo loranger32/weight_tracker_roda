@@ -9,7 +9,6 @@ class AccountTest < HookedTestClass
 
   def clean_fixtures
     DB[:accounts].delete
-    DB.reset_primary_key_sequence(:accounts)
   end
 
   def test_has_user_name_email_pw_hash_attributes

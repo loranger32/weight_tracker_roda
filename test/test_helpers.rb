@@ -34,7 +34,6 @@ class HookedTestClass < Minitest::Test
   end
 
   def load_fixtures; end
-
   def clean_fixtures; end
 end
 
@@ -49,8 +48,33 @@ class CapybaraTestCase < HookedTestClass
     Capybara.app
   end
 
+  def create_account!
+    visit "/create-account"
+    fill_in "user_name", with: "Alice"
+    fill_in "login", with: "alice@example.com"
+    fill_in "login-confirm", with: "alice@example.com"
+    fill_in "password", with: "foobar"
+    fill_in "password-confirm", with: "foobar"
+    click_on "Create Account"
+  end
+
+  def logout!
+    account = Account.all.first
+    visit "/accounts/#{account.id}"
+    click_on "Log Out"
+  end
+
+  def login!
+    create_account! if Account[1].nil?
+    visit "/login"
+    fill_in "login", with: "alice@example.com"
+    fill_in "password", with: "foobar"
+    click_on "Log In"
+  end
+
   def teardown
     Capybara.reset_sessions!
     Capybara.use_default_driver
   end
 end
+

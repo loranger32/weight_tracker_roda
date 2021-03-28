@@ -11,8 +11,13 @@ module WeightTracker
 
     opts[:root] = File.dirname(__FILE__)
 
-    # Logging
-    plugin :enhanced_logger, filter: ->(path) { path.start_with?("/assets") }, trace_missed: true
+    # General plugins
+    plugin :environments
+    unless test?
+      plugin :enhanced_logger,
+        filter: ->(path) { path.start_with?("/assets") },
+        trace_missed: true
+    end
 
     # Security
     secret = ENV["SESSION_SECRET"]
@@ -41,6 +46,9 @@ module WeightTracker
       hmac_secret secret
       title_instance_variable :@page_title
       login_redirect "/entries"
+      change_login_notice_flash "Your email has been changed"
+      change_login_redirect { "/accounts/#{account_from_session[:id]}" }
+      change_password_redirect { "/accounts/#{account_from_session[:id]}" }
       before_create_account do
         unless user_name = param_or_nil("user_name")
           throw_error_status(422, "user_name", "must be present")
@@ -53,7 +61,6 @@ module WeightTracker
           scope.request.redirect close_account_path
         end
       end
-      close_account_redirect "/auth/login"
       audit_log_metadata_default do
         {"ip" => scope.request.ip}
       end
@@ -78,7 +85,7 @@ module WeightTracker
       js: {main: "main.js", close_account: "close_account.js"},
       group_subdirs: false,
       gzip: true
-    compile_assets if ENV["RACK_ENV"] == "production"
+    compile_assets if production?
     plugin :public, gzip: true
     plugin :flash
     plugin :content_for
@@ -90,7 +97,7 @@ module WeightTracker
 
     route do |r|
       r.public
-      r.assets unless ENV["RACK_ENV"] == "production"
+      r.assets unless App.production?
 
       r.rodauth
       check_csrf!
@@ -102,7 +109,7 @@ module WeightTracker
         r.redirect "entries/new"
       end
 
-      r.is "change_user_name" do
+      r.is "change-user-name" do
         r.get do
           view "change-user-name"
         end

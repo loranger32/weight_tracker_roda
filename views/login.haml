@@ -7,7 +7,7 @@
   != csrf_tag(rodauth.login_path)
 
   .form-group
-    %label{for: "login"} email
+    %label{for: "login"} Email
     %input.form-control#login{type: :email, name: "login", value: "", required: true, autofocus: true} 
 
   .form-group
@@ -15,7 +15,7 @@
     %input.form-control#password{type: :password, name: "password", value: "", required: true, autocomplete: "current-password"}
 
   .form-group
-    %input.btn.btn-primary{type: :submit, value: "login"}
+    %input.btn.btn-primary{type: :submit, value: "Log In"}
 
 %h2.rodauth-login-form-footer-links-heading Not yet an account ?
 %ul.rodauth-links.rodauth-login-footer-links
