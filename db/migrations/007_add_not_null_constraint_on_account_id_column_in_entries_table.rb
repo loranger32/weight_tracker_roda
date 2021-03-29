@@ -6,7 +6,7 @@ Sequel.migration do
   end
 
   down do
-    alter_tabme(:entries) do
+    alter_table(:entries) do
       set_column_allow_null :account_id
     end
   end
