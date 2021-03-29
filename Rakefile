@@ -79,8 +79,38 @@ namespace :db do
     end
   end
 
+  desc "Delete all data from database"
+  task :clean do
+    require "sequel/core"
+    tables = [:account_sms_codes,
+      :account_recovery_codes,
+      :account_otp_keys,
+      :account_webauthn_keys,
+      :account_webauthn_user_ids,
+      :account_session_keys,
+      :account_active_session_keys,
+      :account_email_auth_keys,
+      :account_lockouts,
+      :account_login_failures,
+      :account_remember_keys,
+      :account_login_change_keys,
+      :account_verification_keys,
+      :account_password_reset_keys,
+      :account_authentication_audit_logs,
+      :entries,
+      :accounts,
+      :account_statuses]
+
+    Sequel.connect(ENV["DATABASE_URL"]) do |db|
+      tables.each do |table|
+        db[table].delete
+        puts "Table #{table} deleted"
+      end
+    end
+  end
+
   desc "Reset database, run all migrations and seed the database"
-  task fresh: [:reset, :migrate, :seed]
+  task fresh: [:clean, :reset, :migrate, :seed]
 
   desc "Check pending migrations"
   task :pending do |t|
@@ -124,11 +154,12 @@ desc "Cleanup the temp files"
 task :clean_tmp do
   temp_directory = File.expand_path("tmp", __dir__)
   number_tmp_files = Dir.entries(temp_directory).length
-  unless number_tmp_files == 2 # "." and ".."
+  if number_tmp_files == 2 # "." and ".."
+    puts "Temp directory was empty"
+  else
     Dir[File.join(temp_directory, "*")].each { |f| FileUtils.remove_entry_secure(f) }
     puts "Temporary Directory cleaned - #{number_tmp_files - 2} removed"
   end
-  puts "Temp directory was empty"
 end
 
 desc "Generate a password hash"
