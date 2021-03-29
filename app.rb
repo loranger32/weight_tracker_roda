@@ -96,7 +96,7 @@ module WeightTracker
     plugin :sinatra_helpers
 
     route do |r|
-      r.public unless App.production?
+      r.public if App.production?
       r.assets unless App.production?
 
       r.rodauth
