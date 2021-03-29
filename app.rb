@@ -41,7 +41,6 @@ module WeightTracker
     plugin :rodauth do
       enable :login, :logout, :create_account, :change_login, :change_password,
         :close_account, :active_sessions, :audit_logging
-      skip_status_checks? true
       account_password_hash_column :password_hash
       hmac_secret secret
       title_instance_variable :@page_title
@@ -53,7 +52,12 @@ module WeightTracker
         unless user_name = param_or_nil("user_name")
           throw_error_status(422, "user_name", "must be present")
         end
+        unless user_name.length > 2
+          throw_error_status(422, "user_name", "must have at least 3 characters")
+        end
         account[:user_name] = user_name
+        # Temporary Hack before implementing the verify account feature
+        account[:status_id] = 2
       end
       before_close_account do
         unless param_or_nil("confirm-delete-data") == "confirm"
