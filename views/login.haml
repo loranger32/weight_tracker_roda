@@ -17,7 +17,9 @@
   .form-group
     %input.btn.btn-primary{type: :submit, value: "Log In"}
 
-%h2.rodauth-login-form-footer-links-heading Not yet an account ?
+%h2.rodauth-login-form-footer-links-heading Other Options
 %ul.rodauth-links.rodauth-login-footer-links
   %li
     %a{href: rodauth.create_account_path} Create a New Account
+  %li
+    %a{href: rodauth.reset_password_request_path} Reset Password

@@ -85,11 +85,13 @@ body {
 }
 
 .rodauth-login-footer-links {
-  width: 200px;
+  width: 300px;
   margin: 20px auto;
 }
 
 .rodauth-login-footer-links li {
+  width: 200px;
+  margin: 20px auto;
   text-align: center;
   background-color: var(--secondary-color);
   padding: 5px 10px;
