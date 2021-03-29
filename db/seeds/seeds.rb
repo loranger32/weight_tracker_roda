@@ -3,9 +3,10 @@ require "bcrypt"
 
 DB = Sequel.connect(ENV["DATABASE_URL"])
 
-accounts = [{email: "bob@example.com",
-             user_name: "Bob",
-             password_hash: BCrypt::Password.create("helloworld", cost: 2)},
+accounts = [
+  {email: "bob@example.com",
+   user_name: "Bob",
+   password_hash: BCrypt::Password.create("helloworld", cost: 2)},
   {email: "alice@example.com",
    user_name: "Alice",
    password_hash: BCrypt::Password.create("supersecret", cost: 2)},

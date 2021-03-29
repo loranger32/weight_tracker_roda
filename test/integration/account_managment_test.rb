@@ -156,9 +156,7 @@ class AccountManagementTest < CapybaraTestCase
     run_test_export_data_for_file_format("xml")
   end
 
-  def test_close_account
-    # Need to decide what to do when closing account : simply disabling or delete account completely
-    skip
+  def test_close_account_page
     login!
     visit "/close-account"
     assert_current_path "/close-account"
@@ -173,10 +171,45 @@ class AccountManagementTest < CapybaraTestCase
     visit "/close-account"
     refute_checked_field "I have backed up my data"
     assert_css ".btn-disabled"
+  end
 
-    check "I have backed up my data"
-    
+  def test_cannot_close_account_if_checkbox_is_not_checked
+    login!
+
+    assert_equal 2, Account.first.status_id
+
+    visit "/close-account"
+
     fill_in "password", with: "foobar"
     click_on "Close Account"
+
+    assert_current_path "/close-account"
+    assert_css ".flash-error"
+    assert_content "You did not confirm you made a backup of your data"
+
+    assert_equal 2, Account.first.status_id
+  end
+
+  def test_can_close_account_if_checkbox_is_checked
+    login!
+
+    assert_equal 2, Account.first.status_id
+    
+    visit "/close-account"
+
+    check "I have backed up my data"
+    fill_in "password", with: "foobar"
+    click_on "Close Account"
+
+    assert_current_path "/login"
+
+    assert_equal 3, Account.first.status_id
+
+    fill_in "Email", with: "Alice"
+    fill_in "Password", with: "foobar"
+    click_on "Log In"
+
+    assert_current_path "/login"
+    assert_css ".flash-error"
   end
 end
