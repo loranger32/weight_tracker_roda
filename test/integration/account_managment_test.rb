@@ -1,6 +1,23 @@
 require_relative "../test_helpers"
 
 class AccountManagementTest < CapybaraTestCase
+  def test_user_can_visit_account_page
+    login!
+    account = Account.first
+
+    visit "/accounts/#{account.id}"
+    assert_current_path "/accounts/#{account.id}"
+    assert_content account.user_name, count: 2
+    assert_content account.email, count: 1
+    assert_link "Change User Name"
+    assert_link "Change Email"
+    assert_link "Change Password"
+    assert_link "Security Log"
+    assert_link "Export Data"
+    assert_button "Log Out"
+    assert_link "Close Account"
+  end
+  
   def test_user_can_change_user_name
     new_user_name = "Alice In Wonderland"
     login!
@@ -62,9 +79,9 @@ class AccountManagementTest < CapybaraTestCase
     click_on "Log In"
     login!
 
-    visit "/accounts/security_log"
+    visit "/security-log"
 
-    assert_current_path "/accounts/security_log"
+    assert_current_path "/security-log"
     assert_content "Review the access to your account"
     assert_content "create_account", count: 1
     assert_content /\slogin\s/, count: 2

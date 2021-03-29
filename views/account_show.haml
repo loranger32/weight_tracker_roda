@@ -20,9 +20,9 @@
   %li.mt-10
     %a.block.btn.bg-primary.white{href: rodauth.change_password_path} Change Password
   %li.mt-10
-    %a.block.btn.bg-primary.white{href: "/accounts/security_log"} Security Log
+    %a.block.btn.bg-primary.white{href: "/security-log"} Security Log
   %li.mt-10
-    %a.block.btn.bg-primary.white{href: "/export-data"} Export data
+    %a.block.btn.bg-primary.white{href: "/export-data"} Export Data
   %li.mt-10
     %form{action: rodauth.logout_path, method: :post}
       != csrf_tag(rodauth.logout_path)

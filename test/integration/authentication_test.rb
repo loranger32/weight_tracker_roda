@@ -2,9 +2,9 @@ require_relative "../test_helpers"
 
 class AuthenticationTest < CapybaraTestCase
   def test_user_is_redirected_to_login_page_if_not_signed_in
-    restricted_pathes = %w[/ /accounts/1 /accounts/security_log /entries /entries/new
+    restricted_pathes = %w[/ /accounts/1 /security-log /entries /entries/new
                            /change-login /change-password /change-user-name /export-data
-                           close-account]
+                           /close-account]
     
     restricted_pathes.each do |path|
       visit path
@@ -30,7 +30,6 @@ class AuthenticationTest < CapybaraTestCase
 
   def test_user_can_logout
     login!
-    visit "/"
     logout!
     assert_current_path "/login"
     assert page.has_css?(".flash-notice")

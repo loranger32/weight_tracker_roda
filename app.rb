@@ -96,7 +96,7 @@ module WeightTracker
     plugin :sinatra_helpers
 
     route do |r|
-      r.public
+      r.public unless App.production?
       r.assets unless App.production?
 
       r.rodauth
@@ -152,33 +152,32 @@ module WeightTracker
             File.open(data_file_path, "w") { |f| f.write @data.to_xml }
             send_file data_file_path, type: "text/xml", filename: file_name
           else
+            flash.now[:error] = "The file format you requested does not exist"
             response.status = 400
-            response.body = view("error_400")
+            r.halt
           end
         end
       end
 
-      r.on "accounts" do
-        r.get "security_log" do
-          @security_logs = DB[:account_authentication_audit_logs]
-                            .where(account_id: @account_ds[:id])
-                            .reverse(:id)
-                            .select_map([:at, :message, :metadata])
+      r.get "security-log" do
+        @security_logs = DB[:account_authentication_audit_logs]
+                          .where(account_id: @account_ds[:id])
+                          .reverse(:id)
+                          .select_map([:at, :message, :metadata])
 
-          view "security_log"
-        end
+        view "security_log"
+      end
 
-        r.get Integer do |account_id|
-          if (@account = Account[account_id.to_i]) && (account_id == @account_ds[:id] || is_admin?(@account_ds))
-            view "account_show"
-          elsif @account
-            flash.now["error"] = "You're not authorized to see this page"
-            response.status = 403
-            r.halt
-          else
-            response.status = 404
-            r.halt
-          end
+      r.get "accounts", Integer do |account_id|
+        if (@account = Account[account_id.to_i]) && (account_id == @account_ds[:id] || is_admin?(@account_ds))
+          view "account_show"
+        elsif @account
+          flash.now["error"] = "You're not authorized to see this page"
+          response.status = 403
+          r.halt
+        else
+          response.status = 404
+          r.halt
         end
       end
 
