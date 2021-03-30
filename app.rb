@@ -68,6 +68,14 @@ module WeightTracker
       audit_log_metadata_default do
         {"ip" => scope.request.ip}
       end
+      reset_password_email_sent_redirect "/login"
+      reset_password_email_sent_notice_flash "A mail has been sent to reset your password"
+      reset_password_email_body do
+        render "mails/reset-password-email"
+      end
+      reset_password_redirect "/entries"
+      reset_password_email_recently_sent_redirect "/login"
+      reset_password_autologin? true
     end
 
     # Routing
@@ -98,6 +106,16 @@ module WeightTracker
     plugin :typecast_params
     alias_method :tp, :typecast_params
     plugin :sinatra_helpers
+    
+    Mail.defaults do
+      if App.development?
+        delivery_method :smtp, address: "localhost", port: 1025
+      elsif App.test?
+        mail.delivery_method :logger
+      end
+    end
+
+    # send to
 
     route do |r|
       r.public if App.production?
