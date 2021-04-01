@@ -12,6 +12,7 @@ gem "rake", "~> 13.0", ">= 13.0.1"
 gem "roda", "~> 3.42"
 gem "roda-enhanced_logger", "~> 0.4.0"
 gem "rodauth", "~> 2.11"
+gem 'sendgrid-ruby', '~> 6.4'
 gem "sequel", "~> 5.42"
 gem "sequel_pg", "~> 1.14", require: "sequel"
 

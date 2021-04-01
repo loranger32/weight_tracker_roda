@@ -1,13 +1,13 @@
+require "json"
+
 require_relative "db/db"
 require_relative "helpers/app_helpers"
 require_relative "helpers/view_helpers"
+require_relative "helpers/mail_helpers"
 
 module WeightTracker
 
   class App < Roda
-
-    include AppHelpers
-    include ViewHelpers
 
     opts[:root] = File.dirname(__FILE__)
 
@@ -18,6 +18,10 @@ module WeightTracker
         filter: ->(path) { path.start_with?("/assets") },
         trace_missed: true
     end
+
+    include AppHelpers
+    include ViewHelpers
+    include MailHelpers if App.production?
 
     # Security
     secret = ENV["SESSION_SECRET"]
@@ -68,13 +72,18 @@ module WeightTracker
       audit_log_metadata_default do
         {"ip" => scope.request.ip}
       end
+      require_mail? false if App.production?
+      email_from "weighttracker@example.com"
+      email_subject_prefix "WeightTracker - "
+      reset_password_email_subject "Reset Password Link"
+      reset_password_email_body { scope.render "mails/reset-password-email" }
       reset_password_email_sent_redirect "/login"
       reset_password_email_sent_notice_flash "A mail has been sent to reset your password"
-      reset_password_email_body do
-        render "mails/reset-password-email"
-      end
+
+      send_reset_password_email { MailHelpers.send_reset_password_email(self, scope) } if App.production?
+      
       reset_password_redirect "/entries"
-      reset_password_email_recently_sent_redirect "/login"
+      reset_password_email_recently_sent_redirect "/login_redirect"
       reset_password_autologin? true
     end
 
@@ -107,15 +116,10 @@ module WeightTracker
     alias_method :tp, :typecast_params
     plugin :sinatra_helpers
     
-    Mail.defaults do
-      if App.development?
-        delivery_method :smtp, address: "localhost", port: 1025
-      elsif App.test?
-        mail.delivery_method :logger
-      end
-    end
+    
+    Mail.defaults { delivery_method :smtp, address: "localhost", port: 1025 } if App.development?
+    Mail.defaults { delivery_method :logger } if App.test?
 
-    # send to
 
     route do |r|
       r.public if App.production?
