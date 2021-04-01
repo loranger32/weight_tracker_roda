@@ -2,7 +2,7 @@ module WeightTracker
   module MailHelpers
     include SendGrid
 
-    def email_prefix
+    def self.email_prefix
       "WeightTracker - "
     end
 
