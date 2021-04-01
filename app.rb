@@ -78,7 +78,7 @@ module WeightTracker
       reset_password_email_subject "Reset Password Link"
       reset_password_email_body { scope.render "mails/reset-password-email" }
       reset_password_email_sent_redirect "/login"
-      reset_password_email_sent_notice_flash "A mail has been sent to reset your password"
+      reset_password_email_sent_notice_flash "An Email has been sent to reset your password"
 
       send_reset_password_email { MailHelpers.send_reset_password_email(self, scope) } if App.production?
       
@@ -118,7 +118,7 @@ module WeightTracker
     
     
     Mail.defaults { delivery_method :smtp, address: "localhost", port: 1025 } if App.development?
-    Mail.defaults { delivery_method :logger } if App.test?
+    Mail.defaults { delivery_method :test } if App.test?
 
 
     route do |r|

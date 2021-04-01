@@ -213,3 +213,78 @@ class AccountManagementTest < CapybaraTestCase
     assert_css ".flash-error"
   end
 end
+
+class AccountManagementMailTest < CapybaraTestCase
+  def mails_count
+    Mail::TestMailer.deliveries.length
+  end
+
+  def mail_body(mail_index)
+    Mail::TestMailer.deliveries[mail_index].body.raw_source
+  end
+
+  def teardown
+    Mail::TestMailer.deliveries.clear
+  end
+
+  def test_request_password_does_not_send_email_to_unknown_account
+    visit "/"
+    click_on "Reset Password"
+    assert_current_path "/reset-password-request"
+    fill_in "Email", with: "notregistered@example.com"
+    click_on "Password Reset"
+
+    assert_current_path "/reset-password-request"
+    assert_content "There was an error requesting a password reset"
+    assert_equal 0, mails_count
+  end
+
+  def test_request_password_change_with_valid_account
+    create_account!
+    logout!
+    visit "/"
+    click_on "Reset Password"
+
+    assert_current_path "/reset-password-request"
+    fill_in "Email", with: "alice@example.com"
+    click_on "Password Reset"
+
+    assert_current_path "/login"
+    assert_content "An Email has been sent to reset your password"
+    assert_equal 1, mails_count
+    assert_match(/<a href='http:\/\/www\.example\.com\/reset-password\?key=/, mail_body(0))
+    assert_equal Account.first.id, DB[:account_password_reset_keys].first[:id]
+    
+    reset_password_key = /<a href='http:\/\/www\.example\.com\/reset-password\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
+
+    visit "/reset-password?key=#{reset_password_key}"
+
+    assert_current_path "/reset-password"
+
+    fill_in "Password", with: "supersecret"
+    fill_in "Confirm Password", with: "supersecret"
+    click_on "Reset Password"
+
+    assert_current_path "/entries"
+    assert_content "Your password has been reset"
+    assert_content "Alice"
+
+    logout!
+
+    visit "/login"
+
+    fill_in "Email", with: "alice@example.com"
+    fill_in "Password", with: "foobar" # Old Password
+    click_on "Log In"
+
+    assert_current_path "/login"
+    assert_content "There was an error logging in"
+
+    fill_in "Email", with: "alice@example.com"
+    fill_in "Password", with: "supersecret"
+    click_on "Log In"
+
+    assert_current_path "/entries"
+    assert_content "You have been logged in"
+  end
+end

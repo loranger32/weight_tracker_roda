@@ -49,6 +49,7 @@ class CapybaraTestCase < HookedTestClass
   end
 
   def create_account!
+    return if user_exist?
     visit "/create-account"
     fill_in "user_name", with: "Alice"
     fill_in "login", with: "alice@example.com"
@@ -65,11 +66,15 @@ class CapybaraTestCase < HookedTestClass
   end
 
   def login!
-    create_account! if Account[1].nil?
+    create_account! unless user_exist?
     visit "/login"
     fill_in "login", with: "alice@example.com"
     fill_in "password", with: "foobar"
     click_on "Log In"
+  end
+
+  def user_exist?
+    !Account.all.first.nil?
   end
 
   def teardown
