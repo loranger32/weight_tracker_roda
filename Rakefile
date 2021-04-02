@@ -40,6 +40,11 @@ task :s do |t|
   system "RACK_ENV=development rackup config.ru"
 end
 
+desc "start classic server in production mode"
+task :ps do
+  system "RACK_ENV=production rackup config.ru"
+end
+
 namespace :db do
   desc "Run migrations"
   task :migrate, [:version] do |t, args|

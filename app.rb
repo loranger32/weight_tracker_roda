@@ -1,9 +1,9 @@
-require "json"
-
 require_relative "db/db"
 require_relative "helpers/app_helpers"
 require_relative "helpers/view_helpers"
 require_relative "helpers/mail_helpers"
+
+require "pry"
 
 module WeightTracker
 
@@ -44,14 +44,14 @@ module WeightTracker
     plugin :route_csrf
     plugin :rodauth do
       enable :login, :logout, :create_account, :change_login, :change_password,
-        :close_account, :active_sessions, :audit_logging, :reset_password
+        :change_password_notify, :close_account, :active_sessions, :audit_logging, :reset_password
+      
+      # Base
       account_password_hash_column :password_hash
       hmac_secret secret
       title_instance_variable :@page_title
-      login_redirect "/entries"
-      change_login_notice_flash "Your email has been changed"
-      change_login_redirect { "/accounts/#{account_from_session[:id]}" }
-      change_password_redirect { "/accounts/#{account_from_session[:id]}" }
+      
+      # Create Account
       before_create_account do
         unless user_name = param_or_nil("user_name")
           throw_error_status(422, "user_name", "must be present")
@@ -63,28 +63,51 @@ module WeightTracker
         # Temporary Hack before implementing the verify account feature
         account[:status_id] = 2
       end
+      
+      # Login
+      login_redirect "/entries"
+      
+      # Change Login
+      change_login_notice_flash "Your email has been changed"
+      change_login_redirect { "/accounts/#{account_from_session[:id]}" }
+      
+      # Change Password
+      change_password_redirect { "/accounts/#{account_from_session[:id]}" }
+      
+      # Close Account
       before_close_account do
         unless param_or_nil("confirm-delete-data") == "confirm"
           flash[:error] = "You did not confirm you made a backup of your data"
           scope.request.redirect close_account_path
         end
       end
+
+      # Audit Logging
       audit_log_metadata_default do
         {"ip" => scope.request.ip}
       end
+
+      # Email Base
       require_mail? false if App.production?
       email_from "weighttracker@example.com"
       email_subject_prefix "WeightTracker - "
+
+      # Reset Password
       reset_password_email_subject "Reset Password Link"
       reset_password_email_body { scope.render "mails/reset-password-email" }
       reset_password_email_sent_redirect "/login"
       reset_password_email_sent_notice_flash "An Email has been sent to reset your password"
 
-      send_reset_password_email { MailHelpers.send_reset_password_email(self, scope) } if App.production?
-      
+      send_reset_password_email { MailHelpers.send_reset_password_email(self) } if App.production?
+
       reset_password_redirect "/entries"
       reset_password_email_recently_sent_redirect "/login_redirect"
       reset_password_autologin? true
+
+      # Change Password Notify
+      password_changed_email_subject { "Password Modified" }
+      password_changed_email_body { scope.render "mails/change-password-notify" }
+      send_password_changed_email { MailHelpers.send_password_changed_email(self) } if App.production?
     end
 
     # Routing
