@@ -256,6 +256,40 @@ class AccountManagementMailTest < CapybaraTestCase
     assert_content :all, "Request Account Unlock"
   end
 
+  def test_account_can_be_unlocked_with_magic_link
+    create_and_verify_account!
+    logout!
+
+    visit "/login"
+    
+    11.times do
+      fill_in "Email", with: "alice@example.com"
+      fill_in "Password", with: "wrong_password"
+      click_on "Log In"
+    end
+
+    assert_current_path "/login"
+    assert_css ".flash-error"
+    assert_content "This account is currently locked out and cannot be logged in to"
+    assert_content :all, "Request Account Unlock"
+
+    click_on "Request Account Unlock"
+    assert_equal 1, mails_count
+
+    assert_match(/<a href='http:\/\/www\.example\.com\/unlock-account\?key=/, mail_body(0))
+    assert_equal Account.first.id, DB[:account_lockouts].first[:id]
+    
+    unlock_account_key = /<a href='http:\/\/www\.example\.com\/unlock-account\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
+
+    visit "/unlock-account?key=#{unlock_account_key}"
+    assert_current_path "/unlock-account"
+    click_on "Unlock Account"
+    assert_current_path "/entries/new"
+    assert_css ".flash-notice"
+    assert_content "Your account has been unlocked"
+    assert_link "Alice"
+  end
+
   def test_can_verify_account
     create_account!
     assert_equal 1, mails_count
