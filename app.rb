@@ -3,8 +3,6 @@ require_relative "helpers/app_helpers"
 require_relative "helpers/view_helpers"
 require_relative "helpers/mail_helpers"
 
-require "pry"
-
 module WeightTracker
 
   class App < Roda
