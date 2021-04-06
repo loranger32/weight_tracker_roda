@@ -27,7 +27,7 @@ module WeightTracker
     end
 
     def account_cancel_link
-      rodauth.logged_in? ? "/accounts/#{rodauth.account_from_session[:id]}" : "/"
+      rodauth.authenticated? ? "/accounts/#{rodauth.account_from_session[:id]}" : "/"
     end
 
     def format_auth_log_action(action)

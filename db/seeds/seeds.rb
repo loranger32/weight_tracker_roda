@@ -12,7 +12,7 @@ accounts = [
    user_name: "Alice",
    password_hash: BCrypt::Password.create("supersecret", cost: 2),
    status_id: 2},
-  {email: ENV["MY_EMAIL"],
+   {email: ENV["MY_EMAIL"],
    user_name: "Laurent",
    password_hash: BCrypt::Password.create("foobar", cost: 2),
    status_id: 2}]

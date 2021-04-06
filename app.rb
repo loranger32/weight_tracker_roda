@@ -44,7 +44,8 @@ module WeightTracker
     plugin :route_csrf
     plugin :rodauth do
       enable :login, :logout, :create_account, :change_login, :change_password,
-        :change_password_notify, :close_account, :active_sessions, :audit_logging, :reset_password
+        :change_password_notify, :close_account, :active_sessions, :audit_logging,
+        :reset_password, :verify_account, :verify_account_grace_period, :lockout
       
       # Base
       account_password_hash_column :password_hash
@@ -60,8 +61,6 @@ module WeightTracker
           throw_error_status(422, "user_name", "must have at least 3 characters")
         end
         account[:user_name] = user_name
-        # Temporary Hack before implementing the verify account feature
-        account[:status_id] = 2
       end
       
       # Login
@@ -87,6 +86,11 @@ module WeightTracker
         {"ip" => scope.request.ip}
       end
 
+      # Lockout
+      max_invalid_logins 10
+      unlock_account_email_body { scope.render "mails/unlock-account-email" }
+      send_unlock_account_email { MailHelpers.send_unlock_account_email(self) } if App.production?
+
       # Email Base
       require_mail? false if App.production?
       email_from "weighttracker@example.com"
@@ -101,13 +105,19 @@ module WeightTracker
       send_reset_password_email { MailHelpers.send_reset_password_email(self) } if App.production?
 
       reset_password_redirect "/entries"
-      reset_password_email_recently_sent_redirect "/login_redirect"
+      reset_password_email_recently_sent_redirect "/login"
       reset_password_autologin? true
 
       # Change Password Notify
       password_changed_email_subject { "Password Modified" }
       password_changed_email_body { scope.render "mails/change-password-notify" }
       send_password_changed_email { MailHelpers.send_password_changed_email(self) } if App.production?
+
+      # Verify Account
+      verify_account_email_sent_notice_flash "An email has been sent to you to verify your account"
+      verify_account_email_subject "Verify your account"
+      verify_account_email_body { scope.render "mails/verify-account-email" }
+      send_verify_account_email { MailHelpers.send_verify_account_email(self) } if App.production?  
     end
 
     # Routing
@@ -147,7 +157,6 @@ module WeightTracker
     route do |r|
       r.public if App.production?
       r.assets unless App.production?
-
       r.rodauth
       check_csrf!
       rodauth.check_active_session

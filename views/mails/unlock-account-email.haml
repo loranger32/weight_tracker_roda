@@ -1,0 +1,20 @@
+%body{style: "font-family: Arial, sans-serif"}
+  %h1{style: "width: 200px; margin: 25px auto 0 auto; text-align: center; font-size: 2rem, font-weight: 300"}
+    %a{href: 'https://localhost:9292/entries', style: "text-decoration: none; color: inherit" } Weight Tracker
+
+  %h2{style: "text-align: center"} Unlock Account
+
+  %p Your account has been locked out beacuse there were too many unsuccessful attempts to login with invalid credentials.
+
+  %p To unlock your account, please click the link below or copy this link into your browser.
+
+  %p
+    %a{href: rodauth.unlock_account_email_link , method: :post}!= rodauth.unlock_account_email_link 
+
+  %p If you don't rember your password, you can reset your password, clik the link on the login page.
+
+  %p If you didn't try to connect to your account, you should check the security logs from your account page.
+
+  %p
+    %small The Weight Tracker Team
+

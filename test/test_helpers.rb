@@ -59,6 +59,19 @@ class CapybaraTestCase < HookedTestClass
     click_on "Create Account"
   end
 
+  def verify_account!
+    verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
+
+    visit "/verify-account?key=#{verify_account_key}"
+    click_on "Verify Account"
+    clean_mailbox
+  end
+
+  def create_and_verify_account!
+    create_account!
+    verify_account!
+  end
+
   def logout!
     account = Account.all.first
     visit "/accounts/#{account.id}"
@@ -66,7 +79,7 @@ class CapybaraTestCase < HookedTestClass
   end
 
   def login!
-    create_account! unless user_exist?
+    raise StandardError, "No user to log in" unless user_exist?
     visit "/login"
     fill_in "login", with: "alice@example.com"
     fill_in "password", with: "foobar"
@@ -74,12 +87,26 @@ class CapybaraTestCase < HookedTestClass
   end
 
   def user_exist?
-    !Account.all.first.nil?
+    alice_account = Account.all.first
+    alice_account && alice_account.user_name == "Alice" && alice_account.email == "alice@example.com"
+  end
+
+  def mails_count
+    Mail::TestMailer.deliveries.length
+  end
+
+  def clean_mailbox
+    Mail::TestMailer.deliveries.clear
+  end
+
+  def mail_body(mail_index)
+    Mail::TestMailer.deliveries[mail_index].body.raw_source
   end
 
   def teardown
     Capybara.reset_sessions!
     Capybara.use_default_driver
+    clean_mailbox
   end
 end
 

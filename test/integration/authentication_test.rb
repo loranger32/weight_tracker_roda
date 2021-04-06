@@ -10,29 +10,38 @@ class AuthenticationTest < CapybaraTestCase
       visit path
       assert_current_path "/login"
       assert_title "WT - Log In"
-      assert page.has_css? ".flash-error"  
+      assert_css ".flash-error"  
     end
   end
 
   def test_user_can_create_an_account
-    create_account!
-    assert page.has_css? ".flash-notice"
-    assert page.has_content? "Alice"
-    assert_equal "/entries/new", page.current_path
+    visit "/create-account"
+    fill_in "user_name", with: "Alice"
+    fill_in "login", with: "alice@example.com"
+    fill_in "login-confirm", with: "alice@example.com"
+    fill_in "password", with: "foobar"
+    fill_in "password-confirm", with: "foobar"
+    click_on "Create Account"
+    assert_current_path "/entries/new"
+    assert_css ".flash-notice"
+    assert_content "Alice"
   end
 
   def test_user_can_login
+    create_and_verify_account!
+    logout!
     login!
-    assert page.has_css? ".flash-notice"
-    assert page.has_content? "Alice"
+
     assert_current_path "/entries"
+    assert_css ".flash-notice"
+    assert_content "Alice"
   end
 
   def test_user_can_logout
-    login!
+    create_and_verify_account!
     logout!
     assert_current_path "/login"
-    assert page.has_css?(".flash-notice")
-    assert page.has_content? "You have been logged out"
+    assert_css ".flash-notice"
+    assert_content "You have been logged out"
   end
 end

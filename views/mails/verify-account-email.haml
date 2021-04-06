@@ -1,0 +1,14 @@
+%body{style: "font-family: Arial, sans-serif"}
+  %h1{style: "width: 200px; margin: 25px auto 0 auto; text-align: center; font-size: 2rem, font-weight: 300"}
+    %a{href: 'https://localhost:9292/entries', style: "text-decoration: none; color: inherit" } Weight Tracker
+
+  %h2{style: "text-align: center"} Verify your account
+
+  %p You created an account on Weight Tracker with this email. Please verify your account by clicking on the link below or by copying this link in your browser.
+
+  %p
+    %a{href: rodauth.verify_account_email_link, method: :post}!= rodauth.verify_account_email_link
+
+  %p
+    %small The Weight Tracker Team
+

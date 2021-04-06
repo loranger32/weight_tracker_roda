@@ -2,7 +2,8 @@ require_relative "../test_helpers"
 
 class AccountManagementTest < CapybaraTestCase
   def test_user_can_visit_account_page
-    login!
+    create_and_verify_account!
+
     account = Account.first
 
     visit "/accounts/#{account.id}"
@@ -19,8 +20,9 @@ class AccountManagementTest < CapybaraTestCase
   end
   
   def test_user_can_change_user_name
+    create_and_verify_account!
+
     new_user_name = "Alice In Wonderland"
-    login!
     visit "/change-user-name"
     fill_in "user_name", with: new_user_name
     fill_in "password", with: "foobar"
@@ -35,8 +37,10 @@ class AccountManagementTest < CapybaraTestCase
   end
 
   def test_user_can_change_email
+    create_and_verify_account!
+
     new_email = "aliceinwonderland@example.com"
-    login!
+
     visit "/change-login"
     fill_in "login", with: new_email
     fill_in "login-confirm", with: new_email
@@ -52,8 +56,9 @@ class AccountManagementTest < CapybaraTestCase
   end
 
   def test_user_can_change_password
+    create_and_verify_account!
+
     new_password = "barfoo"
-    login!
     visit "/change-password"
     fill_in "password", with: "foobar"
     fill_in "new-password", with: new_password
@@ -69,10 +74,12 @@ class AccountManagementTest < CapybaraTestCase
   end
 
   def test_security_log
-    create_account!
+    create_and_verify_account!
     logout!
+
     login!
     logout!
+
     visit "/login"
     fill_in "login", with: "alice@example.com"
     fill_in "password", with: "wrongpassword"
@@ -90,7 +97,8 @@ class AccountManagementTest < CapybaraTestCase
   end
 
   def test_export_data_page
-    login!
+    create_and_verify_account!
+
     visit "/export-data"
 
     assert_current_path "/export-data"
@@ -108,22 +116,20 @@ class AccountManagementTest < CapybaraTestCase
     click_on "Cancel"
     assert_current_path "/login"
 
-    login!
+    create_and_verify_account!
+
     visit "/change-user-name"
     click_on "Cancel"
     assert_current_path "/accounts/#{Account.first.id}"
 
-    login!
     visit "/change-login"
     click_on "Cancel"
     assert_current_path "/accounts/#{Account.first.id}"
 
-    login!
     visit "/change-password"
     click_on "Cancel"
     assert_current_path "/accounts/#{Account.first.id}"
 
-    login!
     visit "/export-data"
     click_on "Cancel"
     assert_current_path "/accounts/#{Account.first.id}"
@@ -132,7 +138,8 @@ class AccountManagementTest < CapybaraTestCase
   def run_test_export_data_for_file_format(file_format)
     pre_existing_data_files = Dir.glob("tmp/wt_data_Alice_*.#{file_format}")
     
-    login!
+    create_and_verify_account!
+
     visit "/export-data"
     choose file_format
     click_on "Download"
@@ -157,7 +164,8 @@ class AccountManagementTest < CapybaraTestCase
   end
 
   def test_close_account_page
-    login!
+    create_and_verify_account!
+    
     visit "/close-account"
     assert_current_path "/close-account"
 
@@ -174,7 +182,7 @@ class AccountManagementTest < CapybaraTestCase
   end
 
   def test_cannot_close_account_if_checkbox_is_not_checked
-    login!
+    create_and_verify_account!
 
     assert_equal 2, Account.first.status_id
 
@@ -191,7 +199,7 @@ class AccountManagementTest < CapybaraTestCase
   end
 
   def test_can_close_account_if_checkbox_is_checked
-    login!
+    create_and_verify_account!
 
     assert_equal 2, Account.first.status_id
     
@@ -215,16 +223,54 @@ class AccountManagementTest < CapybaraTestCase
 end
 
 class AccountManagementMailTest < CapybaraTestCase
-  def mails_count
-    Mail::TestMailer.deliveries.length
+  def setup
+    clean_mailbox
+    super
   end
 
-  def mail_body(mail_index)
-    Mail::TestMailer.deliveries[mail_index].body.raw_source
+  def test_account_can_be_locked_out_after_10_unsuccessful_attempts
+    create_and_verify_account!
+    logout!
+
+    visit "/login"
+    
+    11.times do
+      fill_in "Email", with: "alice@example.com"
+      fill_in "Password", with: "wrong_password"
+      click_on "Log In"
+    end
+
+    assert_current_path "/login"
+    assert_css ".flash-error"
+    assert_content "This account is currently locked out and cannot be logged in to"
+    assert_content :all, "Request Account Unlock"
+
+    visit "/login"
+    fill_in "Email", with: "alice@example.com"
+    fill_in "Password", with: "foobar"
+    click_on "Log In"
+
+    assert_current_path "/login"
+    assert_content "This account is currently locked out and cannot be logged in to"
+    assert_css ".flash-error"
+    assert_content :all, "Request Account Unlock"
   end
 
-  def teardown
-    Mail::TestMailer.deliveries.clear
+  def test_can_verify_account
+    create_account!
+    assert_equal 1, mails_count
+    assert_match(/<a href='http:\/\/www\.example\.com\/verify-account\?key=/, mail_body(0))
+    assert_equal Account.first.id, DB[:account_verification_keys].first[:id]
+    
+    verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
+
+    visit "/verify-account?key=#{verify_account_key}"
+    assert_current_path "/verify-account"
+    click_on "Verify Account"
+    assert_current_path "/entries/new"
+    assert_css ".flash-notice"
+    assert_content "Your account has been verified"
+    assert_link "Alice"
   end
 
   def test_request_password_does_not_send_email_to_unknown_account
@@ -240,8 +286,9 @@ class AccountManagementMailTest < CapybaraTestCase
   end
 
   def test_request_password_change_with_valid_account
-    create_account!
+    create_and_verify_account!
     logout!
+
     visit "/"
     click_on "Reset Password"
 
@@ -286,5 +333,20 @@ class AccountManagementMailTest < CapybaraTestCase
 
     assert_current_path "/entries"
     assert_content "You have been logged in"
+  end
+
+  def test_user_get_an_email_when_changing_password
+    create_and_verify_account!
+
+    new_password = "supersecret"
+    visit "/change-password"
+    fill_in "password", with: "foobar"
+    fill_in "new-password", with: new_password
+    fill_in "password-confirm", with: new_password
+    click_on "Change Password"
+
+    assert_equal 1, mails_count
+
+    assert_match(/Your Password has been changed/, mail_body(0))
   end
 end
