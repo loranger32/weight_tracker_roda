@@ -43,13 +43,19 @@ module WeightTracker
     plugin :rodauth do
       enable :login, :logout, :create_account, :change_login, :change_password,
         :change_password_notify, :close_account, :active_sessions, :audit_logging,
-        :reset_password, :verify_account, :verify_account_grace_period, :lockout
+        :reset_password, :verify_account, :verify_account_grace_period, :lockout,
+        :verify_login_change
       
       # Base
       account_password_hash_column :password_hash
       hmac_secret secret
       title_instance_variable :@page_title
       
+      # Email Base
+      require_mail? false if App.production?
+      email_from "weighttracker@example.com"
+      email_subject_prefix "WeightTracker - "
+
       # Create Account
       before_create_account do
         unless user_name = param_or_nil("user_name")
@@ -65,9 +71,8 @@ module WeightTracker
       login_redirect "/entries"
       
       # Change Login
-      change_login_notice_flash "Your email has been changed"
       change_login_redirect { "/accounts/#{account_from_session[:id]}" }
-      
+
       # Change Password
       change_password_redirect { "/accounts/#{account_from_session[:id]}" }
       
@@ -89,10 +94,15 @@ module WeightTracker
       unlock_account_email_body { scope.render "mails/unlock-account-email" }
       send_unlock_account_email { MailHelpers.send_unlock_account_email(self) } if App.production?
 
-      # Email Base
-      require_mail? false if App.production?
-      email_from "weighttracker@example.com"
-      email_subject_prefix "WeightTracker - "
+      # Verify Login Change
+      verify_login_change_email_body do
+        scope.render "mails/verify-email-change-email",
+                     locals: { old_email: account[:email], new_email: verify_login_change_new_login }
+      end
+
+      send_verify_login_change_email do
+        MailHelpers.send_verify_login_change_email(self)
+      end
 
       # Reset Password
       reset_password_email_subject "Reset Password Link"

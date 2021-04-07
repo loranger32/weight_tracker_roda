@@ -61,5 +61,22 @@ module WeightTracker
       puts response.body
       puts response.headers
     end
+
+    def self.send_verify_login_change_email(rodauth)
+      from = SendGrid::Email.new(email: rodauth.send(:email_from))
+      to = SendGrid::Email.new(email: rodauth.account[:email])
+      subject = email_prefix + "Verify Email Change"
+      locals = {old_email: rodauth.account[:email], new_email: rodauth.verify_login_change_new_login}
+      content = SendGrid::Content.new(type: 'text/html',
+                                      value: rodauth.scope.render("mails/verify-email-change-email",
+                                                                  locals: locals))
+      mail = SendGrid::Mail.new(from, subject, to, content)
+
+      sg = SendGrid::API.new(api_key: ENV['SENDGRID_API_KEY'])
+      response = sg.client.mail._('send').post(request_body: mail.to_json)
+      puts response.status_code
+      puts response.body
+      puts response.headers
+    end
   end
 end
