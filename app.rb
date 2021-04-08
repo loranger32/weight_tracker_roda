@@ -100,9 +100,7 @@ module WeightTracker
                      locals: { old_email: account[:email], new_email: verify_login_change_new_login }
       end
 
-      send_verify_login_change_email do
-        MailHelpers.send_verify_login_change_email(self)
-      end
+      send_verify_login_change_email { |login| MailHelpers.send_verify_login_change_email(self, login) } if App.production?
 
       # Reset Password
       reset_password_email_subject "Reset Password Link"

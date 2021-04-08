@@ -62,11 +62,11 @@ module WeightTracker
       puts response.headers
     end
 
-    def self.send_verify_login_change_email(rodauth)
+    def self.send_verify_login_change_email(rodauth, new_email)
       from = SendGrid::Email.new(email: rodauth.send(:email_from))
-      to = SendGrid::Email.new(email: rodauth.account[:email])
+      to = SendGrid::Email.new(email: new_email)
       subject = email_prefix + "Verify Email Change"
-      locals = {old_email: rodauth.account[:email], new_email: rodauth.verify_login_change_new_login}
+      locals = {old_email: rodauth.account[:email], new_email: new_email}
       content = SendGrid::Content.new(type: 'text/html',
                                       value: rodauth.scope.render("mails/verify-email-change-email",
                                                                   locals: locals))
