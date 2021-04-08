@@ -95,6 +95,9 @@ module WeightTracker
       send_unlock_account_email { MailHelpers.send_unlock_account_email(self) } if App.production?
 
       # Verify Login Change
+      verify_login_change_button "Verify Email Change"
+      change_login_needs_verification_notice_flash "An email has been sent to your new email verify it"
+      verify_login_change_notice_flash "Your new email has been verified"
       verify_login_change_email_body do
         scope.render "mails/verify-email-change-email",
                      locals: { old_email: account[:email], new_email: verify_login_change_new_login }

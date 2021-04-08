@@ -382,11 +382,11 @@ class AccountManagementMailTest < CapybaraTestCase
     assert_current_path "/accounts/#{account.id}"
     assert_css ".flash-notice"
     assert_content "alice@example.com"
-    assert_content "An email has been sent to you with a link to verify your login change"
+    assert_content "An email has been sent to your new email verify it"
 
     assert_equal 1, mails_count
 
-    assert_equal mail_to(0), new_email
+    assert_equal mail_to(0), new_email # Check email is sent to the new address
     assert_match(/<a href='http:\/\/www\.example\.com\/verify-login-change\?key=/, mail_body(0))
     assert_equal Account.first.id, DB[:account_login_change_keys].first[:id]
     
@@ -396,11 +396,11 @@ class AccountManagementMailTest < CapybaraTestCase
 
     assert_current_path "/verify-login-change"
 
-    click_on "Verify Login Change"
+    click_on "Verify Email Change"
 
     assert_current_path "/entries/new"
     assert_css ".flash-notice"
-    assert_content "Your login change has been verified"
+    assert_content "Your new email has been verified"
     assert_content "Alice"
 
     logout!
