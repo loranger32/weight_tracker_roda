@@ -36,25 +36,6 @@ class AccountManagementTest < CapybaraTestCase
     assert_content new_user_name
   end
 
-  def test_user_can_change_email
-    create_and_verify_account!
-
-    new_email = "aliceinwonderland@example.com"
-
-    visit "/change-login"
-    fill_in "login", with: new_email
-    fill_in "login-confirm", with: new_email
-    fill_in "password", with: "foobar"
-    click_on "Change Email"
-
-    account = Account.first
-
-    assert_equal new_email, account.email 
-    assert_current_path "/accounts/#{account.id}"
-    assert_css ".flash-notice"
-    assert_content new_email
-  end
-
   def test_user_can_change_password
     create_and_verify_account!
 
@@ -307,7 +288,7 @@ class AccountManagementMailTest < CapybaraTestCase
     assert_link "Alice"
   end
 
-  def test_request_password_does_not_send_email_to_unknown_account
+  def test_request_password_reset_does_not_send_email_to_unknown_account
     visit "/"
     click_on "Reset Password"
     assert_current_path "/reset-password-request"
@@ -319,7 +300,7 @@ class AccountManagementMailTest < CapybaraTestCase
     assert_equal 0, mails_count
   end
 
-  def test_request_password_change_with_valid_account
+  def test_request_password_reset_with_valid_account
     create_and_verify_account!
     logout!
 
@@ -382,5 +363,62 @@ class AccountManagementMailTest < CapybaraTestCase
     assert_equal 1, mails_count
 
     assert_match(/Your Password has been changed/, mail_body(0))
+  end
+
+  def test_user_can_change_email
+    create_and_verify_account!
+
+    new_email = "aliceinwonderland@example.com"
+
+    visit "/change-login"
+    fill_in "login", with: new_email
+    fill_in "login-confirm", with: new_email
+    fill_in "password", with: "foobar"
+    click_on "Change Email"
+
+    account = Account.first
+
+    assert_equal "alice@example.com", account.email 
+    assert_current_path "/accounts/#{account.id}"
+    assert_css ".flash-notice"
+    assert_content "alice@example.com"
+    assert_content "An email has been sent to you with a link to verify your login change"
+
+    assert_equal 1, mails_count
+
+    assert_equal mail_to(0), new_email
+    assert_match(/<a href='http:\/\/www\.example\.com\/verify-login-change\?key=/, mail_body(0))
+    assert_equal Account.first.id, DB[:account_login_change_keys].first[:id]
+    
+    verify_login_change_key = /<a href='http:\/\/www\.example\.com\/verify-login-change\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
+
+    visit "/verify-login-change?key=#{verify_login_change_key}"
+
+    assert_current_path "/verify-login-change"
+
+    click_on "Verify Login Change"
+
+    assert_current_path "/entries/new"
+    assert_css ".flash-notice"
+    assert_content "Your login change has been verified"
+    assert_content "Alice"
+
+    logout!
+
+    visit "/login"
+
+    fill_in "Email", with: "alice@example.com" # Old email
+    fill_in "Password", with: "foobar"
+    click_on "Log In"
+
+    assert_current_path "/login"
+    assert_content "There was an error logging in"
+
+    fill_in "Email", with: new_email
+    fill_in "Password", with: "foobar"
+    click_on "Log In"
+
+    assert_current_path "/entries"
+    assert_content "You have been logged in"
   end
 end

@@ -103,6 +103,10 @@ class CapybaraTestCase < HookedTestClass
     Mail::TestMailer.deliveries[mail_index].body.raw_source
   end
 
+  def mail_to(mail_index)
+    Mail::TestMailer.deliveries[mail_index].to[0]
+  end
+
   def teardown
     Capybara.reset_sessions!
     Capybara.use_default_driver
