@@ -52,9 +52,9 @@ module WeightTracker
       title_instance_variable :@page_title
       
       # Email Base
-      require_mail? false if App.production?
       email_from "weighttracker@example.com"
       email_subject_prefix "WeightTracker - "
+      send_email { |mail| MailHelpers.send_mail_with_sendgrid(mail) } if App.production?
 
       # Create Account
       before_create_account do
@@ -92,7 +92,6 @@ module WeightTracker
       # Lockout
       max_invalid_logins 10
       unlock_account_email_body { scope.render "mails/unlock-account-email" }
-      send_unlock_account_email { MailHelpers.send_unlock_account_email(self) } if App.production?
 
       # Verify Login Change
       verify_login_change_button "Verify Email Change"
@@ -103,16 +102,11 @@ module WeightTracker
                      locals: { old_email: account[:email], new_email: verify_login_change_new_login }
       end
 
-      send_verify_login_change_email { |login| MailHelpers.send_verify_login_change_email(self, login) } if App.production?
-
       # Reset Password
       reset_password_email_subject "Reset Password Link"
       reset_password_email_body { scope.render "mails/reset-password-email" }
       reset_password_email_sent_redirect "/login"
       reset_password_email_sent_notice_flash "An Email has been sent to reset your password"
-
-      send_reset_password_email { MailHelpers.send_reset_password_email(self) } if App.production?
-
       reset_password_redirect "/entries"
       reset_password_email_recently_sent_redirect "/login"
       reset_password_autologin? true
@@ -120,13 +114,11 @@ module WeightTracker
       # Change Password Notify
       password_changed_email_subject { "Password Modified" }
       password_changed_email_body { scope.render "mails/change-password-notify" }
-      send_password_changed_email { MailHelpers.send_password_changed_email(self) } if App.production?
 
       # Verify Account
       verify_account_email_sent_notice_flash "An email has been sent to you to verify your account"
       verify_account_email_subject "Verify your account"
       verify_account_email_body { scope.render "mails/verify-account-email" }
-      send_verify_account_email { MailHelpers.send_verify_account_email(self) } if App.production?  
     end
 
     # Routing
