@@ -119,7 +119,10 @@ module WeightTracker
       csp.frame_ancestors :self
       csp.upgrade_insecure_requests true
     end
-    plugin :default_headers, "Strict-Transport-Security" => "max-age=63072000; includeSubDomains"
+
+    # The Default Headers plugin must come after the csp plugin, otherwise don't work
+    plugin :default_headers, "Strict-Transport-Security" => "max-age=63072000; includeSubDomains",
+      "X-Content-Type-Options" => "nosniff"
 
     # Routing
     plugin :status_handler
