@@ -19,7 +19,9 @@ module WeightTracker
 
     include AppHelpers
     include ViewHelpers
+    
     # Security
+    plugin :default_headers, "Strict-Transport-Security" => "max-age=63072000;"
     secret = ENV["SESSION_SECRET"]
     plugin :sessions, key: "weight_tracker.session", secret: secret
     plugin :content_security_policy do |csp|
