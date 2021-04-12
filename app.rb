@@ -21,9 +21,9 @@ module WeightTracker
     include ViewHelpers
     
     # Security
-    plugin :default_headers, "Strict-Transport-Security" => "max-age=63072000;"
     secret = ENV["SESSION_SECRET"]
     plugin :sessions, key: "weight_tracker.session", secret: secret
+    plugin :default_headers, "Strict-Transport-Security" => "max-age=63072000;"
     plugin :content_security_policy do |csp|
       csp.default_src :self
       csp.font_src :self, "fonts.gstatic.com"
@@ -37,7 +37,6 @@ module WeightTracker
       csp.base_uri :none
       csp.frame_ancestors :self
       csp.upgrade_insecure_requests
-      csp.block_all_mixed_content
     end
     plugin :route_csrf
     plugin :rodauth do
