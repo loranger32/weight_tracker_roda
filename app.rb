@@ -19,8 +19,6 @@ module WeightTracker
 
     include AppHelpers
     include ViewHelpers
-    include MailHelpers if App.production?
-
     # Security
     secret = ENV["SESSION_SECRET"]
     plugin :sessions, key: "weight_tracker.session", secret: secret
