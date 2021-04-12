@@ -23,21 +23,6 @@ module WeightTracker
     # Security
     secret = ENV["SESSION_SECRET"]
     plugin :sessions, key: "weight_tracker.session", secret: secret
-    plugin :default_headers, "Strict-Transport-Security" => "max-age=63072000;"
-    plugin :content_security_policy do |csp|
-      csp.default_src :self
-      csp.font_src :self, "fonts.gstatic.com"
-      csp.img_src :self
-      csp.object_src :self
-      csp.frame_src :self
-      csp.style_src :self, "fonts.googleapis.com", "stackpath.bootstrapcdn.com"
-      csp.form_action :self
-      csp.script_src :self
-      csp.connect_src :self
-      csp.base_uri :none
-      csp.frame_ancestors :self
-      csp.upgrade_insecure_requests
-    end
     plugin :route_csrf
     plugin :rodauth do
       enable :login, :logout, :create_account, :change_login, :change_password,
@@ -119,6 +104,22 @@ module WeightTracker
       verify_account_email_subject "Verify your account"
       verify_account_email_body { scope.render "mails/verify-account-email" }
     end
+
+    plugin :content_security_policy do |csp|
+      csp.default_src :self
+      csp.font_src :self, "fonts.gstatic.com"
+      csp.img_src :self
+      csp.object_src :self
+      csp.frame_src :self
+      csp.style_src :self, "fonts.googleapis.com", "stackpath.bootstrapcdn.com"
+      csp.form_action :self
+      csp.script_src :self
+      csp.connect_src :self
+      csp.base_uri :none
+      csp.frame_ancestors :self
+      csp.upgrade_insecure_requests true
+    end
+    plugin :default_headers, "Strict-Transport-Security" => "max-age=63072000; includeSubDomains"
 
     # Routing
     plugin :status_handler
