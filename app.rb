@@ -106,7 +106,7 @@ module WeightTracker
     end
 
     plugin :content_security_policy do |csp|
-      csp.default_src :self
+      csp.default_src :none
       csp.font_src :self, "fonts.gstatic.com"
       csp.img_src :self
       csp.object_src :self
@@ -116,13 +116,17 @@ module WeightTracker
       csp.script_src :self
       csp.connect_src :self
       csp.base_uri :none
-      csp.frame_ancestors :self
+      csp.frame_ancestors :none
       csp.upgrade_insecure_requests true
     end
 
-    # The Default Headers plugin must come after the csp plugin, otherwise don't work
-    plugin :default_headers, "Strict-Transport-Security" => "max-age=63072000; includeSubDomains",
-      "X-Content-Type-Options" => "nosniff"
+    # The Default Headers plugin must apparently come after the csp plugin, otherwise not applied
+    plugin :default_headers,
+      "Strict-Transport-Security" => "max-age=63072000; includeSubDomains",
+      "X-Content-Type-Options" => "nosniff",
+      "X-Frame-Options" => "deny"
+      "X-XSS-Protection'=>'1; mode=block"
+
 
     # Routing
     plugin :status_handler
