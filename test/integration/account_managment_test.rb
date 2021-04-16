@@ -422,3 +422,162 @@ class AccountManagementMailTest < CapybaraTestCase
     assert_content "You have been logged in"
   end
 end
+
+class TwoFactorAuthenticationTest < CapybaraTestCase
+  def test_can_activate_two_factor_authentication
+    create_and_verify_account!
+    account_id = Account.first.id
+
+    visit "/accounts/#{account_id}"
+
+    assert_content "Setup 2FA"
+    refute_content "View Recovery Codes"
+    refute_content "Disable 2FA"
+
+    click_on "Setup 2FA"
+
+    assert_current_path "/otp-setup"
+    assert_link "Alice", href: "/accounts/#{account_id}"
+    assert_css("#qrcode-otp")
+
+    secret = page.find("#otp-secret-key").text
+
+    totp = ROTP::TOTP.new(secret)
+    
+    fill_in "Password", with: "foobar"
+    fill_in "Authentication Code", with: totp.now
+
+    click_on "Setup TOTP Authentication"
+    assert_equal 16, DB[:account_recovery_codes].where(id: account_id).all.size
+
+    assert_current_path "/entries/new"
+    assert_css ".flash-notice"
+    assert_content "TOTP authentication is now setup" 
+    assert_link "Alice", href: "/accounts/#{account_id}"
+
+    visit "/accounts/#{account_id}"
+    refute_content "Setup 2FA"
+    assert_content "View Recovery Codes"
+    assert_content "Disable 2FA"
+  end
+
+  def test_can_authenticate_with_two_factor_authentication
+    create_and_verify_account!
+    account_id = Account.first.id
+    visit "/accounts/#{account_id}"
+    click_on "Setup 2FA"
+    secret = page.find("#otp-secret-key").text
+    totp = ROTP::TOTP.new(secret)
+    fill_in "Password", with: "foobar"
+    fill_in "Authentication Code", with: totp.now
+    click_on "Setup TOTP Authentication"
+    logout!
+
+    login!
+
+    assert_current_path "/multifactor-auth"
+    assert_css ".flash-error"
+    assert_content "You need to authenticate via an additional factor before continuing"
+
+    assert_link "Authenticate Using TOTP", href: "/otp-auth"
+    assert_link "Authenticate Using Recovery Code", href: "/recovery-auth"
+
+    click_on "Authenticate Using TOTP"
+
+    assert_current_path "/otp-auth"
+    assert_content "Authentication Code"
+    refute_content "Alice"
+
+    # Hack the "Preventing reuse of Time based OTP's" mechanism
+    last_use_time_stamp = DB[:account_otp_keys].where(id: account_id).first[:last_use]
+    DB[:account_otp_keys].where(id: account_id).update(last_use: last_use_time_stamp - 60)
+
+    fill_in "Authentication Code", with: totp.now
+    click_on "Authenticate Using TOTP"
+    
+    assert_current_path "/entries/new"
+    assert_link "Alice", href: "/accounts/#{account_id}"
+    assert_css ".flash-notice"
+    assert_content "You have been multifactor authenticated"
+  end
+
+  def test_can_authenticate_with_recovery_codes
+    create_and_verify_account!
+    account_id = Account.first.id
+    visit "/accounts/#{account_id}"
+    click_on "Setup 2FA"
+    secret = page.find("#otp-secret-key").text
+    totp = ROTP::TOTP.new(secret)
+    fill_in "Password", with: "foobar"
+    fill_in "Authentication Code", with: totp.now
+    click_on "Setup TOTP Authentication"
+    logout!
+
+    login!
+
+    assert_current_path "/multifactor-auth"
+    assert_css ".flash-error"
+    assert_content "You need to authenticate via an additional factor before continuing"
+
+    assert_link "Authenticate Using TOTP", href: "/otp-auth"
+    assert_link "Authenticate Using Recovery Code", href: "/recovery-auth"
+
+    click_on "Authenticate Using Recovery Code"
+
+    assert_current_path "/recovery-auth"
+    assert_content "Recovery Code"
+    refute_content "Alice"
+
+    recovery_code = DB[:account_recovery_codes].where(id: account_id).first[:code]
+
+    fill_in "Recovery Code", with: recovery_code
+    click_on "Authenticate via Recovery Code"
+
+    assert_current_path "/entries/new"
+    assert_link "Alice", href: "/accounts/#{account_id}"
+    assert_css ".flash-notice"
+    assert_content "You have been multifactor authenticated"
+
+    assert_equal 15, DB[:account_recovery_codes].where(id: account_id).all.size
+  end
+
+  def test_can_disable_two_factors_authentication
+    create_and_verify_account!
+    account_id = Account.first.id
+    visit "/accounts/#{account_id}"
+    click_on "Setup 2FA"
+    secret = page.find("#otp-secret-key").text
+    totp = ROTP::TOTP.new(secret)
+    fill_in "Password", with: "foobar"
+    fill_in "Authentication Code", with: totp.now
+    click_on "Setup TOTP Authentication"
+    logout!
+
+    login!
+
+    click_on "Authenticate Using Recovery Code"
+
+    recovery_code = DB[:account_recovery_codes].where(id: account_id).first[:code]
+
+    fill_in "Recovery Code", with: recovery_code
+    click_on "Authenticate via Recovery Code"
+
+    visit "/accounts/#{account_id}"
+
+    click_on "Disable 2FA"
+
+    assert_current_path "/multifactor-disable"
+    assert_link "Alice", href: "/accounts/#{account_id}"
+
+    fill_in "Password", with: "foobar"
+    click_on "Remove 2FA"
+
+    assert_css ".flash-notice"
+    assert_content "All multifactor authentication methods have been disabled"
+    assert_link "Alice", href: "/accounts/#{account_id}"
+    assert_current_path "/accounts/#{account_id}"
+
+    assert_equal 0, DB[:account_recovery_codes].where(id: account_id).all.size
+    assert_equal 0, DB[:account_otp_keys].where(id: account_id).all.size
+  end
+end

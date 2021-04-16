@@ -70,7 +70,7 @@ class CapybaraTestCase < HookedTestClass
   def create_and_verify_account!
     create_account!
     verify_account!
-  end
+  end  
 
   def logout!
     account = Account.all.first

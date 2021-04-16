@@ -106,6 +106,7 @@ module WeightTracker
       
       # Two Factor Base Setup
       two_factor_disable_button "Remove 2FA"
+      two_factor_disable_redirect { "/accounts/#{account[:id]}" }
 
       # OTP setup
       before_otp_setup_route do
