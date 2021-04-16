@@ -71,6 +71,9 @@ module WeightTracker
         end
       end
 
+      # Active Session
+      session_inactivity_deadline 129600 # 36 hours
+
       # Audit Logging
       audit_log_metadata_default do
         {"ip" => scope.request.ip}
