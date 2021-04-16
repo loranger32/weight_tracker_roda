@@ -476,8 +476,6 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     login!
 
     assert_current_path "/multifactor-auth"
-    assert_css ".flash-error"
-    assert_content "You need to authenticate via an additional factor before continuing"
 
     assert_link "Authenticate Using TOTP", href: "/otp-auth"
     assert_link "Authenticate Using Recovery Code", href: "/recovery-auth"
@@ -516,8 +514,6 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     login!
 
     assert_current_path "/multifactor-auth"
-    assert_css ".flash-error"
-    assert_content "You need to authenticate via an additional factor before continuing"
 
     assert_link "Authenticate Using TOTP", href: "/otp-auth"
     assert_link "Authenticate Using Recovery Code", href: "/recovery-auth"
