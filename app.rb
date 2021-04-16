@@ -40,6 +40,9 @@ module WeightTracker
       email_subject_prefix "WeightTracker - "
       send_email { |mail| MailHelpers.send_mail_with_sendgrid(mail) } if App.production?
 
+      # Login Password Requirements Base
+      password_hash_cost(App.test? ? 2 : 12)
+
       # Create Account
       before_create_account do
         unless user_name = param_or_nil("user_name")
