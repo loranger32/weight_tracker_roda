@@ -105,6 +105,12 @@ module WeightTracker
       verify_account_email_body { scope.render "mails/verify-account-email" }
     end
 
+    plugin :default_headers,
+      "Strict-Transport-Security" => "max-age=63072000; includeSubDomains",
+      "X-Content-Type-Options" => "nosniff",
+      "X-Frame-Options" => "deny"
+      "X-XSS-Protection'=>'1; mode=block"
+
     plugin :content_security_policy do |csp|
       csp.default_src :none
       csp.font_src :self, "fonts.gstatic.com"
@@ -119,14 +125,6 @@ module WeightTracker
       csp.frame_ancestors :none
       csp.upgrade_insecure_requests true
     end
-
-    # The Default Headers plugin must apparently come after the csp plugin, otherwise not applied
-    plugin :default_headers,
-      "Strict-Transport-Security" => "max-age=63072000; includeSubDomains",
-      "X-Content-Type-Options" => "nosniff",
-      "X-Frame-Options" => "deny"
-      "X-XSS-Protection'=>'1; mode=block"
-
 
     # Routing
     plugin :status_handler

@@ -9,7 +9,7 @@ gem "nokogiri", "~> 1.11", ">= 1.11.2"
 gem "pg", "~> 1.2", ">= 1.2.3"
 gem "puma", "~> 5.2", ">= 5.2.2"
 gem "rake", "~> 13.0", ">= 13.0.1"
-gem "roda", "~> 3.42"
+gem "roda", "~> 3.43.1"
 gem "roda-enhanced_logger", "~> 0.4.0"
 gem "rodauth", "~> 2.11"
 gem 'sendgrid-ruby', '~> 6.4'
