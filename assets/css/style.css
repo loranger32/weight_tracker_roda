@@ -106,3 +106,28 @@ body {
 #close_account_button {
   background-color: var(--danger-color);
 }
+
+#qrcode-otp {
+  max-width: 456px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#recovery-codes {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.rodauth-two-factor-auth-links {
+  margin-top: 60px;
+}
+
+.rodauth-two-factor-auth-links li {
+  width: 200px;
+  margin: 20px auto;
+  text-align: center;
+  background-color: var(--primary-color);
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: white;
+}

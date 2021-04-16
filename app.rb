@@ -28,7 +28,7 @@ module WeightTracker
       enable :login, :logout, :create_account, :change_login, :change_password,
         :change_password_notify, :close_account, :active_sessions, :audit_logging,
         :reset_password, :verify_account, :verify_account_grace_period, :lockout,
-        :verify_login_change
+        :verify_login_change, :otp, :recovery_codes
       
       # Base
       account_password_hash_column :password_hash
@@ -103,6 +103,18 @@ module WeightTracker
       verify_account_email_sent_notice_flash "An email has been sent to you to verify your account"
       verify_account_email_subject "Verify your account"
       verify_account_email_body { scope.render "mails/verify-account-email" }
+      
+      # Two Factor Base Setup
+      two_factor_disable_button "Remove 2FA"
+
+      # OTP setup
+      before_otp_setup_route do
+        scope.content_security_policy.add_style_src [:sha256, 'hXLriEz22xKNlZLBZHXTURsF5XZHj1Bkjo1s7SNTzSI=']
+      end
+
+      # Recovery Codes Setup
+      auto_add_recovery_codes? true
+      auto_remove_recovery_codes? true
     end
 
     plugin :default_headers,
@@ -163,8 +175,8 @@ module WeightTracker
     route do |r|
       r.public if App.production?
       r.assets unless App.production?
-      r.rodauth
       check_csrf!
+      r.rodauth
       rodauth.check_active_session
       rodauth.require_authentication
       @account_ds = rodauth.account_from_session

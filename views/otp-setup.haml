@@ -1,0 +1,31 @@
+%h2.mt-40.w-200.center-block.center-text.p-20.bg-gold.white.fs-1-5 Two Factors Authentication Setup
+
+%p.mt-30.mx-10.fs-1-2.center-text Scan the QRCode with your authentication application and enter the provided authentication code below
+
+.mt-50.mx-10
+  %p#qrcode-otp!= rodauth.otp_qr_code
+  .mt-40.center-text
+    %p
+      %b #{rodauth.otp_secret_label}:
+    %p #{rodauth.otp_user_key}
+  .mt-10.center-text
+    %p
+      %b #{rodauth.otp_provisioning_uri_label}:
+    %p #{rodauth.otp_provisioning_uri}
+
+%form.rodauth#otp-setup-form{action: rodauth.otp_setup_path, method: :post, role: "form"}
+  
+  %input{type: :hidden, id: "otp-key", name: rodauth.otp_setup_param, value: rodauth.otp_user_key}
+  %input{type: :hidden, id: "otp-hmac-secret", name: rodauth.otp_setup_raw_param, value: rodauth.otp_key}
+  != csrf_tag(rodauth.otp_setup_path)
+        
+  .form-group
+    %label{for: "password"} Password
+    %input{type: :password, id: "password", name: "password", value: "", autocomplete: "current-password", required: true}
+
+  .form-group
+    %label{for: "otp-auth-code"} Authentication Code
+    %input.form-control{type: :text, id: "otp-auth-code", name: "otp", value: "", autocomplete: "off", inputmode: "numeric", required: true}
+
+  .form-group
+    %input.btn.btn-primary{type: :submit, value: "Setup TOTP Authentication"}

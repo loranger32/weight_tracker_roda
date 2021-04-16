@@ -13,7 +13,15 @@
 %h2.w-200.center-block.mt-40.center-text Options
 
 %ul.mt-20.w-200.center-block
-  %li
+  - if rodauth.otp_exists?
+    %li
+      %a.block.btn.bg-primary.white{href: rodauth.recovery_codes_path} View Recovery Codes
+    %li.mt-10
+      %a.block.btn.bg-warning.white{href: rodauth.two_factor_disable_path} Disable 2FA
+  - else
+    %li
+      %a.block.btn.bg-primary.white{href: rodauth.two_factor_manage_path} Setup 2FA
+  %li.mt-10
     %a.block.btn.bg-primary.white{href: "/change-user-name"} Change User Name
   %li.mt-10
     %a.block.btn.bg-primary.white{href: rodauth.change_login_path} Change Email
