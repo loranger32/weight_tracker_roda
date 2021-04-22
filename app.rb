@@ -229,27 +229,10 @@ module WeightTracker
             ds_entry
           end
 
-
-          if r.params["file_format"] == "json"
-            file_name = "wt_data_#{@account_ds[:user_name]}_#{Time.now.strftime("%Y%m%d%H%M%S")}.json"
-            data_file_path = File.join(opts[:root], "tmp", file_name)
-            File.open(data_file_path, "w") { |f| f.write @unecrypted_data.to_json }
-            send_file data_file_path, type: "application/json", filename: file_name
-          elsif r.params["file_format"] == "csv"
-            file_name = "wt_data_#{@account_ds[:user_name]}_#{Time.now.strftime("%Y%m%d%H%M%S")}.csv"
-            data_file_path = File.join(opts[:root], "tmp", file_name)
-            File.open(data_file_path, "w") { |f| f.write @unecrypted_data.to_csv(write_headers: true) }
-            send_file data_file_path, type: "text/csv", filename: file_name
-          elsif r.params["file_format"] == "xml"
-            file_name = "wt_data_#{@account_ds[:user_name]}_#{Time.now.strftime("%Y%m%d%H%M%S")}.xml"
-            data_file_path = File.join(opts[:root], "tmp", file_name)
-            File.open(data_file_path, "w") { |f| f.write @unecrypted_data.to_xml }
-            send_file data_file_path, type: "text/xml", filename: file_name
-          else
-            flash.now[:error] = "The file format you requested does not exist"
-            response.status = 400
-            r.halt
-          end
+          file_name = "wt_data_#{@account_ds[:user_name]}_#{Time.now.strftime("%Y%m%d%H%M%S")}.json"
+          data_file_path = File.join(opts[:root], "tmp", file_name)
+          File.open(data_file_path, "w") { |f| f.write @unecrypted_data.to_json }
+          send_file data_file_path, type: "application/json", filename: file_name
         end
       end
 

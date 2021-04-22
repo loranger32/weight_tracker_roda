@@ -84,12 +84,9 @@ class AccountManagementTest < CapybaraTestCase
 
     assert_current_path "/export-data"
     assert_content "Export Data"
-    assert_content "json"
-    assert_content "csv"
-    assert_content "xml"
+    assert_content "JSON"
 
-    assert_selector "label", count: 3
-    assert_selector "input", count: 4
+    assert_selector "input", count: 1
   end
 
   def test_cancel_button_behavior
@@ -116,32 +113,21 @@ class AccountManagementTest < CapybaraTestCase
     assert_current_path "/accounts/#{Account.first.id}"
   end
 
-  def run_test_export_data_for_file_format(file_format)
-    pre_existing_data_files = Dir.glob("tmp/wt_data_Alice_*.#{file_format}")
+
+  def test_export_data_to_json
+    pre_existing_data_files = Dir.glob("tmp/wt_data_Alice_*.json")
     
     create_and_verify_account!
 
     visit "/export-data"
-    choose file_format
+
     click_on "Download"
 
-    existing_data_files = Dir.glob("tmp/wt_data_Alice_*.#{file_format}")
+    existing_data_files = Dir.glob("tmp/wt_data_Alice_*.json")
 
     assert_equal pre_existing_data_files.size + 1, existing_data_files.size
     
     FileUtils.remove_entry_secure((existing_data_files - pre_existing_data_files)[0])
-  end
-
-  def test_export_data_to_json
-    run_test_export_data_for_file_format("json")
-  end
-
-  def test_export_data_to_csv
-    run_test_export_data_for_file_format("csv")
-  end
-
-  def test_export_data_to_xml
-    run_test_export_data_for_file_format("xml")
   end
 
   def test_close_account_page

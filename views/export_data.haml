@@ -2,24 +2,12 @@
 
 %h2.mt-40.w-200.center-block.center-text.p-20.bg-gold.white.fs-1-5 Export Data
 
-%p.mt-30.center-text Select the file format
+%p.mt-80.center-text Your data will be exported in a JSON text file, which is a very common file format
 
-%form.w-300.center-block{action: "/export-data", method: :post}
+%form.mt-60.w-300.center-block{action: "/export-data", method: :post}
   
   !=csrf_tag("/export-data")
   
-  .mt-15.w-60.center-block.flex.justify-between
-    %input.mr-10{type: :radio, name: "file_format", value: "json", id: "json", checked: true}
-    %label{for: "json"} json
-  
-  .mt-15.w-60.center-block.flex.justify-between
-    %input.mr-10{type: :radio, name: "file_format", value: "csv", id: "csv"}
-    %label{for: "csv"} csv
-
-  .mt-15.w-60.center-block.flex.justify-between
-    %input.mr-10{type: :radio, name: "file_format", value: "xml", id: "xml"}
-    %label{for: "xml"} xml
-
   %input.mt-30.w-200.center-block.btn.bg-primary.white.lh-2{type: :submit, value: "Download"}
 
 != partial("partials/rodauth_cancel_btn")
