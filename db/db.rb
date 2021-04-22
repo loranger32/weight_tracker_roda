@@ -1,6 +1,10 @@
 require "sequel"
 require "logger"
 
+Sequel::Model.plugin :column_encryption do |enc|
+  enc.key 0, ENV["SEQUEL_COLUMN_ENCRYPTION_KEY"]
+end
+
 module WeightTracker
   DB = if ENV["RACK_ENV"] == "test"
     Sequel.connect(ENV.fetch("TEST_DATABASE_URL"))
