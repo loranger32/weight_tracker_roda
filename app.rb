@@ -13,9 +13,7 @@ module WeightTracker
         filter: ->(path) { path.start_with?("/assets") },
         trace_missed: true
     end
-    Dir[File.expand_path("helpers/*", __dir__)] do |f|  
-      puts f
-    end
+
     include AppHelpers
     include ViewHelpers
 
