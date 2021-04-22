@@ -3,6 +3,28 @@ class Account < Sequel::Model
 
   one_to_many :entries
 
+  def self.verified
+    where(status_id: 2).all
+  end
+
+  def self.unverified
+    where(status_id: 1).all
+  end
+
+  def self.closed
+    where(status_id: 3).all
+  end
+
+  def self.otp_on
+    otp_on_account_ids = DB[:account_otp_keys].select_map(:id)
+    where(id: otp_on_account_ids).all
+  end
+
+  def self.otp_off
+    otp_on_account_ids = DB[:account_otp_keys].select_map(:id)
+    exclude(id: otp_on_account_ids).all
+  end
+
   def validate
     super
     validates_presence [:user_name, :email, :password_hash]

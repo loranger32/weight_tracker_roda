@@ -1,12 +1,9 @@
 require_relative "db/db"
-require_relative "helpers/app_helpers"
-require_relative "helpers/view_helpers"
-require_relative "helpers/mail_helpers"
+Dir["helpers/*.rb"].each { |f| require_relative f }
 
 module WeightTracker
 
   class App < Roda
-
     opts[:root] = File.dirname(__FILE__)
 
     # General plugins
@@ -16,10 +13,12 @@ module WeightTracker
         filter: ->(path) { path.start_with?("/assets") },
         trace_missed: true
     end
-
+    Dir[File.expand_path("helpers/*", __dir__)] do |f|  
+      puts f
+    end
     include AppHelpers
     include ViewHelpers
-    
+
     # Security
     secret = ENV["SESSION_SECRET"]
     plugin :sessions, key: "weight_tracker.session", secret: secret
@@ -147,6 +146,9 @@ module WeightTracker
     end
 
     # Routing
+    plugin :hash_routes
+    Dir["routes/*.rb"].each { |f| require_relative f }
+
     plugin :status_handler
 
     status_handler(404) do
@@ -189,9 +191,12 @@ module WeightTracker
       rodauth.require_authentication
       @account_ds = rodauth.account_from_session
 
+      r.hash_branches
+  
       r.root do
         r.redirect "entries/new"
       end
+
 
       r.is "change-user-name" do
         r.get do

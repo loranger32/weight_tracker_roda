@@ -1,0 +1,27 @@
+- @page_title << "Accounts"
+
+.w-500.center-block.flex.justify-between
+  %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts"} All
+  %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=verified"} Verified
+  %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=unverified"} Unverified
+  %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=closed"} Closed
+  %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=otp_on"} OTP ON
+  %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=otp_off"} OTP OFF
+
+- if !@accounts.empty?
+  %table.mt-50.w-600.center-block.center-text
+    %thead.lh-2
+      %td.fw-600 USERNAME
+      %td.fw-600 EMAIL
+      %td.fw-600 STATUS
+      %td.fw-600 2FA
+    %tbody
+      - @accounts.each do |account|
+        %tr.lh-2
+          %td
+            %a{href: "/admin/account/#{account.id}"}= account.user_name 
+          %td= account.email
+          %td= DB[:account_statuses].where(id: account.status_id).first[:name]
+          %td= DB[:account_recovery_codes].where(id: account.id).empty? ? "" : "x"
+- else
+  %p.mt-50.fs-2 No Account match these criterias
