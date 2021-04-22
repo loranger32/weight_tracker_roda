@@ -1,7 +1,5 @@
-require "sequel"
 require "bcrypt"
-
-DB = Sequel.connect(ENV["DATABASE_URL"])
+require_relative "../db"
 
 accounts = [
   {email: "bob@example.com",
@@ -26,7 +24,7 @@ accounts = [
    status_id: 3}
  ]
 
-accounts.each { |account| DB[:accounts].insert(account) }
+accounts.each { |account| Account.new(account).save }
 
 entries = [{weight: 85.0, day: "2021-01-01", note: "First day", account_id: 1},
   {weight: 84.0, day: "2021-01-02", note: "", account_id: 1},
@@ -37,4 +35,4 @@ entries = [{weight: 85.0, day: "2021-01-01", note: "First day", account_id: 1},
   {weight: 83.5, day: "2021-01-03", note: "I stop !", account_id: 5},
 ]
 
-entries.each { |entry| DB[:entries].insert(entry) }
+entries.each { |entry| Entry.new(entry).save }
