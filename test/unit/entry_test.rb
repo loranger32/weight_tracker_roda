@@ -58,6 +58,12 @@ class EntryBasicTest < HookedTestClass
     assert entry.errors.has_key?(:account_id)
   end
 
+  def test_note_must_be_present
+    entry = Entry.new(@valid_params.except(:note))
+    refute entry.valid?
+    assert entry.errors.has_key?(:note)
+  end
+
   def test_note_can_be_empty_string
     entry = Entry.new(@valid_params.merge(note: ""))
     assert entry.valid?
@@ -81,20 +87,20 @@ class EntryBasicTest < HookedTestClass
     assert entry.errors.has_key?(:weight)
   end
 
-  def test_note_must_be_a_string
+  # Because the encryption / decryption processing happens before validation
+  def test_raise_error_if_note_before_encryption_is_not_a_string
     entry = Entry.new(@valid_params.merge(note: ['not a string']))
-    refute entry.valid?
-    assert entry.errors.has_key?(:note)
+    assert_raises { refute entry.valid? }
   end
 
-  def test_string_must_be_less_or_equal_than_600_characters
+  def test_note_must_be_less_or_equal_than_600_characters
     entry = Entry.new(@valid_params.merge(note: "a" * 601))
     refute entry.valid?
     assert entry.errors.has_key?(:note)
   end
 
   def test_only_one_entry_per_day_per_user
-    Entry.insert(@valid_params)
+    Entry.new(@valid_params).save
     entry = Entry.new(@valid_params)
     refute entry.valid?
     assert_equal 1, entry.errors.size
@@ -106,6 +112,14 @@ class EntryBasicTest < HookedTestClass
     assert_respond_to entry, :to_csv
     assert_respond_to entry, :to_xml
   end
+
+  def test_entry_note_is_stored_encrypted_but_can_be_accessed_unecrypted
+    assert_equal 0, Entry.all.size
+    Entry.new(@valid_params).save
+    refute_equal @valid_params[:note], DB[:entries].first[:note]
+    assert DB[:entries].first[:note].size >= 65
+    assert_equal @valid_params[:note], Entry.first.note 
+  end
 end
 
 class EntryQueryingTest < HookedTestClass
@@ -114,11 +128,11 @@ class EntryQueryingTest < HookedTestClass
     Account.insert(user_name: "Alice", email: "alice@example.com",
                    # password = 'foobar'
                    password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva") 
-    Entry.insert(day: "2021-01-01" , weight: 50.0, note: "", account_id: 1)
-    Entry.insert(day: "2021-01-02" , weight: 51.0, note: "", account_id: 1)
-    Entry.insert(day: "2021-01-03" , weight: 50.5, note: "", account_id: 1)
-    Entry.insert(day: "2021-01-04" , weight: 49.1, note: "", account_id: 1)
-    Entry.insert(day: "2021-01-05" , weight: 48.5, note: "", account_id: 1)
+    Entry.new(day: "2021-01-01" , weight: 50.0, note: "", account_id: 1).save
+    Entry.new(day: "2021-01-02" , weight: 51.0, note: "", account_id: 1).save
+    Entry.new(day: "2021-01-03" , weight: 50.5, note: "", account_id: 1).save
+    Entry.new(day: "2021-01-04" , weight: 49.1, note: "", account_id: 1).save
+    Entry.new(day: "2021-01-05" , weight: 48.5, note: "", account_id: 1).save
   end
 
   def clean_fixtures
