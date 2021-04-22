@@ -3,9 +3,9 @@ class Entry < Sequel::Model
   plugin :json_serializer
   plugin :csv_serializer
   plugin :xml_serializer
-  plugin :column_encryption do |enc|
-    enc.column :note
-  end
+  # plugin :column_encryption do |enc|
+  #   enc.column :note
+  # end
 
   many_to_one :account
 
