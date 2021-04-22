@@ -11,7 +11,7 @@ gem "puma", "~> 5.2", ">= 5.2.2"
 gem "rake", "~> 13.0", ">= 13.0.1"
 gem "roda", "~> 3.43.1"
 gem "roda-enhanced_logger", "~> 0.4.0"
-gem "rodauth", "~> 2.11"
+gem 'rodauth', '~> 2.12'
 gem "rotp", "~> 6.2"
 gem "rqrcode", "~> 1.2"
 gem 'sendgrid-ruby', '~> 6.4'
