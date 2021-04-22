@@ -15,7 +15,7 @@ gem "rodauth", "~> 2.11"
 gem "rotp", "~> 6.2"
 gem "rqrcode", "~> 1.2"
 gem 'sendgrid-ruby', '~> 6.4'
-gem "sequel", "~> 5.42"
+gem 'sequel', '~> 5.43'
 gem "sequel_pg", "~> 1.14", require: "sequel"
 
 group :development, :test do
