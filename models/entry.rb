@@ -4,7 +4,7 @@ class Entry < Sequel::Model
   plugin :csv_serializer
   plugin :xml_serializer
   plugin :column_encryption do |enc|
-    enc.column :enc_note
+    enc.column :note
   end
 
   many_to_one :account
