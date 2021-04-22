@@ -173,3 +173,13 @@ desc "Generate a password hash"
 task :gen_ph, [:pw] do |pw|
   puts BCrypt::Password.create(pw, cost: 2)
 end
+
+desc "migrate notes to encrypted notes"
+task :enc_note do
+  require "sequel"
+  db = Sequel.connect(ENV["DATABASE_URL"])
+  require_relative "db/db"
+  Entry.each do |entry|
+    entry.update(enc_note: entry.note)
+  end
+end
