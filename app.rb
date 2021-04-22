@@ -225,9 +225,9 @@ module WeightTracker
         r.post do
           @raw_data = Entry.where(account_id: @account_ds[:id]).order(:id).select(:day, :weight, :note)
           
-          # unencrypt the encrypted data
+          # unencrypt the encrypted data + set the correct encoding
           @unecrypted_data = @raw_data.all.map do |ds_entry|
-            ds_entry[:note] = ds_entry.note
+            ds_entry[:note] = ds_entry.note.force_encoding("UTF-8")
             ds_entry
           end
 
