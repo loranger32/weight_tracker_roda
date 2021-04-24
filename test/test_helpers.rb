@@ -67,6 +67,21 @@ class CapybaraTestCase < HookedTestClass
     clean_mailbox
   end
 
+  def setup_two_fa!
+    account_id = Account.first.id
+
+    visit "/accounts/#{account_id}"
+    click_on "Setup 2FA"
+    secret = page.find("#otp-secret-key").text
+
+    totp = ROTP::TOTP.new(secret)
+    
+    fill_in "Password", with: "foobar"
+    fill_in "Authentication Code", with: totp.now
+
+    click_on "Setup TOTP Authentication"
+  end
+
   def create_and_verify_account!
     create_account!
     verify_account!

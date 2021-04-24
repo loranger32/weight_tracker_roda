@@ -87,7 +87,8 @@ class EntryBasicTest < HookedTestClass
     assert entry.errors.has_key?(:weight)
   end
 
-  # Because the encryption / decryption processing happens before validation
+  # Because the encryption / decryption processing happens before validation,
+  # it raises an error if the attribute is not a string
   def test_raise_error_if_note_before_encryption_is_not_a_string
     entry = Entry.new(@valid_params.merge(note: ['not a string']))
     assert_raises { refute entry.valid? }

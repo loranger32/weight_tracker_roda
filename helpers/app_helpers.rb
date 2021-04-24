@@ -2,7 +2,7 @@ module WeightTracker
   module AppHelpers
     # Temporary Hack
     def is_admin?(account)
-      account[:id] == 3
+      account[:id] == 1
     end
 
     def format_flash_error(model)
