@@ -2,7 +2,7 @@ module WeightTracker
   class App
     hash_branch("admin") do |r|
 
-      unless is_admin?(@account_ds)
+      unless Account[@account_ds[:id]].is_admin?
         response.status = 403
         r.halt
       end

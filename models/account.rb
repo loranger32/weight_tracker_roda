@@ -2,6 +2,7 @@ class Account < Sequel::Model
   plugin :validation_helpers
 
   one_to_many :entries
+  one_to_one :admin
 
   def self.verified
     where(status_id: 2).all
@@ -32,5 +33,9 @@ class Account < Sequel::Model
     validates_format /^[^,;@ \r\n]+@[^,@; \r\n]+\.[^,@; \r\n]+$/, :email, message: "is not a valid email"
     validates_min_length 3, :user_name, message: "must have at least 3 characters"
     validates_max_length 100, :user_name
+  end
+
+  def is_admin?
+    !admin.nil?
   end
 end

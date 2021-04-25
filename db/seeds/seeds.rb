@@ -26,6 +26,8 @@ accounts = [
 
 accounts.each { |account| Account.new(account).save }
 
+Admin.new(account_id: 3).save
+
 entries = [{weight: 85.0, day: "2021-01-01", note: "First day", account_id: 1},
   {weight: 84.0, day: "2021-01-02", note: "", account_id: 1},
   {weight: 83.5, day: "2021-01-03", note: "Great !", account_id: 1},

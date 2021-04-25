@@ -1,10 +1,5 @@
 module WeightTracker
   module AppHelpers
-    # Temporary Hack
-    def is_admin?(account)
-      account[:id] == 1
-    end
-
     def format_flash_error(model)
       if model.errors.length >= 2
         model.errors.full_messages.map { |msg| "- #{msg}" }.join("\n")
