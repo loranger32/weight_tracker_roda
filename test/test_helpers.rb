@@ -15,12 +15,16 @@ require_relative "../app"
 class HookedTestClass < Minitest::Test
   include Minitest::Hooks
 
-  around(:all) do |&block|
-    DB.transaction(rollback: :always){super(&block)}
+  def around_all
+    DB.transaction(rollback: :always) do
+      super
+    end
   end
 
-  around do |&block|
-    DB.transaction(rollback: :always, savepoint: true, auto_savepoint: true){super(&block)}
+  def around
+    DB.transaction(rollback: :always, savepoint: true, auto_savepoint: true) do
+      super
+    end
   end
 
   def before_all
@@ -67,9 +71,7 @@ class CapybaraTestCase < HookedTestClass
     clean_mailbox
   end
 
-  def setup_two_fa!
-    account_id = Account.first.id
-
+  def setup_two_fa!(account_id)
     visit "/accounts/#{account_id}"
     click_on "Setup 2FA"
     secret = page.find("#otp-secret-key").text

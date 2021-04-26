@@ -1,6 +1,23 @@
 require_relative "../test_helpers"
 
-class AccountManagementTest < CapybaraTestCase
+class AdminPageTest < CapybaraTestCase
+  def load_fixtures
+    DB[:accounts].insert(user_name: "test unverified user", email: "test.unverified@example.com",
+                         password_hash: BCrypt::Password.create("secret", cost: 2),
+                         status_id: 1)
+    DB[:accounts].insert(user_name: "test verified user", email: "test.verified@example.com",
+                         password_hash: BCrypt::Password.create("secret", cost: 2),
+                         status_id: 2)
+    DB[:accounts].insert(user_name: "test closed account", email: "test.closed@example.com",
+                         password_hash: BCrypt::Password.create("secret", cost: 2),
+                         status_id: 3)
+  end
+
+  def clean_fixtures
+    DB[:accounts].delete
+    DB.reset_primary_key_sequence(:accounts)
+  end
+
   def test_non_admin_user_cannot_access_admin_page
     create_and_verify_account!
   
@@ -11,8 +28,9 @@ class AccountManagementTest < CapybaraTestCase
   end
 
   def test_admin_without_two_fa_cannot_access_admin_page
-    create_and_verify_account!    
-    Admin.new(account_id: Account.first.id).save
+    create_and_verify_account!
+    alice_account = Account.where(user_name: "Alice").first
+    Admin.new(account_id: alice_account.id).save
     
     visit "/admin/accounts"
 
@@ -22,13 +40,10 @@ class AccountManagementTest < CapybaraTestCase
 
   def test_admin_with_2_fa_enabled_can_access_admin_page
     create_and_verify_account!
-    setup_two_fa!
-  
-    Admin.new(account_id: Account.first.id).save
-    
-    DB[:accounts].insert(user_name: "test user", email: "test@example.com",
-                         password_hash: BCrypt::Password.create("secret", cost: 2),
-                         status_id: 2)
+    alice_account = Account.where(user_name: "Alice").first
+    setup_two_fa!(alice_account.id)
+
+    Admin.new(account_id: alice_account.id).save
 
     visit "/admin/accounts"
     
@@ -42,8 +57,57 @@ class AccountManagementTest < CapybaraTestCase
     assert_link "OTP ON"   
     assert_link "OTP OFF"
 
-    assert_content "alice@example.com"   
-    assert_content "test@example.com"   
-    assert_content "test user"   
+    assert_content "alice@example.com"
+    assert_content "test.unverified@example.com"
+    assert_content "test.verified@example.com"   
+    assert_content "test.closed@example.com"
+    assert_content "test unverified user"
+    assert_content "test verified user"
+    assert_content "test closed account"
+
+    click_on "Verified"
+    assert_content "alice@example.com"
+    assert_content "test.verified@example.com"   
+    assert_content "test verified user"
+    refute_content "test.unverified@example.com"
+    refute_content "test.closed@example.com"
+    refute_content "test unverified user"
+    refute_content "test closed account"
+
+    click_on "Unverified"
+    refute_content "alice@example.com"
+    assert_content "test.unverified@example.com"
+    refute_content "test.verified@example.com"   
+    refute_content "test.closed@example.com"
+    assert_content "test unverified user"
+    refute_content "test verified user"
+    refute_content "test closed account"
+
+    click_on "Closed"
+    refute_content "alice@example.com"
+    refute_content "test.unverified@example.com"
+    refute_content "test.verified@example.com"   
+    assert_content "test.closed@example.com"
+    refute_content "test unverified user"
+    refute_content "test verified user"
+    assert_content "test closed account"    
+
+    click_on "OTP ON"
+    assert_content "alice@example.com"
+    refute_content "test.unverified@example.com"
+    refute_content "test.verified@example.com"   
+    refute_content "test.closed@example.com"
+    refute_content "test unverified user"
+    refute_content "test verified user"
+    refute_content "test closed account"
+
+    click_on "OTP OFF"
+    refute_content "alice@example.com"
+    assert_content "test.unverified@example.com"
+    assert_content "test.verified@example.com"   
+    assert_content "test.closed@example.com"
+    assert_content "test unverified user"
+    assert_content "test verified user"
+    assert_content "test closed account"
   end
 end
