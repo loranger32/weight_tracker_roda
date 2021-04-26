@@ -72,7 +72,7 @@ class CapybaraTestCase < HookedTestClass
   end
 
   def setup_two_fa!(account_id)
-    visit "/accounts/#{account_id}"
+    visit "/account"
     click_on "Setup 2FA"
     secret = page.find("#otp-secret-key").text
 
@@ -91,7 +91,7 @@ class CapybaraTestCase < HookedTestClass
 
   def logout!
     account = Account.all.first
-    visit "/accounts/#{account.id}"
+    visit "/account"
     click_on "Log Out"
   end
 

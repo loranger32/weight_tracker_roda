@@ -55,10 +55,10 @@ module WeightTracker
       login_redirect "/entries"
       
       # Change Login
-      change_login_redirect { "/accounts/#{account_from_session[:id]}" }
+      change_login_redirect { "/account" }
 
       # Change Password
-      change_password_redirect { "/accounts/#{account_from_session[:id]}" }
+      change_password_redirect { "/account" }
       
       # Close Account
       before_close_account do
@@ -109,7 +109,7 @@ module WeightTracker
       
       # Two Factor Base Setup
       two_factor_disable_button "Remove 2FA"
-      two_factor_disable_redirect { "/accounts/#{account[:id]}" }
+      two_factor_disable_redirect { "/account" }
       two_factor_need_authentication_error_flash nil
 
       # OTP setup
@@ -207,7 +207,7 @@ module WeightTracker
           if account.valid?
             account.save
             flash[:notice] = "User Name successfully changed"
-            r.redirect "/accounts/#{account[:id]}"
+            r.redirect "/account"
           else
             flash[:error] = format_flash_error(account)
             r.redirect
@@ -245,17 +245,9 @@ module WeightTracker
         view "security_log"
       end
 
-      r.get "accounts", Integer do |account_id|
-        if (@account = Account[account_id.to_i]) && (account_id == @account_ds[:id])
-          view "account_show"
-        elsif @account
-          flash.now["error"] = "You're not authorized to see this page"
-          response.status = 403
-          r.halt
-        else
-          response.status = 404
-          r.halt
-        end
+      r.get "account" do
+        @account = Account[@account_ds[:id]]
+        view "account_show"
       end
 
       r.on "entries" do

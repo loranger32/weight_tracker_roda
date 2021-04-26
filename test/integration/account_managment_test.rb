@@ -6,8 +6,8 @@ class AccountManagementTest < CapybaraTestCase
 
     account = Account.first
 
-    visit "/accounts/#{account.id}"
-    assert_current_path "/accounts/#{account.id}"
+    visit "/account"
+    assert_current_path "/account"
     assert_content account.user_name, count: 2
     assert_content account.email, count: 1
     assert_link "Change User Name"
@@ -31,7 +31,7 @@ class AccountManagementTest < CapybaraTestCase
     account = Account.first
 
     assert_equal new_user_name, account.user_name
-    assert_current_path "/accounts/#{account.id}"
+    assert_current_path "/account"
     assert_css ".flash-notice"
     assert_content new_user_name
   end
@@ -49,7 +49,7 @@ class AccountManagementTest < CapybaraTestCase
     account = Account.first
 
     assert BCrypt::Password.new(account.password_hash) == "barfoo" 
-    assert_current_path "/accounts/#{account.id}"
+    assert_current_path "/account"
     assert_css ".flash-notice"
     assert_content "Your password has been changed"
   end
@@ -98,19 +98,19 @@ class AccountManagementTest < CapybaraTestCase
 
     visit "/change-user-name"
     click_on "Cancel"
-    assert_current_path "/accounts/#{Account.first.id}"
+    assert_current_path "/account"
 
     visit "/change-login"
     click_on "Cancel"
-    assert_current_path "/accounts/#{Account.first.id}"
+    assert_current_path "/account"
 
     visit "/change-password"
     click_on "Cancel"
-    assert_current_path "/accounts/#{Account.first.id}"
+    assert_current_path "/account"
 
     visit "/export-data"
     click_on "Cancel"
-    assert_current_path "/accounts/#{Account.first.id}"
+    assert_current_path "/account"
   end
 
 
@@ -141,7 +141,7 @@ class AccountManagementTest < CapybaraTestCase
 
     visit "/close-account"
     click_on "I don't want to close my account"
-    assert_current_path "/accounts/#{Account.first.id}"
+    assert_current_path "/account"
 
     visit "/close-account"
     refute_checked_field "I have backed up my data"
@@ -365,7 +365,7 @@ class AccountManagementMailTest < CapybaraTestCase
     account = Account.first
 
     assert_equal "alice@example.com", account.email 
-    assert_current_path "/accounts/#{account.id}"
+    assert_current_path "/account"
     assert_css ".flash-notice"
     assert_content "alice@example.com"
     assert_content "An email has been sent to your new email verify it"
@@ -414,7 +414,7 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     create_and_verify_account!
     account_id = Account.first.id
 
-    visit "/accounts/#{account_id}"
+    visit "/account"
 
     assert_content "Setup 2FA"
     refute_content "View Recovery Codes"
@@ -423,7 +423,7 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     click_on "Setup 2FA"
 
     assert_current_path "/otp-setup"
-    assert_link "Alice", href: "/accounts/#{account_id}"
+    assert_link "Alice", href: "/account"
     assert_css("#qrcode-otp")
 
     secret = page.find("#otp-secret-key").text
@@ -439,9 +439,9 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     assert_current_path "/entries/new"
     assert_css ".flash-notice"
     assert_content "TOTP authentication is now setup" 
-    assert_link "Alice", href: "/accounts/#{account_id}"
+    assert_link "Alice", href: "/account"
 
-    visit "/accounts/#{account_id}"
+    visit "/account"
     refute_content "Setup 2FA"
     assert_content "View Recovery Codes"
     assert_content "Disable 2FA"
@@ -450,7 +450,7 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
   def test_can_authenticate_with_two_factor_authentication
     create_and_verify_account!
     account_id = Account.first.id
-    visit "/accounts/#{account_id}"
+    visit "/account"
     click_on "Setup 2FA"
     secret = page.find("#otp-secret-key").text
     totp = ROTP::TOTP.new(secret)
@@ -480,7 +480,7 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     click_on "Authenticate Using TOTP"
     
     assert_current_path "/entries/new"
-    assert_link "Alice", href: "/accounts/#{account_id}"
+    assert_link "Alice", href: "/account"
     assert_css ".flash-notice"
     assert_content "You have been multifactor authenticated"
   end
@@ -488,7 +488,7 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
   def test_can_authenticate_with_recovery_codes
     create_and_verify_account!
     account_id = Account.first.id
-    visit "/accounts/#{account_id}"
+    visit "/account"
     click_on "Setup 2FA"
     secret = page.find("#otp-secret-key").text
     totp = ROTP::TOTP.new(secret)
@@ -516,7 +516,7 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     click_on "Authenticate via Recovery Code"
 
     assert_current_path "/entries/new"
-    assert_link "Alice", href: "/accounts/#{account_id}"
+    assert_link "Alice", href: "/account"
     assert_css ".flash-notice"
     assert_content "You have been multifactor authenticated"
 
@@ -526,7 +526,7 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
   def test_can_disable_two_factors_authentication
     create_and_verify_account!
     account_id = Account.first.id
-    visit "/accounts/#{account_id}"
+    visit "/account"
     click_on "Setup 2FA"
     secret = page.find("#otp-secret-key").text
     totp = ROTP::TOTP.new(secret)
@@ -544,20 +544,20 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     fill_in "Recovery Code", with: recovery_code
     click_on "Authenticate via Recovery Code"
 
-    visit "/accounts/#{account_id}"
+    visit "/account"
 
     click_on "Disable 2FA"
 
     assert_current_path "/multifactor-disable"
-    assert_link "Alice", href: "/accounts/#{account_id}"
+    assert_link "Alice", href: "/account"
 
     fill_in "Password", with: "foobar"
     click_on "Remove 2FA"
 
     assert_css ".flash-notice"
     assert_content "All multifactor authentication methods have been disabled"
-    assert_link "Alice", href: "/accounts/#{account_id}"
-    assert_current_path "/accounts/#{account_id}"
+    assert_link "Alice", href: "/account"
+    assert_current_path "/account"
 
     assert_equal 0, DB[:account_recovery_codes].where(id: account_id).all.size
     assert_equal 0, DB[:account_otp_keys].where(id: account_id).all.size
