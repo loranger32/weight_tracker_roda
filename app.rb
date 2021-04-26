@@ -246,7 +246,7 @@ module WeightTracker
       end
 
       r.get "accounts", Integer do |account_id|
-        if (@account = Account[account_id.to_i]) && (account_id == @account_ds[:id] || is_admin?(@account_ds))
+        if (@account = Account[account_id.to_i]) && (account_id == @account_ds[:id])
           view "account_show"
         elsif @account
           flash.now["error"] = "You're not authorized to see this page"
