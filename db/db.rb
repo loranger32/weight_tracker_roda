@@ -13,10 +13,6 @@ module WeightTracker
   end
 
   DB.loggers << Logger.new($stdout) unless ENV["RACK_ENV"] == "test"
-
-  require_relative "../models/entry"
-  require_relative "../models/account"
-  require_relative "../models/admin"
 end
 
 # In the irb console, save some typing when accessing the DB object
