@@ -163,7 +163,8 @@ module WeightTracker
     plugin :partials
     plugin :assets,
       css: %w[lg_utilities_20201112.css style.css],
-      js: {main: "main.js", close_account: "close_account.js"},
+      js: {main: "main.js", close_account: "close_account.js",
+           recovery_codes: "recovery_codes.js"},
       group_subdirs: false,
       gzip: true
     compile_assets if production?

@@ -1,0 +1,11 @@
+%h2.mt-35.center-text.fs-1-8 Recovery codes
+.mt-40.w-300.center-block.flex.justify-between.no-print
+  .block.btn.bg-primary.white#print Print
+  .block.btn.bg-primary.white#copy Copy
+  %a.block.btn.bg-primary.white{href: "/account"} Cancel
+%pre#recovery-codes= rodauth.recovery_codes.map{ |s| h s }.join("\n\n")
+-  if rodauth.can_add_recovery_codes?
+  %h2.mt-30.center-text.no-print Add Additional Recovery Codes
+  .no-print!= rodauth.render('recovery-codes')
+
+- content_for :js, assets([:js, :recovery_codes])

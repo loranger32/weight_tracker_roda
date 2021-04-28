@@ -2,6 +2,12 @@ body {
   font-family: 'Ubuntu', sans-serif;
 }
 
+@media print {
+  .no-print{
+    display:none;
+  }
+}
+
 .tooltip {
   position: relative;
 }
