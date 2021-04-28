@@ -485,6 +485,28 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     assert_content "You have been multifactor authenticated"
   end
 
+  def test_can_see_recovery_codes
+    create_and_verify_account!
+    account_id = Account.first.id
+    setup_two_fa!(account_id)
+
+    visit "/account"
+    click_on "View Recovery Codes"
+    assert_current_path "/recovery-codes"
+    fill_in "Password", with: "foobar"
+    click_on "View Authentication Recovery Codes"
+
+    assert_current_path "/recovery-codes"
+    assert_content "Print"
+    assert_content "Copy"
+    assert_content "Cancel"
+
+    recovery_codes = DB[:account_recovery_codes].where(id: account_id).map(:code)
+    recovery_codes.each do |code|
+      assert_content code
+    end
+  end
+
   def test_can_authenticate_with_recovery_codes
     create_and_verify_account!
     account_id = Account.first.id
@@ -521,6 +543,44 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     assert_content "You have been multifactor authenticated"
 
     assert_equal 15, DB[:account_recovery_codes].where(id: account_id).all.size
+  end
+
+
+  def test_can_add_recovery_code
+    create_and_verify_account!
+    account_id = Account.first.id
+    setup_two_fa!(account_id)
+    logout!
+    login!
+
+    assert_current_path "/multifactor-auth"
+    click_on "Authenticate Using Recovery Code"
+    assert_current_path "/recovery-auth"
+
+    recovery_code = DB[:account_recovery_codes].where(id: account_id).first[:code]
+
+    fill_in "Recovery Code", with: recovery_code
+    click_on "Authenticate via Recovery Code"
+
+    assert_equal 15, DB[:account_recovery_codes].where(id: account_id).all.size
+
+    visit "/account"
+    click_on "View Recovery Codes"
+
+    assert_current_path "/recovery-codes"
+    fill_in "Password", with: "foobar"
+    click_on "View Authentication Recovery Codes"
+
+    assert_current_path "/recovery-codes"
+    refute_content recovery_code
+    assert_content "Add Additional Recovery Codes"
+    
+    fill_in "Password", with: "foobar"
+    click_on "Add Authentication Recovery Codes"
+    
+    assert_equal 16, DB[:account_recovery_codes].where(id: account_id).all.size    
+    assert_css ".flash-notice"
+    assert_content "Additional authentication recovery codes have been added"
   end
 
   def test_can_disable_two_factors_authentication
