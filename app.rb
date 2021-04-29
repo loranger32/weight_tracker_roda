@@ -1,5 +1,5 @@
 require_relative "db/db"
-Dir["models/*.rb"].each { |f| require_relative f }
+
 Dir["helpers/*.rb"].each { |f| require_relative f }
 
 module WeightTracker
