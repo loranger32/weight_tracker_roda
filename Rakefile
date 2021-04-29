@@ -104,6 +104,7 @@ namespace :db do
       :account_verification_keys,
       :account_password_reset_keys,
       :account_authentication_audit_logs,
+      :admins,
       :entries,
       :accounts,
       :account_statuses]
@@ -181,5 +182,25 @@ task :enc_note do
   require_relative "db/db"
   Entry.each do |entry|
     entry.update(enc_note: entry.note)
+  end
+end
+
+desc "migrate numeric weight to string weight"
+task :stringify_weight do
+  require "sequel"
+  db = Sequel.connect(ENV["DATABASE_URL"])
+  require_relative "db/db"
+  Entry.each do |entry|
+    entry.update(weight_string: entry.weight.to_f.to_s)
+  end
+end
+
+desc "migrate string weight to encrypted weight"
+task :enc_weight do
+  require "sequel"
+  db = Sequel.connect(ENV["DATABASE_URL"])
+  require_relative "db/db"
+  Entry.each do |entry|
+    entry.update(enc_weight: entry.weight_string)
   end
 end
