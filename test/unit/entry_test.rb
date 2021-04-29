@@ -3,7 +3,7 @@ require_relative "../test_helpers"
 class EntryBasicTest < HookedTestClass
   def before_all
     super
-    @valid_params= {day: Date.parse("2021-01-01"), weight: 50.0, account_id: 1, note: "A good note"}
+    @valid_params= {day: Date.parse("2021-01-01"), weight: "50.0", account_id: 1, note: "A good note"}
   end
 
   def load_fixtures
@@ -81,16 +81,15 @@ class EntryBasicTest < HookedTestClass
     assert entry.errors.has_key?(:day)
   end
 
-  def test_weight_must_be_a_numeric
-    entry = Entry.new(@valid_params.merge(weight: ':50'))
-    refute entry.valid?
-    assert entry.errors.has_key?(:weight)
-  end
-
   # Because the encryption / decryption processing happens before validation,
   # it raises an error if the attribute is not a string
   def test_raise_error_if_note_before_encryption_is_not_a_string
     entry = Entry.new(@valid_params.merge(note: ['not a string']))
+    assert_raises { refute entry.valid? }
+  end
+
+  def test_raise_error_if_weight_before_encryption_is_not_a_string
+    entry = Entry.new(@valid_params.merge(weight: 50.6))
     assert_raises { refute entry.valid? }
   end
 
@@ -129,11 +128,11 @@ class EntryQueryingTest < HookedTestClass
     Account.insert(user_name: "Alice", email: "alice@example.com",
                    # password = 'foobar'
                    password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva") 
-    Entry.new(day: "2021-01-01" , weight: 50.0, note: "", account_id: 1).save
-    Entry.new(day: "2021-01-02" , weight: 51.0, note: "", account_id: 1).save
-    Entry.new(day: "2021-01-03" , weight: 50.5, note: "", account_id: 1).save
-    Entry.new(day: "2021-01-04" , weight: 49.1, note: "", account_id: 1).save
-    Entry.new(day: "2021-01-05" , weight: 48.5, note: "", account_id: 1).save
+    Entry.new(day: "2021-01-01" , weight: "50.0", note: "", account_id: 1).save
+    Entry.new(day: "2021-01-02" , weight: "51.0", note: "", account_id: 1).save
+    Entry.new(day: "2021-01-03" , weight: "50.5", note: "", account_id: 1).save
+    Entry.new(day: "2021-01-04" , weight: "49.1", note: "", account_id: 1).save
+    Entry.new(day: "2021-01-05" , weight: "48.5", note: "", account_id: 1).save
   end
 
   def clean_fixtures
