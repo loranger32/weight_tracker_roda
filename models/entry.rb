@@ -1,8 +1,6 @@
 class Entry < Sequel::Model
   plugin :validation_helpers
   plugin :json_serializer
-  plugin :csv_serializer
-  plugin :xml_serializer
   plugin :column_encryption do |enc|
     enc.column :note
     enc.column :weight
