@@ -5,7 +5,7 @@ class Entry < Sequel::Model
   plugin :xml_serializer
   plugin :column_encryption do |enc|
     enc.column :note
-    enc.column :enc_weight
+    enc.column :weight
   end
 
   many_to_one :account
@@ -27,7 +27,7 @@ class Entry < Sequel::Model
       entries = all_desc(account_id)
       entries.each_with_index do |entry, index|
         entry.delta = if entries[index + 1]
-          (entry.weight - entries[index + 1].weight).to_f
+          (entry.weight.to_f - entries[index + 1].weight.to_f).truncate(1)
         else
           0
         end
