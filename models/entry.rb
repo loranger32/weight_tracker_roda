@@ -5,7 +5,7 @@ class Entry < Sequel::Model
   plugin :xml_serializer
   plugin :column_encryption do |enc|
     enc.column :note
-    #enc.column :weight
+    enc.column :enc_weight
   end
 
   many_to_one :account
