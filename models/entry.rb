@@ -25,7 +25,7 @@ class Entry < Sequel::Model
       entries = all_desc(account_id)
       entries.each_with_index do |entry, index|
         entry.delta = if entries[index + 1]
-          (entry.weight.to_f - entries[index + 1].weight.to_f).truncate(1)
+          (entry.weight.to_f - entries[index + 1].weight.to_f).round(1)
         else
           0
         end
