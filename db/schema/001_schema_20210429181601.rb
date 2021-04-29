@@ -8,7 +8,6 @@ Sequel.migration do
       
       index [:name], :name=>:account_statuses_name_key, :unique=>true
     end
-    from(:account_statuses).import([:id, :name], [[1, 'Unverified'], [2, 'Verified'], [3, 'Closed']])
     
     create_table(:schema_info) do
       column :version, "integer", :default=>0, :null=>false
@@ -101,27 +100,9 @@ Sequel.migration do
       primary_key [:id, :code]
     end
     
-    create_table(:account_remember_keys) do
-      foreign_key :id, :accounts, :type=>"bigint", :null=>false, :key=>[:id]
-      column :key, "text", :null=>false
-      column :deadline, "timestamp without time zone", :default=>Sequel::CURRENT_TIMESTAMP, :null=>false
-      
-      primary_key [:id]
-    end
-    
     create_table(:account_session_keys) do
       foreign_key :id, :accounts, :type=>"bigint", :null=>false, :key=>[:id]
       column :key, "text", :null=>false
-      
-      primary_key [:id]
-    end
-    
-    create_table(:account_sms_codes) do
-      foreign_key :id, :accounts, :type=>"bigint", :null=>false, :key=>[:id]
-      column :phone_number, "text", :null=>false
-      column :num_failures, "integer"
-      column :code, "text"
-      column :code_issued_at, "timestamp without time zone", :default=>Sequel::CURRENT_TIMESTAMP, :null=>false
       
       primary_key [:id]
     end
@@ -135,23 +116,6 @@ Sequel.migration do
       primary_key [:id]
     end
     
-    create_table(:account_webauthn_keys) do
-      foreign_key :account_id, :accounts, :type=>"bigint", :null=>false, :key=>[:id]
-      column :webauthn_id, "text", :null=>false
-      column :public_key, "text", :null=>false
-      column :sign_count, "integer", :null=>false
-      column :last_use, "timestamp without time zone", :default=>Sequel::CURRENT_TIMESTAMP, :null=>false
-      
-      primary_key [:account_id, :webauthn_id]
-    end
-    
-    create_table(:account_webauthn_user_ids) do
-      foreign_key :id, :accounts, :type=>"bigint", :null=>false, :key=>[:id]
-      column :webauthn_id, "text", :null=>false
-      
-      primary_key [:id]
-    end
-    
     create_table(:admins) do
       primary_key :id
       foreign_key :account_id, :accounts, :key=>[:id]
@@ -160,9 +124,9 @@ Sequel.migration do
     create_table(:entries) do
       primary_key :id
       column :day, "date", :null=>false
-      column :weight, "numeric(3,1)", :null=>false
       foreign_key :account_id, :accounts, :null=>false, :key=>[:id]
       column :note, "text"
+      column :weight, "text", :null=>false
       
       index [:account_id, :day], :name=>:entries_day_account_id_ukey, :unique=>true
     end
