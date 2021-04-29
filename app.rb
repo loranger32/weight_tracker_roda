@@ -228,6 +228,7 @@ module WeightTracker
           # unencrypt the encrypted data + set the correct encoding
           @unecrypted_data = @raw_data.all.map do |ds_entry|
             ds_entry[:note] = ds_entry.note.force_encoding("UTF-8")
+            ds_entry[:weight] = ds_entry.weight.force_encoding("UTF-8")
             ds_entry
           end
 
@@ -262,17 +263,20 @@ module WeightTracker
 
           r.post do
             submitted = {day: tp.date("day"),
-                         weight: tp.float("weight"),
+                         weight: tp.str("weight"),
                          note: tp.str("note"),
                          account_id: @account_ds[:id]}
 
             @entry = Entry.new
             @entry.set(submitted)
 
-            if @entry.valid?
+            if @entry.valid? && valid_weight_string?(submitted[:weight])
               @entry.save
               flash[:notice] = "New entry saved"
               r.redirect
+            elsif !valid_weight_string?(submitted[:weight])
+              flash.now["error"] = "Invalid weight, must be between 20.0 and 999.9"
+              view "entries_new"
             else
               flash.now["error"] = format_flash_error(@entry)
               view "entries_new"
@@ -293,16 +297,19 @@ module WeightTracker
           r.is do
             r.post do
               submitted = {day: tp.date("day"),
-                           weight: tp.float("weight"),
+                           weight: tp.str("weight"),
                            note: tp.str("note"),
                            account_id: @account_ds[:id]}
 
               @entry.set(submitted)
 
-              if @entry.valid?
+              if @entry.valid? && valid_weight_string?(submitted[:weight])
                 @entry.save
                 flash[:notice] = "Entry has been updated"
                 r.redirect "/entries"
+              elsif !valid_weight_string?(submitted[:weight])
+                flash.now["error"] = "Invalid weight, must be between 20.0 and 999.9"
+                view "entries_edit"
               else
                 flash.now[:error] = @entry.errors.values.join("\n")
                 view "entries_edit"

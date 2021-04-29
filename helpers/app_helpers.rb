@@ -7,5 +7,9 @@ module WeightTracker
         model.errors.full_messages[0]
       end
     end
+
+    def valid_weight_string?(weight)
+      weight.match?(/\A\d{2,3}[\,|\.]\d\z/)
+    end
   end
 end
