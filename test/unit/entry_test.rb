@@ -106,11 +106,9 @@ class EntryBasicTest < HookedTestClass
     assert_equal 1, entry.errors.size
   end
 
-  def test_can_be_serialized_in_json_csv_and_xml
+  def test_can_be_serialized_in_json
     entry = Entry.new(@valid_params)
     assert_respond_to entry, :to_json
-    assert_respond_to entry, :to_csv
-    assert_respond_to entry, :to_xml
   end
 
   def test_entry_note_is_stored_encrypted_but_can_be_accessed_unecrypted
