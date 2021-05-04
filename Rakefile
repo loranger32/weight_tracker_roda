@@ -106,6 +106,7 @@ namespace :db do
       :account_authentication_audit_logs,
       :admins,
       :entries,
+      :batches,
       :accounts,
       :account_statuses]
 

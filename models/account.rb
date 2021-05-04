@@ -2,6 +2,7 @@ class Account < Sequel::Model
   plugin :validation_helpers
 
   one_to_many :entries
+  one_to_many :batches
   one_to_one :admin
 
   def self.verified

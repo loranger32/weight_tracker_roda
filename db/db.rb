@@ -18,6 +18,7 @@ end
 require_relative "../models/account"
 require_relative "../models/entry"
 require_relative "../models/admin"
+require_relative "../models/batch"
 
 # In the irb console, save some typing when accessing the DB object
 DB = WeightTracker::DB

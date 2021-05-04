@@ -28,13 +28,19 @@ accounts.each { |account| Account.new(account).save }
 
 Admin.new(account_id: 3).save
 
-entries = [{weight: "85.0", day: "2021-01-01", note: "First day", account_id: 1},
-  {weight: "84.0", day: "2021-01-02", note: "", account_id: 1},
-  {weight: "83.5", day: "2021-01-03", note: "Great !", account_id: 1},
-  {weight: "83.2", day: "2021-01-04", note: "Keep going", account_id: 1},
-  {weight: "84.0", day: "2021-01-05", note: "Don't give up", account_id: 1},
-  {weight: "84.0", day: "2021-01-02", note: "", account_id: 5},
-  {weight: "83.5", day: "2021-01-03", note: "I stop !", account_id: 5},
+batches = [{account_id: 1, active: false}, {account_id: 1, active: true},
+  {account_id: 2, active: true}, {account_id: 3, active: false},
+  {account_id: 4, active: true}, {account_id: 5, active: true}]
+
+batches.each { |batch| Batch.new(batch).save }
+
+entries = [{weight: "85.0", day: "2021-01-01", note: "First day", account_id: 1, batch_id: 1},
+  {weight: "84.0", day: "2021-01-02", note: "", account_id: 1, batch_id: 1},
+  {weight: "83.5", day: "2021-01-03", note: "Great !", account_id: 1, batch_id: 2},
+  {weight: "83.2", day: "2021-01-04", note: "Keep going", account_id: 1, batch_id: 2},
+  {weight: "84.0", day: "2021-01-05", note: "Don't give up", account_id: 1, batch_id: 2},
+  {weight: "84.0", day: "2021-01-02", note: "", account_id: 5, batch_id: 6},
+  {weight: "83.5", day: "2021-01-03", note: "I stop !", account_id: 5, batch_id: 6},
 ]
 
 entries.each { |entry| Entry.new(entry).save }
