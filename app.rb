@@ -262,13 +262,15 @@ module WeightTracker
           end
 
           r.post do
+            @entry = Entry.new
             submitted = {day: tp.date("day"),
                          weight: tp.str("weight"),
                          note: tp.str("note"),
                          account_id: @account_ds[:id]}
 
-            @entry = Entry.new
+            
             @entry.set(submitted)
+            @entry.set(batch_id: Account[@account_ds[:id]].active_batch_id)
 
             if @entry.valid? && valid_weight_string?(submitted[:weight])
               @entry.save

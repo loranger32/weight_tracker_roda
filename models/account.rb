@@ -39,4 +39,17 @@ class Account < Sequel::Model
   def is_admin?
     !admin.nil?
   end
+
+  def active_batch_id
+    active_batch = batches_dataset.where(active: true).all
+    
+    # Temporary error - must be dealt with by user on appropriate page
+    raise StandardError, "More than one active batch" if active_batch.length > 1
+    
+    if active_batch.length == 0
+      add_batch(active: true).id
+    else
+      active_batch.first.id
+    end
+  end
 end
