@@ -256,7 +256,8 @@ module WeightTracker
       r.on "entries" do
         r.is do
           r.get do
-            @entries = Entry.all_desc_with_deltas(@account_ds[:id])
+            @entries = Entry.all_with_deltas(account_id: @account_ds[:id],
+                                             active_batch: true)
 
             view "entries_index"
           end
