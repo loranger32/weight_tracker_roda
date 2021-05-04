@@ -1,5 +1,3 @@
-console.log("close account from js dir");
-
 const closeAccountButton = document.querySelector("#close_account_button");
 const confirmDeleteData = document.querySelector("#confirm-delete-data");
 const closeAccountForm = document.querySelector("#close-account-form");
