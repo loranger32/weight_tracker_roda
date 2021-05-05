@@ -25,8 +25,11 @@ class Entry < Sequel::Model
     end
 
     def all_active_in_descending_order_by_date(account_id)
-      active_batch_id = Batch.where(account_id: account_id, active: true).first.id
-      where(account_id: account_id, batch_id: active_batch_id).reverse_order(:day).all
+      if (active_batch = Batch.where(account_id: account_id, active: true).first)
+        where(account_id: account_id, batch_id: active_batch.id).reverse_order(:day).all
+      else
+        []
+      end
     end
 
     def most_recent_weight(account_id)

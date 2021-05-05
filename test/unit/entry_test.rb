@@ -1,13 +1,9 @@
 require_relative "../test_helpers"
 
 class EntryBasicTest < HookedTestClass
-  def before_all
-    super
+  def load_fixtures
     @valid_params= {day: Date.parse("2021-01-01"), weight: "50.0", note: "A good note",
                     account_id: 1, batch_id: 1}
-  end
-
-  def load_fixtures
     clean_fixtures
     Account.insert(user_name: "Alice", email: "alice@example.com",
                    # password = 'foobar'
@@ -177,6 +173,13 @@ class EntryQueryingTest < HookedTestClass
 
   def test_most_recent_weight
     assert_equal 48.5, Entry.most_recent_weight(1)
+  end
+
+  def test_all_active_in_descending_order_by_date_returns_empty_array_if_no_active_batch
+    test_account_id = Account.insert(user_name: "Bob", email: "bob@example.com",
+                                     # password = 'foobar'
+                                     password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva")
+    assert_equal [], Entry.all_active_in_descending_order_by_date(test_account_id)
   end
 
   def test_all_results
