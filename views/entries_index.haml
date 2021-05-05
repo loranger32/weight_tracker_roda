@@ -4,19 +4,22 @@
 %a{href: "/entries/new"}
   .w-70.center-block.center-text.mt-20.p-10.bg-primary.white.rounded-10.fw-500 New
 
-%article
-  %table.w-250.mt-50.center-block.center-text
-    %thead.lh-2
-      %td.fw-600 DAY
-      %td.fw-600 WEIGHT
-      %td.fw-600 + / -
-    %tbody
-      - @entries.each do |entry|
-        %tr.lh-1-5
-          %td.tooltip
-            - unless entry.note.empty?
-              %span.tooltip-text= entry.note
-            %a{href: "/entries/#{entry.id}/edit"}= entry.day.strftime("%a %d %b %Y")
-          %td= entry.weight.to_f
-          %td{ class: weight_delta_color(entry.delta) }= format_delta(entry.delta)
+%article.mt-50
+  - if @entries.empty?
+    %p.center-text No entries in this batch yet
+  - else
+    %table.w-250.center-block.center-text
+      %thead.lh-2
+        %td.fw-600 DAY
+        %td.fw-600 WEIGHT
+        %td.fw-600 + / -
+      %tbody
+        - @entries.each do |entry|
+          %tr.lh-1-5
+            %td.tooltip
+              - unless entry.note.empty?
+                %span.tooltip-text= entry.note
+              %a{href: "/entries/#{entry.id}/edit"}= entry.day.strftime("%a %d %b %Y")
+            %td= entry.weight.to_f
+            %td{ class: weight_delta_color(entry.delta) }= format_delta(entry.delta)
     
