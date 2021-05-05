@@ -3,7 +3,8 @@ require_relative "../test_helpers"
 class EntryBasicTest < HookedTestClass
   def before_all
     super
-    @valid_params= {day: Date.parse("2021-01-01"), weight: "50.0", account_id: 1, note: "A good note"}
+    @valid_params= {day: Date.parse("2021-01-01"), weight: "50.0", note: "A good note",
+                    account_id: 1, batch_id: 1}
   end
 
   def load_fixtures
@@ -11,21 +12,27 @@ class EntryBasicTest < HookedTestClass
     Account.insert(user_name: "Alice", email: "alice@example.com",
                    # password = 'foobar'
                    password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva")
+    Batch.insert(account_id: 1, active: true)
   end
 
   def clean_fixtures
-    [:entries, :accounts].each do |table|
+    [:batches, :entries, :accounts].each do |table|
       DB[table].delete
       DB.reset_primary_key_sequence(table)
     end
   end
 
-  def test_has_day_weight_note_and_delta_attributes
+  def test_has_db_columns_attributes
     entry = Entry.new
     assert_respond_to(entry, :day)
     assert_respond_to(entry, :weight)
     assert_respond_to(entry, :note)
-    assert_respond_to(entry, :delta)
+    assert_respond_to(entry, :account_id)
+    assert_respond_to(entry, :batch_id)
+  end
+
+  def test_has_delta_virtual_attribute
+    assert_respond_to(Entry.new, :delta)
   end
 
   def test_has_an_account_association
@@ -33,6 +40,13 @@ class EntryBasicTest < HookedTestClass
 
     assert_instance_of Account, entry.account
     assert_equal "Alice", entry.account.user_name
+  end
+
+  def test_has_a_batch_association
+    entry = Entry.new(@valid_params)
+
+    assert_instance_of Batch, entry.batch
+    assert_equal true, entry.batch.active
   end
 
   def test_entry_is_valid_with_valid_params
@@ -58,6 +72,12 @@ class EntryBasicTest < HookedTestClass
     assert entry.errors.has_key?(:account_id)
   end
 
+  def test_batch_id_must_be_present
+    entry = Entry.new(@valid_params.except(:batch_id))
+    refute entry.valid?
+    assert entry.errors.has_key?(:batch_id)
+  end
+
   def test_note_must_be_present
     entry = Entry.new(@valid_params.except(:note))
     refute entry.valid?
@@ -73,6 +93,12 @@ class EntryBasicTest < HookedTestClass
     entry = Entry.new(@valid_params.merge(account_id: "One"))
     refute entry.valid?
     assert entry.errors.has_key?(:account_id)
+  end
+
+  def test_batch_id_must_be_integer
+    entry = Entry.new(@valid_params.merge(batch_id: "One"))
+    refute entry.valid?
+    assert entry.errors.has_key?(:batch_id)
   end
 
   def test_day_must_be_a_date
@@ -125,38 +151,65 @@ class EntryQueryingTest < HookedTestClass
     clean_fixtures
     Account.insert(user_name: "Alice", email: "alice@example.com",
                    # password = 'foobar'
-                   password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva") 
-    Entry.new(day: "2021-01-01" , weight: "50.0", note: "", account_id: 1).save
-    Entry.new(day: "2021-01-02" , weight: "51.0", note: "", account_id: 1).save
-    Entry.new(day: "2021-01-03" , weight: "50.5", note: "", account_id: 1).save
-    Entry.new(day: "2021-01-04" , weight: "49.1", note: "", account_id: 1).save
-    Entry.new(day: "2021-01-05" , weight: "48.5", note: "", account_id: 1).save
+                   password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva")
+
+    Batch.insert(account_id: 1, active: false)
+    Batch.insert(account_id: 1, active: true)
+
+    # Batch 1
+    Entry.new(day: "2020-12-01" , weight: "51.0", note: "", account_id: 1, batch_id: 1).save
+    Entry.new(day: "2020-12-02" , weight: "52.0", note: "", account_id: 1, batch_id: 1).save
+
+    # Batch 2
+    Entry.new(day: "2021-01-01" , weight: "50.0", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2021-01-02" , weight: "51.0", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2021-01-03" , weight: "50.5", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2021-01-04" , weight: "49.1", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2021-01-05" , weight: "48.5", note: "", account_id: 1, batch_id: 2).save
   end
 
   def clean_fixtures
-    [:entries, :accounts].each do |table|
+    [:batches, :entries, :accounts].each do |table|
       DB[table].delete
       DB.reset_primary_key_sequence(table)
     end
-  end
-
-  def test_all_desc
-    results = Entry.all_desc(1)
-    assert_equal Date.parse("2021-01-05"), results.first.day
-    assert_equal Date.parse("2021-01-01"), results.last.day
   end
 
   def test_most_recent_weight
     assert_equal 48.5, Entry.most_recent_weight(1)
   end
 
-  def test_all_desc_with_deltas
-    results = Entry.all_desc_with_deltas(1)
-    assert_equal 0, results.last.delta
-    assert_equal 1, results[-2].delta
-    assert_equal -0.5, results[-3].delta
-    assert_equal -1.4, results[-4].delta
-    assert_equal -0.6, results[-5].delta
+  def test_all_results
+    results = Entry.all_desc(account_id: 1, active_batch: false)
+    assert_equal Date.parse("2021-01-05"), results.first.day
+    assert_equal Date.parse("2020-12-01"), results.last.day
   end
 
+  def test_all_with_deltas
+    results = Entry.all_with_deltas(account_id: 1, active_batch: false)
+    
+    assert_equal 0, results.last.delta
+    assert_equal 1, results[-2].delta
+
+    assert_equal -2, results[-3].delta
+    assert_equal 1, results[-4].delta
+    assert_equal -0.5, results[-5].delta
+    assert_equal -1.4, results[-6].delta
+    assert_equal -0.6, results[-7].delta
+  end
+
+  def test_all_active_batch_results
+    active_batch_results = Entry.all_desc(account_id: 1, active_batch: true)
+    assert_equal Date.parse("2021-01-05"), active_batch_results.first.day
+    assert_equal Date.parse("2021-01-01"), active_batch_results.last.day
+  end
+
+  def test_all_active_with_deltas
+    all_active_results = Entry.all_with_deltas(account_id: 1, active_batch: true)
+    assert_equal 0, all_active_results.last.delta
+    assert_equal 1, all_active_results[-2].delta
+    assert_equal -0.5, all_active_results[-3].delta
+    assert_equal -1.4, all_active_results[-4].delta
+    assert_equal -0.6, all_active_results[-5].delta
+  end
 end
