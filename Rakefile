@@ -207,3 +207,14 @@ task :enc_weight do
     entry.update(enc_weight: entry.weight_string)
   end
 end
+
+desc "add batches for existing accounts"
+task :add_batch do
+  require "sequel"
+  db = Sequel.connect(ENV["DATABASE_URL"])
+  require_relative "db/db"
+  Account.each do |account|
+    batch_id = account.add_batch(active: true).id
+    account.entries.each { |entry| entry.update(batch_id: batch_id) }
+  end
+end
