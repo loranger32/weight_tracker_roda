@@ -9,6 +9,12 @@ Sequel.migration do
       index [:name], :name=>:account_statuses_name_key, :unique=>true
     end
     
+    create_table(:batches) do
+      primary_key :id
+      column :account_id, "integer"
+      column :active, "boolean"
+    end
+    
     create_table(:schema_info) do
       column :version, "integer", :default=>0, :null=>false
     end
@@ -127,6 +133,7 @@ Sequel.migration do
       foreign_key :account_id, :accounts, :null=>false, :key=>[:id]
       column :note, "text"
       column :weight, "text", :null=>false
+      foreign_key :batch_id, :batches, :key=>[:id], :on_delete=>:cascade
       
       index [:account_id, :day], :name=>:entries_day_account_id_ukey, :unique=>true
     end
