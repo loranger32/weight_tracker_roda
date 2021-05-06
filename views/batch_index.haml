@@ -2,8 +2,15 @@
 
 %h2.mt-40.w-200.center-block.center-text.p-20.bg-gold.white.fs-1-5 Batches
 
-%a{href: "/batches/new"}
-  .w-70.center-block.center-text.mt-20.p-10.bg-primary.white.rounded-10.fw-500 New
+%a#new-batch-btn{href: "#"}
+  .w-70.center-block.center-text.mt-20.p-10.bg-primary.white.rounded-10.fw-500#newBatchText New
+
+%form.mt-30.w-300.center-block.invisible#new-batch-form{action: "/batches", method: :post, role: "forme"}
+  != csrf_tag("/batches")
+  .flex.justify-between.items-center
+    %input.lh-2.pl-5#name{type: :text, name: "name", value: "", placeholder: "Batch Name", autofocus: true, size: "20", maxlength: "40"}
+    %input.lh-1-5.btn.btn-sm.bg-primary.white#create-batch-button{type: :submit, value: "Create"}
+
 
 %a{href: "/entries"}
   .mt-50.mb-30.btn.w-150.center-block.bg-primary.white
@@ -27,3 +34,5 @@
           %td= batch.first_date
           %td= batch.last_date
           %td= batch.active
+
+- content_for :js, assets([:js, :batch_index])

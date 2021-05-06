@@ -23,6 +23,7 @@
 
     - if @batch.active
       %p.mt-30.center-text This batch is currently active
+      %input{type: :hidden, name: "confirm-make-batch-active", value: "confirm"}
     - else
       .mt-30.flex.justify-evenly.items-center
         %label{for: "confirm-make-batch-active"} Make active
@@ -30,9 +31,17 @@
 
     .mt-30.flex.justify-between.items-center
       %input.w-150.btn.bg-primary.white.rounded-5{type: :submit, value: "Validate"}
-      %a{href: "/batches/delete"}
-        .btn.bg-warning.white.rounded-5 Delete
+      .btn.bg-warning.white.rounded-5#delete-batch-button Delete
+
+  %form.mt-20.w-250.center-block.invisible#delete-batch-form{action: "/batches/#{@batch.id}/delete", method: :post, role: "forme"}
+    !=csrf_tag("/batches/#{@batch.id}/delete")
+    .flex.justify-between.items-center
+      %label{for: "confirm-delete-batch"} #{@batch.entries.length} entries will be deleted !
+      %input#confirm-delete-batch-checkbox{type: :checkbox, name: "confirm-delete-batch", value: "confirm", checked: false}
+    %input.mt-10.w-200.center-block.btn.btn-disabled.bg-danger.white#confirm-delete-batch-button{type: :submit, value: "Confirm Deletion"}
 
 
 %a{href: "/batches"}
-  .block.mt-40.center-block.w-250.btn.bg-danger.white Cancel
+  .block.mt-20.center-block.w-250.btn.bg-danger.white Cancel
+
+- content_for :js, assets([:js, :batch_edit])
