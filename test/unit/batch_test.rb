@@ -23,6 +23,7 @@ class BatchBasicTest < HookedTestClass
     assert_respond_to(batch, :id)
     assert_respond_to(batch, :account_id)
     assert_respond_to(batch, :active)
+    assert_respond_to(batch, :name)
   end
 
   def test_has_an_account_association
@@ -53,6 +54,12 @@ class BatchBasicTest < HookedTestClass
     batch = Batch.new(account_id: "one", active: true)
     refute batch.valid?
     assert batch.errors.has_key?(:account_id)
+  end
+
+  def test_name_must_have_max_length_of_30
+    batch = Batch.new(account_id: 1, active: true, name: "a" * 31)
+    refute batch.valid?
+    assert batch.errors.has_key?(:name)
   end
 
   # TO DO : active param is always evaluated in a boolean context, which means it's always
