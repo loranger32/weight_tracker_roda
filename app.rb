@@ -297,6 +297,16 @@ module WeightTracker
         r.on Integer do |id|
           @entry = Entry[id]
 
+          unless @entry
+            response.status = 404
+            r.halt
+          end
+
+          unless @entry.account_id == @account_ds[:id]
+            response.status = 403
+            r.halt
+          end
+
           r.is do
             r.post do
               submitted = {day: tp.date("day"),
