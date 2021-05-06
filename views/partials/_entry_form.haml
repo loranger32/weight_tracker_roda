@@ -1,6 +1,12 @@
 %form.w-250.mt-50.center-block{action: create_or_update_entry_action(@entry), method: :post}
   != csrf_tag(create_or_update_entry_action(@entry))
+
   .flex.justify-between.items-center
+    %p Batch name
+    %p
+      %a{href: "/batches"}= @current_batch.display_name
+
+  .mt-30.flex.justify-between.items-center
     %label.w-50{for: "day"} Day
     %input.w-150.lh-2{type: :date, id: "day", name: "day", value: @entry.day || Date.today}
 

@@ -1,0 +1,38 @@
+- @page_title = "Edit batch"
+
+%h2.w-250.mt-50.center-block.center-text.fs-2.bg-gold.white.p-15 Edit Batch
+
+%a{href: "/entries?batch_id=#{@batch.id}"}
+  .w-70.center-block.center-text.mt-20.p-10.bg-primary.white.rounded-10.fw-500 View
+
+.mt-40.w-250.center-block
+  .flex.justify-between.items-center
+    %p Fisrt entry
+    %p= @batch.first_date
+
+  .mt-10.flex.justify-between.items-center
+    %p Last Entry
+    %p= @batch.last_date
+
+  %form.mt-20{action: "/batches/#{@batch.id}", method: :post, role: "forme"}
+    != csrf_tag("/batches/#{@batch.id}")
+
+    .mt-30.flex.justify-between.items-center
+      %label.w-50{for: "name"} Name
+      %input.w-150.lh-2.rounded-5{type: :text, id: "name", name: "name", value: @batch.name}
+
+    - if @batch.active
+      %p.mt-30.center-text This batch is currently active
+    - else
+      .mt-30.flex.justify-evenly.items-center
+        %label{for: "confirm-make-batch-active"} Make active
+        %input#confirm-make-batch-active{type: :checkbox, name: "confirm-make-batch-active", value: "confirm",  checked: false}
+
+    .mt-30.flex.justify-between.items-center
+      %input.w-150.btn.bg-primary.white.rounded-5{type: :submit, value: "Validate"}
+      %a{href: "/batches/delete"}
+        .btn.bg-warning.white.rounded-5 Delete
+
+
+%a{href: "/batches"}
+  .block.mt-40.center-block.w-250.btn.bg-danger.white Cancel

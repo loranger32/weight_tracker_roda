@@ -254,6 +254,9 @@ module WeightTracker
       end
 
       r.on "entries" do
+        # TODO - Ugly - to refactor
+        @current_batch = Batch[Account[@account_ds[:id]].active_batch_id]
+
         r.is do
           r.get do
             @entries = Entry.all_with_deltas(account_id: @account_ds[:id],

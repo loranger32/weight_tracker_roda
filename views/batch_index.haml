@@ -1,0 +1,29 @@
+- @page_title = "Batches list"
+
+%h2.mt-40.w-200.center-block.center-text.p-20.bg-gold.white.fs-1-5 Batches
+
+%a{href: "/batches/new"}
+  .w-70.center-block.center-text.mt-20.p-10.bg-primary.white.rounded-10.fw-500 New
+
+%a{href: "/entries"}
+  .mt-50.mb-30.btn.w-150.center-block.bg-primary.white
+    %h3 Current batch
+    %p= @current_batch.display_name
+  
+- if @batches.empty?
+  %p.center-text No batch created yet
+- else
+  %table.w-400.center-block.center-text
+    %thead.lh-2
+      %td.fw-600 NAME
+      %td.fw-600 FIRST
+      %td.fw-600 LAST
+      %td.fw-600 ACTIVE
+    %tbody
+      - @batches.each do |batch|
+        %tr.lh-1-5
+          %td
+            %a{href: "/batches/#{batch.id}/edit"}= batch.name || "/"
+          %td= batch.first_date
+          %td= batch.last_date
+          %td= batch.active
