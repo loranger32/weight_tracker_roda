@@ -11,8 +11,9 @@ Sequel.migration do
     
     create_table(:batches) do
       primary_key :id
-      column :account_id, "integer"
+      column :account_id, "integer", :null=>false
       column :active, "boolean"
+      column :name, "character varying(30)"
     end
     
     create_table(:schema_info) do
@@ -133,7 +134,7 @@ Sequel.migration do
       foreign_key :account_id, :accounts, :null=>false, :key=>[:id]
       column :note, "text"
       column :weight, "text", :null=>false
-      foreign_key :batch_id, :batches, :key=>[:id], :on_delete=>:cascade
+      foreign_key :batch_id, :batches, :null=>false, :key=>[:id], :on_delete=>:cascade
       
       index [:account_id, :day], :name=>:entries_day_account_id_ukey, :unique=>true
     end
