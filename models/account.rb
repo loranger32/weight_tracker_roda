@@ -45,11 +45,11 @@ class Account < Sequel::Model
     
     # Temporary error - must be dealt with by user on appropriate page
     raise StandardError, "More than one active batch" if active_batch.length > 1
-    
-    if active_batch.length == 0
-      add_batch(active: true).id
-    else
-      active_batch.first.id
-    end
+
+    active_batch.first ? active_batch.first.id : nil
+  end
+
+  def active_batch_id_or_create
+    active_batch_id || add_batch(active: true).id
   end
 end

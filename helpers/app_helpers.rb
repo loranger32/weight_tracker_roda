@@ -11,5 +11,11 @@ module WeightTracker
     def valid_weight_string?(weight)
       weight.match?(/\A\d{2,3}[\,|\.]\d\z/)
     end
+
+    def ensure_at_least_one_batch_for_account!(account_id)
+      return if Batch.of_account(account_id).length > 0
+
+      Account[account_id].add_batch(active: true)
+    end
   end
 end

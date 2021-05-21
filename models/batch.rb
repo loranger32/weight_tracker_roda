@@ -9,13 +9,7 @@ class Batch < Sequel::Model
   end
 
   def self.active_for_account(account_id)
-    active_batch = Batch.where(account_id: account_id, active: true).all
-
-    unless active_batch.length == 1
-      raise StandardError, "Must have one and only one active batch, got #{active_batch.length}"
-    end
-    
-    active_batch.first
+    Batch.where(account_id: account_id, active: true).all
   end
 
   def validate
@@ -26,19 +20,14 @@ class Batch < Sequel::Model
     # Validation should be more specific
     validates_type [TrueClass, FalseClass], :active
     errors.add(:name, 'must have 30 characters max') if name && name.length > 30
-
   end
 
-  def display_name
-    return name if name
-
-    if batch_entries_date.empty?
-      Time.now.strftime("%d %b %Y") + " - ..."
-    elsif !active
-      first_date + " - " + last_date
-    else
-      first_date + " - ..."
+  def before_save
+    if name == "" || name.nil?
+      number_of_existing_batches = Account[account_id].batches.length
+      set(name: "Batch #{number_of_existing_batches + 1}")
     end
+    super
   end
 
   def first_date
@@ -49,16 +38,16 @@ class Batch < Sequel::Model
     batch_entries_date.last
   end
 
-  def batch_entries_date
-    @batch_entries_date ||= entries.sort_by(&:day).map { |entry| entry.day.strftime("%d %b %Y") }
+  def set_active_status
+    return if active
+
+    Batch.active_for_account(account_id).map { |batch| batch.update(active: false) }
+    set(active: true)
   end
 
-  def set_active_status(bool_flag)
-    return if bool_flag && active
-
-    if bool_flag
-      Batch.active_for_account(account_id).update(active: false)
-      set(active: true)
+  private
+    
+    def batch_entries_date
+      @batch_entries_date ||= entries.sort_by(&:day).map { |entry| entry.day.strftime("%d %b %Y") }
     end
-  end
 end

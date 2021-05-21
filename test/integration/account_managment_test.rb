@@ -447,44 +447,6 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     assert_content "Disable 2FA"
   end
 
-  def test_can_authenticate_with_two_factor_authentication
-    create_and_verify_account!
-    account_id = Account.first.id
-    visit "/account"
-    click_on "Setup 2FA"
-    secret = page.find("#otp-secret-key").text
-    totp = ROTP::TOTP.new(secret)
-    fill_in "Password", with: "foobar"
-    fill_in "Authentication Code", with: totp.now
-    click_on "Setup TOTP Authentication"
-    logout!
-
-    login!
-
-    assert_current_path "/multifactor-auth"
-
-    assert_link "Authenticate Using TOTP", href: "/otp-auth"
-    assert_link "Authenticate Using Recovery Code", href: "/recovery-auth"
-
-    click_on "Authenticate Using TOTP"
-
-    assert_current_path "/otp-auth"
-    assert_content "Authentication Code"
-    refute_content "Alice"
-
-    # Hack the "Preventing reuse of Time based OTP's" mechanism
-    last_use_time_stamp = DB[:account_otp_keys].where(id: account_id).first[:last_use]
-    DB[:account_otp_keys].where(id: account_id).update(last_use: last_use_time_stamp - 60)
-
-    fill_in "Authentication Code", with: totp.now
-    click_on "Authenticate Using TOTP"
-    
-    assert_current_path "/entries/new"
-    assert_link "Alice", href: "/account"
-    assert_css ".flash-notice"
-    assert_content "You have been multifactor authenticated"
-  end
-
   def test_can_see_recovery_codes
     create_and_verify_account!
     account_id = Account.first.id
@@ -506,45 +468,6 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
       assert_content code
     end
   end
-
-  def test_can_authenticate_with_recovery_codes
-    create_and_verify_account!
-    account_id = Account.first.id
-    visit "/account"
-    click_on "Setup 2FA"
-    secret = page.find("#otp-secret-key").text
-    totp = ROTP::TOTP.new(secret)
-    fill_in "Password", with: "foobar"
-    fill_in "Authentication Code", with: totp.now
-    click_on "Setup TOTP Authentication"
-    logout!
-
-    login!
-
-    assert_current_path "/multifactor-auth"
-
-    assert_link "Authenticate Using TOTP", href: "/otp-auth"
-    assert_link "Authenticate Using Recovery Code", href: "/recovery-auth"
-
-    click_on "Authenticate Using Recovery Code"
-
-    assert_current_path "/recovery-auth"
-    assert_content "Recovery Code"
-    refute_content "Alice"
-
-    recovery_code = DB[:account_recovery_codes].where(id: account_id).first[:code]
-
-    fill_in "Recovery Code", with: recovery_code
-    click_on "Authenticate via Recovery Code"
-
-    assert_current_path "/entries/new"
-    assert_link "Alice", href: "/account"
-    assert_css ".flash-notice"
-    assert_content "You have been multifactor authenticated"
-
-    assert_equal 15, DB[:account_recovery_codes].where(id: account_id).all.size
-  end
-
 
   def test_can_add_recovery_code
     create_and_verify_account!

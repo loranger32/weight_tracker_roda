@@ -7,7 +7,7 @@
 
 .mt-40.w-250.center-block
   .flex.justify-between.items-center
-    %p Fisrt entry
+    %p First Entry
     %p= @batch.first_date
 
   .mt-10.flex.justify-between.items-center
@@ -31,7 +31,7 @@
 
     .mt-30.flex.justify-between.items-center
       %input.w-150.btn.bg-primary.white.rounded-5{type: :submit, value: "Validate"}
-      .btn.bg-warning.white.rounded-5#delete-batch-button Delete
+      %a.btn.bg-warning.white.rounded-5#delete-batch-button{href: "#"} Delete
 
   %form.mt-20.w-250.center-block.invisible#delete-batch-form{action: "/batches/#{@batch.id}/delete", method: :post, role: "forme"}
     !=csrf_tag("/batches/#{@batch.id}/delete")

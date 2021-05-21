@@ -5,10 +5,7 @@
   .w-70.center-block.center-text.mt-20.p-10.bg-primary.white.rounded-10.fw-500 New
 
 %article.mt-50
-  %a{href: "/batches"}
-    .mt-15.mb-30.btn.w-150.center-block.bg-primary.white
-      %h3 Current batch
-      %p= @current_batch.display_name
+  %a.block.mb-30.btn.w-150.center-block.bg-primary.white{href: "/batches"}= @current_batch.name
   
   - if @entries.empty?
     %p.center-text No entries in this batch yet

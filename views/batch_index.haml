@@ -2,8 +2,7 @@
 
 %h2.mt-40.w-200.center-block.center-text.p-20.bg-gold.white.fs-1-5 Batches
 
-%a#new-batch-btn{href: "#"}
-  .w-70.center-block.center-text.mt-20.p-10.bg-primary.white.rounded-10.fw-500#newBatchText New
+%a.block.mt-30.w-100.center-block.btn.bg-primary.white.fw-500#new-batch-btn{href: "#"} New
 
 %form.mt-30.w-300.center-block.invisible#new-batch-form{action: "/batches", method: :post, role: "forme"}
   != csrf_tag("/batches")
@@ -15,7 +14,7 @@
 %a{href: "/entries"}
   .mt-50.mb-30.btn.w-150.center-block.bg-primary.white
     %h3 Current batch
-    %p= @current_batch.display_name
+    %p= @current_batch ? @current_batch.name : "No Active batch"
   
 - if @batches.empty?
   %p.center-text No batch created yet
@@ -26,6 +25,7 @@
       %td.fw-600 FIRST
       %td.fw-600 LAST
       %td.fw-600 ACTIVE
+      %td.fw-600 ENTRIES
     %tbody
       - @batches.each do |batch|
         %tr.lh-1-5
@@ -34,5 +34,6 @@
           %td= batch.first_date
           %td= batch.last_date
           %td= batch.active
+          %td= batch.entries.length
 
 - content_for :js, assets([:js, :batch_index])

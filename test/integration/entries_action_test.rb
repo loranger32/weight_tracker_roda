@@ -139,6 +139,21 @@ class EntriesActionTest < CapybaraTestCase
     assert_equal active_batch_id, entry.batch.id
   end
 
+  def test_gets_redirected_to_batches_pages_if_many_batches_but_none_active
+    batch_id = Batch.insert(account_id: @account_id, active: false)
+
+    visit "/entries"
+
+    assert_current_path "/batches"
+    assert_css ".flash-error"
+    assert_content "No Active batch found, please create or one or make one active"
+  end
+
+  def test_link_to_batches_page_on_entries_index_page
+    visit "/entries"
+    assert_link href: "/batches"
+  end
+
   def test_can_update_an_entry
     visit "/entries/new"
     

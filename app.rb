@@ -192,6 +192,8 @@ module WeightTracker
       rodauth.require_authentication
       @account_ds = rodauth.account_from_session
 
+      ensure_at_least_one_batch_for_account!(@account_ds[:id])
+
       r.hash_branches
   
       r.root do
@@ -258,6 +260,11 @@ module WeightTracker
         # TODO - Ugly - to refactor
         @current_batch = Batch[Account[@account_ds[:id]].active_batch_id]
 
+        unless @current_batch
+          flash[:error] = "No Active batch found, please create or one or make one active"
+          r.redirect "/batches"
+        end
+
         r.is do
           r.get do
             @entries = Entry.all_with_deltas(account_id: @account_ds[:id],
@@ -275,7 +282,7 @@ module WeightTracker
 
             
             @entry.set(submitted)
-            @entry.set(batch_id: Account[@account_ds[:id]].active_batch_id)
+            @entry.set(batch_id: @current_batch.id)
 
             if @entry.valid? && valid_weight_string?(submitted[:weight])
               @entry.save
