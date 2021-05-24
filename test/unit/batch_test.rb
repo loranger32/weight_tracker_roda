@@ -6,7 +6,7 @@ class BatchBasicTest < HookedTestClass
     Account.insert(user_name: "Alice", email: "alice@example.com",
                    # password = 'foobar'
                    password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva")
-    Batch.insert(account_id: 1, active: true)
+    Batch.insert(account_id: 1, active: true, name: "Batch 1")
     Entry.new(day: "2020-12-01" , weight: "51.0", note: "", account_id: 1, batch_id: 1).save
     Entry.new(day: "2020-12-02" , weight: "52.0", note: "", account_id: 1, batch_id: 1).save
   end
@@ -165,5 +165,4 @@ class BatchAdvancedTest < HookedTestClass
     second_batch.save
     assert_equal true, Batch.where(name: "non active").first.active
   end
-
 end

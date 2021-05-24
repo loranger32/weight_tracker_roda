@@ -29,8 +29,8 @@ accounts.each { |account| Account.new(account).save }
 Admin.new(account_id: 3).save
 
 batches = [{account_id: 1, active: false, name: "First run"},
-  {account_id: 1, active: true},
-  {account_id: 5, active: true}]
+  {account_id: 1, active: true, name: "Batch 2"},
+  {account_id: 5, active: true, name: "Batch 1"}]
 
 batches.each { |batch| Batch.new(batch).save }
 

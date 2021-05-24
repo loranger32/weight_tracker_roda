@@ -53,7 +53,7 @@ class EntriesActionTest < CapybaraTestCase
   end
 
   def test_can_create_entry_with_an_already_existing_active_batch
-    batch_id = Batch.insert(account_id: @account_id, active: true)
+    batch_id = Batch.insert(account_id: @account_id, active: true, name: "Active Batch")
 
     visit "/entries/new"
     assert_current_path "/entries/new"
@@ -96,8 +96,8 @@ class EntriesActionTest < CapybaraTestCase
   end
 
   def test_can_create_an_entry_with_many_batches_and_one_active
-    inactive_batch_id = Batch.insert(account_id: @account_id, active: false)
-    active_batch_id = Batch.insert(account_id: @account_id, active: true)
+    inactive_batch_id = Batch.insert(account_id: @account_id, active: false, name: "Inactive Batch")
+    active_batch_id = Batch.insert(account_id: @account_id, active: true, name: "Active Batch")
 
     visit "/entries/new"
     assert_current_path "/entries/new"
@@ -140,7 +140,7 @@ class EntriesActionTest < CapybaraTestCase
   end
 
   def test_gets_redirected_to_batches_pages_if_many_batches_but_none_active
-    batch_id = Batch.insert(account_id: @account_id, active: false)
+    batch_id = Batch.insert(account_id: @account_id, active: false, name: "Inactive Batch")
 
     visit "/entries"
 
