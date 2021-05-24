@@ -1,5 +1,8 @@
 class Batch < Sequel::Model
   plugin :validation_helpers
+  plugin :column_encryption do |enc|
+    enc.column :target
+  end
 
   one_to_many :entries
   many_to_one :account
