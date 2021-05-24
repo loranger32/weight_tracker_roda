@@ -41,7 +41,7 @@ GEM
       minitest (>= 5.0)
       ruby-progressbar
     nio4r (2.5.7)
-    nokogiri (1.11.3-x86_64-linux)
+    nokogiri (1.11.5-x86_64-linux)
       racc (~> 1.4)
     parallel (1.20.1)
     parser (3.0.1.1)
@@ -132,7 +132,7 @@ DEPENDENCIES
   minitest (~> 5.14, >= 5.14.4)
   minitest-hooks (~> 1.5)
   minitest-reporters (~> 1.4, >= 1.4.3)
-  nokogiri (~> 1.11, >= 1.11.2)
+  nokogiri (~> 1.11, >= 1.11.4)
   pg (~> 1.2, >= 1.2.3)
   pry-byebug (~> 3.9)
   puma (~> 5.3)
