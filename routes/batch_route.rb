@@ -13,15 +13,20 @@ module WeightTracker
         r.post do
           currently_active_batch = Batch.active_for_account(@account_ds[:id])
 
-          @batch = Batch.new(account_id: @account_ds[:id], name: tp.str("name"))
-          @batch.set_active_status
+          @batch = Batch.new(account_id: @account_ds[:id], active: false)
 
-          if @batch.valid?
+          submitted = {name: tp.str("name"), target: tp.str("target")}
+          @batch.set(submitted)
+
+          if @batch.valid? && valid_weight_string?(submitted[:target])
+            @batch.set_active_status
             @batch.save
             flash["notice"] = "Batch successfully created"
             r.redirect
+          elsif !valid_weight_string?(submitted[:target])
+            flash["error"] = "Invalid target weight, must be between 20.0 and 999.9"
+            r.redirect
           else
-            currently_active_batch.set_active_status
             flash["error"] = format_flash_error(@batch)
             r.redirect
           end
@@ -43,16 +48,22 @@ module WeightTracker
 
         r.is do
           r.post do
-            @batch.set(name: tp.str("name"))
+            currently_active_batch = Batch.active_for_account(@account_ds[:id])
 
-            @batch.set_active_status if r.params["confirm-make-batch-active"] == "confirm"
+            submitted = {name: tp.str("name"), target: tp.str("target")}
 
-            if @batch.valid?
+            @batch.set(submitted)
+
+            if @batch.valid? && valid_weight_string?(submitted[:target])
+              @batch.set_active_status if r.params["confirm-make-batch-active"] == "confirm"
               @batch.save
-              flash[:notice] = "Batch has been successfully updated"
+              flash["notice"] = "Batch has been successfully updated"
               r.redirect "/batches"
+            elsif !valid_weight_string?(submitted[:target])
+              flash.now["error"] = "Invalid target weight, must be between 20.0 and 999.9"
+              view "batch_edit"
             else
-              flash.now[:error] = format_flash_error(@batch)
+              flash.now["error"] = format_flash_error(@batch)
               view "batch_edit"
             end
           end
@@ -65,10 +76,10 @@ module WeightTracker
         r.post "delete" do
           if r.params["confirm-delete-batch"] == "confirm"
             @batch.destroy
-            flash[:notice] = "Batch has been successfully deleted"
+            flash["notice"] = "Batch has been successfully deleted"
             r.redirect "/batches"
           else
-            flash[:error] = "Please tick the checbox to confirm batch deletion"
+            flash["error"] = "Please tick the checkbox to confirm batch deletion"
             r.redirect "edit"
           end
         end

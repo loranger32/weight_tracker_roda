@@ -8,18 +8,22 @@
 .mt-40.w-250.center-block
   .flex.justify-between.items-center
     %p First Entry
-    %p= @batch.first_date
+    %p= @batch.first_date || "/"
 
   .mt-10.flex.justify-between.items-center
     %p Last Entry
-    %p= @batch.last_date
+    %p= @batch.last_date || "/"
 
   %form.mt-20{action: "/batches/#{@batch.id}", method: :post, role: "forme"}
     != csrf_tag("/batches/#{@batch.id}")
 
     .mt-30.flex.justify-between.items-center
       %label.w-50{for: "name"} Name
-      %input.w-150.lh-2.rounded-5{type: :text, id: "name", name: "name", value: @batch.name}
+      %input.w-150.lh-2.rounded-5#name{type: :text, name: "name", value: @batch.name}
+
+    .mt-30.flex.justify-between.items-center
+      %label.w-50{for: "target"} Target Weight
+      %input.w-150.lh-2.rounded-5#target{type: :number, min: 20, max: 200, step: 0.1, name: "target", value: @batch.target || 20.0}
 
     - if @batch.active
       %p.mt-30.center-text This batch is currently active

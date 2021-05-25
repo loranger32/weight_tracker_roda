@@ -9,7 +9,7 @@ class Entry < Sequel::Model
   many_to_one :account
   many_to_one :batch
 
-  attr_accessor :delta
+  attr_accessor :delta, :delta_to_target
 
   dataset_module do
     def all_desc(account_id:, active_batch:)
@@ -40,12 +40,28 @@ class Entry < Sequel::Model
 
     def all_with_deltas(account_id:, active_batch:)
       entries = all_desc(account_id: account_id, active_batch: active_batch)
+      batch_target = entries.first.batch.target.to_f
 
+      add_deltas(entries)
+      add_deltas_to_target(entries, batch_target)
+    end
+
+    def add_deltas(entries)
       entries.each_with_index do |entry, index|
         entry.delta = if entries[index + 1]
           (entry.weight.to_f - entries[index + 1].weight.to_f).round(1)
         else
           0
+        end
+      end
+    end
+
+    def add_deltas_to_target(entries, batch_target)
+      if batch_target == 0.0 # Batch target is nil
+        entries.each { |entry| entry.delta_to_target = "/" }
+      else
+        entries.each do |entry|
+          entry.delta_to_target = -(batch_target - entry.weight.to_f).round(1)
         end
       end
     end

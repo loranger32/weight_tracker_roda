@@ -5,16 +5,17 @@
   .w-70.center-block.center-text.mt-20.p-10.bg-primary.white.rounded-10.fw-500 New
 
 %article.mt-50
-  %a.block.mb-30.btn.w-150.center-block.bg-primary.white{href: "/batches"}= @current_batch.name
+  %a.block.mb-30.btn.w-150.center-block.bg-primary.white{href: "/batches"} #{@current_batch.name} - #{@current_batch.target || "/"}
   
   - if @entries.empty?
     %p.center-text No entries in this batch yet
   - else
-    %table.w-250.center-block.center-text
+    %table.w-300.center-block.center-text
       %thead.lh-2
         %td.fw-600 DAY
         %td.fw-600 WEIGHT
         %td.fw-600 + / -
+        %td.fw-600 LEFT
       %tbody
         - @entries.each do |entry|
           %tr.lh-1-5
@@ -24,4 +25,5 @@
               %a{href: "/entries/#{entry.id}/edit"}= entry.day.strftime("%a %d %b %Y")
             %td= entry.weight.to_f
             %td{ class: weight_delta_color(entry.delta) }= format_delta(entry.delta)
+            %td= @current_batch.target ? entry.delta_to_target : "/"
     

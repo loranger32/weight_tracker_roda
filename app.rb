@@ -211,10 +211,10 @@ module WeightTracker
           account.set(user_name: r.params["user_name"])
           if account.valid?
             account.save
-            flash[:notice] = "User Name successfully changed"
+            flash["notice"] = "User Name successfully changed"
             r.redirect "/account"
           else
-            flash[:error] = format_flash_error(account)
+            flash["error"] = format_flash_error(account)
             r.redirect
           end
         end
@@ -261,7 +261,7 @@ module WeightTracker
         @current_batch = Batch[Account[@account_ds[:id]].active_batch_id]
 
         unless @current_batch
-          flash[:error] = "No Active batch found, please create or one or make one active"
+          flash["error"] = "No Active batch found, please create or one or make one active"
           r.redirect "/batches"
         end
 
@@ -286,7 +286,7 @@ module WeightTracker
 
             if @entry.valid? && valid_weight_string?(submitted[:weight])
               @entry.save
-              flash[:notice] = "New entry saved"
+              flash["notice"] = "New entry saved"
               r.redirect
             elsif !valid_weight_string?(submitted[:weight])
               flash.now["error"] = "Invalid weight, must be between 20.0 and 999.9"
@@ -329,13 +329,13 @@ module WeightTracker
 
               if @entry.valid? && valid_weight_string?(submitted[:weight])
                 @entry.save
-                flash[:notice] = "Entry has been updated"
+                flash["notice"] = "Entry has been updated"
                 r.redirect "/entries"
               elsif !valid_weight_string?(submitted[:weight])
                 flash.now["error"] = "Invalid weight, must be between 20.0 and 999.9"
                 view "entries_edit"
               else
-                flash.now[:error] = @entry.errors.values.join("\n")
+                flash.now["error"] = @entry.errors.values.join("\n")
                 view "entries_edit"
               end
             end
