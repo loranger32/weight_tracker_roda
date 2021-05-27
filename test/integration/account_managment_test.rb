@@ -332,7 +332,7 @@ class AccountManagementMailTest < CapybaraTestCase
     fill_in "Password", with: "supersecret"
     click_on "Log In"
 
-    assert_current_path "/entries"
+    assert_current_path "/entries/new" # Test user has no entry for current day
     assert_content "You have been logged in"
   end
 
@@ -404,7 +404,7 @@ class AccountManagementMailTest < CapybaraTestCase
     fill_in "Password", with: "foobar"
     click_on "Log In"
 
-    assert_current_path "/entries"
+    assert_current_path "/entries/new" # Test User has no entry for current day
     assert_content "You have been logged in"
   end
 end

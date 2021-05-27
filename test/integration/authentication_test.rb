@@ -32,7 +32,7 @@ class AuthenticationTest < CapybaraTestCase
     logout!
     login!
 
-    assert_current_path "/entries"
+    assert_current_path "/entries/new" # Test User has no entry for current day
     assert_css ".flash-notice"
     assert_content "Alice"
   end
