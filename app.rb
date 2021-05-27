@@ -53,7 +53,7 @@ module WeightTracker
       end
       
       # Login
-      login_redirect "/entries"
+      login_redirect "/"
       
       # Change Login
       change_login_redirect { "/account" }
@@ -197,7 +197,7 @@ module WeightTracker
       r.hash_branches
   
       r.root do
-        r.redirect "entries/new"
+        r.redirect landing_page(@account_ds)
       end
 
 

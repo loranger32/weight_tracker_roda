@@ -21,5 +21,9 @@ module WeightTracker
     def account_owns_batch?(account, batch_id)
       account.batches.map(&:id).include? batch_id
     end
+
+    def landing_page(account_ds)
+      Account[account_ds[:id]].has_entry_for_today? ? "/entries" : "/entries/new"
+    end
   end
 end

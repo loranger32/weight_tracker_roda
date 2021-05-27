@@ -52,4 +52,12 @@ class Account < Sequel::Model
   def active_batch_id_or_create
     active_batch_id || add_batch(active: true).id
   end
+
+  def has_entry_for_today?
+    return false if entries.empty?
+
+    today = Time.now.strftime("%d %b %Y")
+    last_entry_date = Entry.where(account_id: id).select_map(:day).sort.reverse.first.strftime("%d %b %Y")
+    today == last_entry_date
+  end
 end
