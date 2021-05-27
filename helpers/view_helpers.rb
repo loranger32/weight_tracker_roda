@@ -39,5 +39,13 @@ module WeightTracker
         "bg-secondary"
       end
     end
+
+    def entries_index_batch_badge_infos(batch_info)
+      if batch_info[:target]
+        "#{batch_info[:name]}\n #{batch_info[:target]}"
+      else
+        batch_info[:name]
+      end
+    end
   end
 end

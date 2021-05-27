@@ -6,7 +6,7 @@ class BatchBasicTest < HookedTestClass
     Account.insert(user_name: "Alice", email: "alice@example.com",
                    # password = 'foobar'
                    password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva")
-    Batch.insert(account_id: 1, active: true, name: "Batch 1")
+    Batch.new(account_id: 1, active: true, name: "Batch 1", target: "50.0").save
     Entry.new(day: "2020-12-01" , weight: "51.0", note: "", account_id: 1, batch_id: 1).save
     Entry.new(day: "2020-12-02" , weight: "52.0", note: "", account_id: 1, batch_id: 1).save
   end
@@ -24,6 +24,7 @@ class BatchBasicTest < HookedTestClass
     assert_respond_to(batch, :account_id)
     assert_respond_to(batch, :active)
     assert_respond_to(batch, :name)
+    assert_respond_to(batch, :target)
   end
 
   def test_has_an_account_association
@@ -61,6 +62,34 @@ class BatchBasicTest < HookedTestClass
     refute batch.valid?
     assert batch.errors.has_key?(:name)
   end
+
+  # Because the encryption / decryption processing happens before validation,
+  # it raises an error if the attribute is not a string
+  def test_raise_error_if_target_before_encryption_is_not_a_string
+    entry = Batch.new(account_id: 1, active: true, name: "Test Batch", target: ["50.0"])
+    assert_raises { refute entry.valid? }
+  end
+
+  def test_target_is_encrypted_in_database
+    encrypted_target = Batch.where(id: 1).first[:target]
+    refute_equal "50.0", encrypted_target
+    assert encrypted_target.length > 90
+  end
+
+  def test_target_can_be_decrypted
+    assert_equal "50.0", Batch[1].target
+  end
+
+  def test_target_can_be_empty_string
+    batch = Batch.new(account_id: 1, active: true, name: "Test Batch", target: "")
+    assert batch.valid?
+  end
+
+  def test_target_can_be_nil
+    batch = Batch.new(account_id: 1, active: true, name: "Test Batch")
+    assert batch.valid?
+  end
+
 
   # TO DO : active param is always evaluated in a boolean context, which means it's always
   # true or false. Validation should be more specific

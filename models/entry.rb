@@ -12,11 +12,11 @@ class Entry < Sequel::Model
   attr_accessor :delta, :delta_to_target
 
   dataset_module do
-    def all_desc(account_id:, active_batch:)
-      if active_batch
-        all_active_in_descending_order_by_date(account_id)
-      else
+    def all_desc(account_id:, batch_id:)
+      if batch_id == "all"
         all_in_descending_order_by_date(account_id)
+      else
+        all_active_in_descending_order_by_date(account_id, batch_id)
       end
     end
 
@@ -24,26 +24,22 @@ class Entry < Sequel::Model
       where(account_id: account_id).reverse_order(:day).all
     end
 
-    def all_active_in_descending_order_by_date(account_id)
-      if (active_batch = Batch.where(account_id: account_id, active: true).first)
-        where(account_id: account_id, batch_id: active_batch.id).reverse_order(:day).all
-      else
-        []
-      end
+    def all_active_in_descending_order_by_date(account_id, batch_id)
+      where(account_id: account_id, batch_id: batch_id).reverse_order(:day).all
     end
 
     def most_recent_weight(account_id)
-      if (most_recent = all_desc(account_id: account_id, active_batch: false).first)
+      if (most_recent = all_desc(account_id: account_id, batch_id: "all").first)
         most_recent.weight.to_f
       end
     end
 
-    def all_with_deltas(account_id:, active_batch:)
-      entries = all_desc(account_id: account_id, active_batch: active_batch)
-      batch_target = entries.first.batch.target.to_f
-
+    def all_with_deltas(account_id:, batch_id:)
+      entries = all_desc(account_id: account_id, batch_id: batch_id)
+   
       add_deltas(entries)
-      add_deltas_to_target(entries, batch_target)
+      add_deltas_to_target(entries)
+      entries
     end
 
     def add_deltas(entries)
@@ -56,14 +52,8 @@ class Entry < Sequel::Model
       end
     end
 
-    def add_deltas_to_target(entries, batch_target)
-      if batch_target == 0.0 # Batch target is nil
-        entries.each { |entry| entry.delta_to_target = "/" }
-      else
-        entries.each do |entry|
-          entry.delta_to_target = -(batch_target - entry.weight.to_f).round(1)
-        end
-      end
+    def add_deltas_to_target(entries)
+      entries.each(&:add_delta_to_target)
     end
   end
 
@@ -78,5 +68,18 @@ class Entry < Sequel::Model
     validates_type String, :note
     validates_max_length 600, :note
     validates_unique [:day, :account_id], message: "Can't have two entries for the same day"
+  end
+
+  def target
+    batch.target.to_f
+  end
+
+  def add_delta_to_target
+    @delta_to_target = compute_delta_to_target
+  end
+
+  def compute_delta_to_target
+    return -(target - weight.to_f).round(1) unless target == 0.0
+    "/"
   end
 end

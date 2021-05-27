@@ -5,7 +5,12 @@
   .w-70.center-block.center-text.mt-20.p-10.bg-primary.white.rounded-10.fw-500 New
 
 %article.mt-50
-  %a.block.mb-30.btn.w-150.center-block.bg-primary.white{href: "/batches"} #{@current_batch.name} - #{@current_batch.target || "/"}
+  %a.block.mb-30.btn.w-200.center-block.bg-secondary.white{href: "/batches"}
+    %p= @batch_info[:name]
+    - if @batch_info[:target]
+      %p.mt-10
+        Target:
+        = @batch_info[:target]
   
   - if @entries.empty?
     %p.center-text No entries in this batch yet

@@ -152,6 +152,7 @@ class EntriesActionTest < CapybaraTestCase
   def test_link_to_batches_page_on_entries_index_page
     visit "/entries"
     assert_link href: "/batches"
+    assert_content "Target: /"
   end
 
   def test_can_update_an_entry

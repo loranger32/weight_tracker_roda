@@ -17,5 +17,9 @@ module WeightTracker
 
       Account[account_id].add_batch(active: true)
     end
+
+    def account_owns_batch?(account, batch_id)
+      account.batches.map(&:id).include? batch_id
+    end
   end
 end

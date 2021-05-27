@@ -31,6 +31,10 @@ class EntryBasicTest < HookedTestClass
     assert_respond_to(Entry.new, :delta)
   end
 
+  def test_has_a_delta_to_target_virtual_attribute
+    assert_respond_to(Entry.new, :delta_to_target)
+  end
+
   def test_has_an_account_association
     entry = Entry.new(@valid_params)
 
@@ -149,8 +153,8 @@ class EntryQueryingTest < HookedTestClass
                    # password = 'foobar'
                    password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva")
 
-    Batch.insert(account_id: 1, active: false, name: "Batch 1")
-    Batch.insert(account_id: 1, active: true, name: "Batch 2")
+    Batch.new(account_id: 1, active: false, name: "Batch 1").save
+    Batch.new(account_id: 1, active: true, name: "Batch 2", target: "49.0").save
 
     # Batch 1
     Entry.new(day: "2020-12-01" , weight: "51.0", note: "", account_id: 1, batch_id: 1).save
@@ -175,21 +179,14 @@ class EntryQueryingTest < HookedTestClass
     assert_equal 48.5, Entry.most_recent_weight(1)
   end
 
-  def test_all_active_in_descending_order_by_date_returns_empty_array_if_no_active_batch
-    test_account_id = Account.insert(user_name: "Bob", email: "bob@example.com",
-                                     # password = 'foobar'
-                                     password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva")
-    assert_equal [], Entry.all_active_in_descending_order_by_date(test_account_id)
-  end
-
   def test_all_results
-    results = Entry.all_desc(account_id: 1, active_batch: false)
+    results = Entry.all_desc(account_id: 1, batch_id: "all")
     assert_equal Date.parse("2021-01-05"), results.first.day
     assert_equal Date.parse("2020-12-01"), results.last.day
   end
 
-  def test_all_with_deltas
-    results = Entry.all_with_deltas(account_id: 1, active_batch: false)
+  def test_all_with_deltas_computes_correct_deltas_when_selecting_all_entries
+    results = Entry.all_with_deltas(account_id: 1, batch_id: "all")
     
     assert_equal 0, results.last.delta
     assert_equal 1, results[-2].delta
@@ -201,18 +198,54 @@ class EntryQueryingTest < HookedTestClass
     assert_equal -0.6, results[-7].delta
   end
 
-  def test_all_active_batch_results
-    active_batch_results = Entry.all_desc(account_id: 1, active_batch: true)
-    assert_equal Date.parse("2021-01-05"), active_batch_results.first.day
-    assert_equal Date.parse("2021-01-01"), active_batch_results.last.day
+  def test_all_with_deltas_computes_correct_deltas_when_selecting_individuel_batches
+    active_batch_id = Batch.where(account_id: 1, active: true).first.id
+    inactive_batch_id = Batch.where(account_id: 1, active: false).first.id
+
+    inactive_results = Entry.all_with_deltas(account_id: 1, batch_id: inactive_batch_id)
+
+    assert_equal 0, inactive_results.last.delta
+    assert_equal 1, inactive_results[-2].delta
+
+    active_results = Entry.all_with_deltas(account_id: 1, batch_id: active_batch_id)
+
+    assert_equal 0, active_results.last.delta
+    assert_equal 1, active_results[-2].delta
+    assert_equal -0.5, active_results[-3].delta
+    assert_equal -1.4, active_results[-4].delta
+    assert_equal -0.6, active_results.first.delta
   end
 
-  def test_all_active_with_deltas
-    all_active_results = Entry.all_with_deltas(account_id: 1, active_batch: true)
-    assert_equal 0, all_active_results.last.delta
-    assert_equal 1, all_active_results[-2].delta
-    assert_equal -0.5, all_active_results[-3].delta
-    assert_equal -1.4, all_active_results[-4].delta
-    assert_equal -0.6, all_active_results[-5].delta
+  def test_all_with_deltas_computes_correct_deltas_to_target_if_target_is_present_for_specific_batch
+    batch_id = Batch.where(account_id: 1, active: true).first.id
+    results = Entry.all_with_deltas(account_id: 1, batch_id: batch_id) # active batch has target
+    
+    assert_equal 1.0, results.last.delta_to_target
+    assert_equal 2.0, results[-2].delta_to_target
+    assert_equal 1.5, results[-3].delta_to_target
+    assert_equal 0.1, results[-4].delta_to_target
+    assert_equal -0.5, results[-5].delta_to_target
+  end
+
+  def test_all_with_deltas_sets_a_slash_as_target_to_delta_if_no_target_set_for_specific_batch
+    batch_id = Batch.where(account_id: 1, active: false).first.id # passive batch has no target
+    results = Entry.all_with_deltas(account_id: 1, batch_id: batch_id) 
+    
+    # check only the most ancient entries that belongs to first (inactive) batch with no target    
+    assert_equal "/", results.last.delta_to_target
+    assert_equal "/", results[-2].delta_to_target
+  end
+
+  def test_all_with_deltas_computes_delta_to_target_or_set_slash_when_viewing_all_batches
+    results = Entry.all_with_deltas(account_id: 1, batch_id: "all")
+
+    assert_equal "/", results.last.delta_to_target
+    assert_equal "/", results[-2].delta_to_target
+
+    assert_equal 1.0, results[-3].delta_to_target
+    assert_equal 2.0, results[-4].delta_to_target
+    assert_equal 1.5, results[-5].delta_to_target
+    assert_equal 0.1, results[-6].delta_to_target
+    assert_equal -0.5, results[-7].delta_to_target
   end
 end

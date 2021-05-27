@@ -28,7 +28,7 @@ module WeightTracker
           else
             @entries = Entry.all_with_deltas(account_id: @account_ds[:id],
                                              batch_id: @current_batch.id)
-            @batch_info = {name: @current_batch.name, target: @current_batch.target}
+            @batch_info = {name: @current_batch.name, target: @current_batch.target || "/"}
           end
 
           view "entries_index"
