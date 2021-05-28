@@ -1,5 +1,6 @@
 class Batch < Sequel::Model
   plugin :validation_helpers
+  plugin :json_serializer
   plugin :column_encryption do |enc|
     enc.column :target
   end

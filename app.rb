@@ -226,18 +226,30 @@ module WeightTracker
         end
 
         r.post do
-          @raw_data = Entry.where(account_id: @account_ds[:id]).order(:id).select(:day, :weight, :note)
+          @raw_entry_data = Entry.where(account_id: @account_ds[:id])
+                                 .order(:id)
+                                 .select(:day, :weight, :note, :batch_id)
+          @raw_batch_data = Batch.where(account_id: @account_ds[:id])
+                                  .order(:id)
+                                  .select(:id, :name, :target)
           
-          # unencrypt the encrypted data + set the correct encoding
-          @unecrypted_data = @raw_data.all.map do |ds_entry|
+          # Hack to ensure proper encoding of notes
+          @raw_entry_data_with_decrypted_notes = @raw_entry_data.all.map do |ds_entry|
             ds_entry[:note] = ds_entry.note.force_encoding("UTF-8")
-            ds_entry[:weight] = ds_entry.weight.force_encoding("UTF-8")
             ds_entry
+          end
+
+          # Hack to ensure proper encoding of name
+          @raw_batch_data_with_decrypted_name = @raw_batch_data.all.map do |ds_batch|
+            ds_batch[:name] = ds_batch.name.force_encoding("UTF-8")
+            ds_batch
           end
 
           file_name = "wt_data_#{@account_ds[:user_name]}_#{Time.now.strftime("%Y%m%d%H%M%S")}.json"
           data_file_path = File.join(opts[:root], "tmp", file_name)
-          File.open(data_file_path, "w") { |f| f.write @unecrypted_data.to_json }
+          File.open(data_file_path, "w") do |f| 
+            f.write @raw_entry_data_with_decrypted_notes.to_json + @raw_batch_data_with_decrypted_name.to_json
+          end
           send_file data_file_path, type: "application/json", filename: file_name
         end
       end
