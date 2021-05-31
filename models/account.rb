@@ -60,4 +60,41 @@ class Account < Sequel::Model
     last_entry_date = Entry.where(account_id: id).select_map(:day).sort.reverse.first.strftime("%d %b %Y")
     today == last_entry_date
   end
+
+  def last_entry
+    return if entries.empty?
+
+    Entry.all_desc(account_id: id, batch_id: "all").first
+  end
+
+  def last_entry_date
+    last_entry ? last_entry.day.strftime("%d %b %Y") : "/"
+  end
+
+  def is_verified?
+    status_id == 2
+  end
+
+  def is_closed?
+    status_id == 3
+  end
+
+  def is_unverified?
+    status_id == 1 
+  end
+
+  def account_status
+    case status_id
+    when 2 then "verified"
+    when 3 then "closed"
+    when 1 then "unverified"
+    else
+      "unknown status"
+    end
+  end
+
+  def before_destroy
+    batches.each(&:destroy)
+    super
+  end
 end

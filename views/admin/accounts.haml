@@ -15,6 +15,7 @@
       %td.fw-600 EMAIL
       %td.fw-600 STATUS
       %td.fw-600 2FA
+      %td.fw-600 DELETE
     %tbody
       - @accounts.each do |account|
         %tr.lh-2
@@ -23,5 +24,7 @@
           %td= account.email
           %td= DB[:account_statuses].where(id: account.status_id).first[:name]
           %td= DB[:account_recovery_codes].where(id: account.id).empty? ? "" : "x"
+          %td
+            %a.btn.btn-sm.bg-danger.white{href: "/admin/accounts/delete?account_id=#{account.id}"} Delete
 - else
   %p.mt-50.fs-2 No Account match these criterias
