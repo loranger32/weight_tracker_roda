@@ -38,6 +38,11 @@ module WeightTracker
             r.halt
           end
 
+          if @target_account.is_admin?
+            flash["error"] = "Cannot delete an admin user"
+            r.redirect "/admin/accounts"
+          end
+
           r.get do
             view "admin/account-delete", layout: "layout-admin"
           end
