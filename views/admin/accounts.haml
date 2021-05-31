@@ -1,12 +1,13 @@
 - @page_title << "Accounts"
 
-.w-500.center-block.flex.justify-between
+.w-600.center-block.flex.justify-between
   %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts"} All
   %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=verified"} Verified
   %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=unverified"} Unverified
   %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=closed"} Closed
   %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=otp_on"} OTP ON
   %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=otp_off"} OTP OFF
+  %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=admin"} ADMIN
 
 - if !@accounts.empty?
   %table.mt-50.w-600.center-block.center-text
@@ -15,6 +16,7 @@
       %td.fw-600 EMAIL
       %td.fw-600 STATUS
       %td.fw-600 2FA
+      %td.fw-600 ADMIN
       %td.fw-600 DELETE
     %tbody
       - @accounts.each do |account|
@@ -24,7 +26,8 @@
           %td= account.email
           %td= DB[:account_statuses].where(id: account.status_id).first[:name]
           %td= DB[:account_recovery_codes].where(id: account.id).empty? ? "" : "x"
+          %td= account.is_admin? ? "" : "x"
           %td
-            %a.btn.btn-sm.bg-danger.white{href: "/admin/accounts/delete?account_id=#{account.id}"} Delete
+            %a.btn.btn-sm.bg-danger.white{href: "/admin/accounts/delete?account_id=#{account.id}", class: ("btn-disabled" if account.is_admin?)} Delete
 - else
   %p.mt-50.fs-2 No Account match these criterias

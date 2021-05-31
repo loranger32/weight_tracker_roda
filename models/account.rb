@@ -27,6 +27,11 @@ class Account < Sequel::Model
     exclude(id: otp_on_account_ids).all
   end
 
+  def self.admins
+    admin_ids = Admin.select_map(:account_id)
+    where(id: admin_ids).all
+  end
+
   def validate
     super
     validates_presence [:user_name, :email, :password_hash]

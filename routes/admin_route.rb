@@ -23,6 +23,7 @@ module WeightTracker
           when "closed"     then @accounts = Account.closed
           when "otp_on"     then @accounts = Account.otp_on
           when "otp_off"    then @accounts = Account.otp_off
+          when "admin"      then @accounts = Account.admins
           else
             @accounts = Account.all
           end
