@@ -35,8 +35,8 @@ class BatchManegmentTest < CapybaraTestCase
 
   def test_can_view_index_of_batches
     visit "/entries"
-    assert_link "Batch 1", href: "/batches"
-    click_on "Batch 1"
+    assert_link "New Batch", href: "/batches"
+    click_on "New Batch"
 
     assert_current_path "/batches"
     assert_content "Batches"
@@ -52,10 +52,10 @@ class BatchManegmentTest < CapybaraTestCase
     assert_content "ACTIVE"
     assert_content "ENTRIES"
 
-    assert_content "Batch 1"
+    assert_content "New Batch"
     assert_content "past batch"
     assert_content "50.0"
-    assert_content "/"
+    assert_content "0.0"
   end
 
   def test_link_to_batch_related_entries_on_batches_index_page
@@ -66,8 +66,8 @@ class BatchManegmentTest < CapybaraTestCase
 
   def test_link_to_batch_related_entries_in_batch_edit_page
     visit "/batches"
-    click_on "Batch 1"
-    batch = Batch.where(name: "Batch 1", account_id: 1, active: true).first
+    click_on "New Batch"
+    batch = Batch.where(name: "New Batch", account_id: 1, active: true).first
     assert_current_path "/batches/#{batch.id}/edit"
     assert_link href: "/entries?batch_id=#{batch.id}"
   end
@@ -222,7 +222,7 @@ class BatchManegmentTest < CapybaraTestCase
     assert_current_path "/batches"
 
     refute_nil Batch.where(name: "past batch", account_id: 1, active: true).first
-    assert_nil Batch.where(name: "Batch 1", account_id: 1, active: true).first
+    assert_nil Batch.where(name: "New Batch", account_id: 1, active: true).first
 
     assert_equal 1, Batch.where(account_id: 1, active: true).count
   end
@@ -230,8 +230,8 @@ class BatchManegmentTest < CapybaraTestCase
   def test_can_delete_a_batch_with_check_box_checked
     visit "/batches"
 
-    click_on "Batch 1"
-    batch = Batch.where(name: "Batch 1", account_id: 1, active: true).first
+    click_on "New Batch"
+    batch = Batch.where(name: "New Batch", account_id: 1, active: true).first
     refute_nil batch
     assert_equal 2, batch.entries.size
 
@@ -245,16 +245,16 @@ class BatchManegmentTest < CapybaraTestCase
     assert_css ".flash-notice"
     assert_content "Batch has been successfully deleted"
     
-    refute_content "Batch 1"
-    assert_nil Batch.where(name: "Batch 1", account_id: 1).first
+    refute_content "New Batch"
+    assert_nil Batch.where(name: "New Batch", account_id: 1).first
     assert_equal 0, Entry.where(batch_id: batch.id).count
   end
 
   def test_cannot_delete_a_batch_if_check_box_is_not_checked
     visit "/batches"
 
-    click_on "Batch 1"
-    batch = Batch.where(name: "Batch 1", account_id: 1, active: true).first
+    click_on "New Batch"
+    batch = Batch.where(name: "New Batch", account_id: 1, active: true).first
     refute_nil batch
     assert_equal 2, batch.entries.size
 
@@ -266,7 +266,7 @@ class BatchManegmentTest < CapybaraTestCase
     assert_css ".flash-error"
     assert_content "Please tick the checkbox to confirm batch deletion"
     
-    refute_nil Batch.where(name: "Batch 1", account_id: 1).first
+    refute_nil Batch.where(name: "New Batch", account_id: 1).first
     assert_equal 2, Entry.where(batch_id: batch.id).count
   end
 end

@@ -18,19 +18,19 @@ class Batch < Sequel::Model
 
   def validate
     super
-    validates_presence [:account_id, :active]
+    validates_presence [:account_id, :active, :name, :target]
     validates_integer :account_id
     # TO DO : active param is always evaluated in a boolean context, which means it's always true or false
     # Validation should be more specific
     validates_type [TrueClass, FalseClass], :active
+    validates_type String, :name
+    validates_type String, :target
     errors.add(:name, 'must have 30 characters max') if name && name.length > 30
   end
 
-  def before_save
-    if name == "" || name.nil?
-      number_of_existing_batches = Account[account_id].batches.length
-      set(name: "Batch #{number_of_existing_batches + 1}")
-    end
+  def before_validation
+    self.target = "0.0" if target == "" || target.nil?
+    self.name = "New Batch" if name == "" || name.nil?
     super
   end
 

@@ -107,8 +107,8 @@ class BatchAdvancedTest < HookedTestClass
                    # password = 'foobar'
                    password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva")
 
-    Batch.insert(account_id: 1, active: false, name: "non active")
-    Batch.insert(account_id: 1, active: true, name: "active one")
+    Batch.new(account_id: 1, active: false, name: "non active").save
+    Batch.new(account_id: 1, active: true, name: "active one").save
 
     # Cannot use insert here beacuse of the column encryption
     Entry.new(day: "2020-11-01" , weight: "51.0", note: "", account_id: 1, batch_id: 1).save
@@ -152,13 +152,13 @@ class BatchAdvancedTest < HookedTestClass
 
   def test_set_a_default_name_if_is_nil
     batch = @account.add_batch(active: true)
-    assert_equal "Batch 3", batch.name
+    assert_equal "New Batch", batch.name
   end
 
 
   def test_set_a_default_name_if_is_empty_string
     batch = @account.add_batch(active: true, name: "")
-    assert_equal "Batch 3", batch.name
+    assert_equal "New Batch", batch.name
   end
 
   def test_has_a_first_date

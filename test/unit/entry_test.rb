@@ -8,7 +8,7 @@ class EntryBasicTest < HookedTestClass
     Account.insert(user_name: "Alice", email: "alice@example.com",
                    # password = 'foobar'
                    password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva")
-    Batch.insert(account_id: 1, active: true, name: "Batch 1")
+    Batch.new(account_id: 1, active: true, name: "Batch 1").save
   end
 
   def clean_fixtures
