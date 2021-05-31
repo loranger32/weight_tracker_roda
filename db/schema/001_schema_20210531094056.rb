@@ -13,7 +13,8 @@ Sequel.migration do
       primary_key :id
       column :account_id, "integer", :null=>false
       column :active, "boolean"
-      column :name, "character varying(30)"
+      column :name, "character varying(30)", :null=>false
+      column :target, "text", :null=>false
     end
     
     create_table(:schema_info) do
