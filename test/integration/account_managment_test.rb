@@ -274,6 +274,48 @@ class AccountManagementMailTest < CapybaraTestCase
     assert_link "Alice"
   end
 
+  def test_send_a_new_verify_account_email_if_first_has_expired
+    create_account!
+    assert_equal 1, mails_count
+    logout!
+
+    assert_equal 1, DB[:account_verification_keys].all.count
+    assert_equal Account.first.id, DB[:account_verification_keys].first[:id]
+    # Hack to simulate an account not verified during grace period
+    DB[:account_verification_keys].update(requested_at: Time.now - (60 * 60 * 24 * 3))
+    DB[:account_verification_keys].update(email_last_sent: Time.now - (60 * 60 * 24 * 2))
+    hacked_email_last_sent = DB[:account_verification_keys].first[:email_last_sent]
+
+    visit "/"
+    assert_current_path "/login"
+
+    login!
+
+    assert_css ".flash-error"
+    assert_content "The account you tried to login with is currently awaiting verification"
+    click_on "Send Verification Email Again"
+
+    assert_equal 2, mails_count
+
+    assert_current_path "/login"
+    assert_css ".flash-notice"
+
+    refute_equal hacked_email_last_sent, DB[:account_verification_keys].first[:email_last_sent]
+
+    assert_match(/<a href='http:\/\/www\.example\.com\/verify-account\?key=/, mail_body(1))
+    assert_equal Account.first.id, DB[:account_verification_keys].first[:id]
+    
+    verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(mail_body(1))[1]
+
+    visit "/verify-account?key=#{verify_account_key}"
+    assert_current_path "/verify-account"
+    click_on "Verify Account"
+    assert_current_path "/entries/new"
+    assert_css ".flash-notice"
+    assert_content "Your account has been verified"
+    assert_link "Alice"
+  end
+
   def test_request_password_reset_does_not_send_email_to_unknown_account
     visit "/"
     click_on "Reset Password"

@@ -107,6 +107,7 @@ module WeightTracker
       verify_account_email_sent_notice_flash "An email has been sent to you to verify your account"
       verify_account_email_subject "Verify your account"
       verify_account_email_body { scope.render "mails/verify-account-email" }
+      verify_account_email_sent_redirect "/login"
       
       # Two Factor Base Setup
       two_factor_disable_button "Remove 2FA"
