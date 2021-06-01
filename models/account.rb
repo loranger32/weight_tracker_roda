@@ -99,7 +99,20 @@ class Account < Sequel::Model
   end
 
   def before_destroy
-    batches.each(&:destroy)
+    # Delete all rows associated with the account in RODAUTH tables
+    rodauth_tables_with_account_id = [:account_active_session_keys, :account_authentication_audit_logs]
+    rodauth_tables_with_id = [:account_email_auth_keys, :account_lockouts, :account_login_change_keys,
+                              :account_login_failures, :account_otp_keys, :account_password_reset_keys,
+                              :account_recovery_codes, :account_session_keys,
+                              :account_verification_keys, :account_verification_keys]
+    rodauth_tables_with_account_id.each do |table|
+      DB[table].where(account_id: id).delete
+    end
+
+    rodauth_tables_with_id.each do |table|
+      DB[table].where(id: id).delete
+    end
+
     super
   end
 end

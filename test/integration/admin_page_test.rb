@@ -14,8 +14,17 @@ class AdminPageTest < CapybaraTestCase
   end
 
   def clean_fixtures
+    DB[:admins].delete
+    DB.reset_primary_key_sequence(:admins)
     DB[:accounts].delete
     DB.reset_primary_key_sequence(:accounts)
+  end
+
+  def setup_admin
+    alice_account = create_and_verify_account!
+    setup_two_fa!(alice_account.id)
+    Admin.new(account_id: alice_account.id).save
+    alice_account.reload
   end
 
   def test_non_admin_user_cannot_access_admin_page
@@ -33,11 +42,9 @@ class AdminPageTest < CapybaraTestCase
   end
 
   def test_admin_without_two_fa_cannot_access_admin_page
-    create_and_verify_account!
+    account = create_and_verify_account!(user_name: "admin", email: "admin@example.com")
+    Admin.new(account_id: account.id).save
 
-    alice_account = Account.where(user_name: "Alice").first
-    Admin.new(account_id: alice_account.id).save
-    
     visit "/admin"
 
     assert_current_path "/otp-setup"
@@ -45,11 +52,7 @@ class AdminPageTest < CapybaraTestCase
   end
 
   def test_admin_with_2_fa_enabled_can_access_admin_page
-    create_and_verify_account!
-    alice_account = Account.where(user_name: "Alice").first
-    setup_two_fa!(alice_account.id)
-
-    Admin.new(account_id: alice_account.id).save
+    alice_account = setup_admin
 
     visit "/admin"
     
@@ -129,46 +132,42 @@ class AdminPageTest < CapybaraTestCase
   end
 
   def test_admin_can_delete_a_non_admin_account
-    # This test is slightly flawed because it deletes an account that has been
-    # directly inserted in the DB, and has no rows in other Rodauth tables
-    create_and_verify_account!
-    alice_account = Account.where(user_name: "Alice").first
-    setup_two_fa!(alice_account.id)
-
-    Admin.new(account_id: alice_account.id).save
-
+    soon_deleted_account = create_and_verify_account!(user_name: "soon deleted",
+                                                      email: "soondeleted@example.com")
+    batch_id = soon_deleted_account.active_batch_id
+    entry = Entry.new(weight: "60.0", day: "2021-06-01", note: "",
+                      account_id: soon_deleted_account.id, batch_id: batch_id).save
+    
+    alice_account = setup_admin
+    
     visit "/admin"
     assert_current_path "/admin/accounts"
-    verified_account = Account.where(user_name: "test verified account").first
-    click_link "Delete", href: "/admin/accounts/delete?account_id=#{verified_account.id}"
+    
+    click_link "Delete", href: "/admin/accounts/delete?account_id=#{soon_deleted_account.id}"
 
-    assert_current_path "/admin/accounts/delete?account_id=#{verified_account.id}"
+    assert_current_path "/admin/accounts/delete?account_id=#{soon_deleted_account.id}"
     assert_content "Admin Panel"
     assert_content "Admin - Alice"
 
     assert_content "Delete Account"
-    assert_content "test verified account"
-    assert_content "test.verified@example.com"
-    assert_content "0 batches"
-    assert_content "0 entries"
-    assert_content "Last entry: /"
+    assert_content "soon deleted"
+    assert_content "soondeleted@example.com"
+    assert_content "1 batches" # The default one
+    assert_content "1 entries"
+    assert_content "Last entry: 01 Jun 2021"
 
     click_on "Delete Account"
 
     assert_current_path "/admin/accounts"
     assert_css ".flash-notice"
     assert_content "Account successfully deleted"
-    refute_content "test verified account"
-    refute_content "test.verified@example.com"
-    refute_link "Delete", href: "/admin/accounts/delete?account_id=#{verified_account.id}"
+    refute_content "soon deleted"
+    refute_content "soondeleted@example.com"
+    refute_link "Delete", href: "/admin/accounts/delete?account_id=#{soon_deleted_account.id}"
   end
 
   def test_admin_cannot_delete_an_admin_account
-    create_and_verify_account!
-    alice_account = Account.where(user_name: "Alice").first
-    setup_two_fa!(alice_account.id)
-
-    Admin.new(account_id: alice_account.id).save
+    alice_account = setup_admin
 
     visit "/admin"
 
