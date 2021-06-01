@@ -12,6 +12,8 @@ Minitest::Reporters.use! Minitest::Reporters::SpecReporter.new
 require_relative "../db/db"
 require_relative "../app"
 
+class TestAccountMismatchError < StandardError; end
+
 class HookedTestClass < Minitest::Test
   include Minitest::Hooks
 
@@ -52,24 +54,52 @@ class CapybaraTestCase < HookedTestClass
     Capybara.app
   end
 
-  def create_account!
-    return if user_exist?
+  def create_account!(user_name: "Alice", email: "alice@example.com", password: "foobar")
+    return existing_account if existing_account = Account.where(email: email).first
+
     visit "/create-account"
-    fill_in "user_name", with: "Alice"
-    fill_in "login", with: "alice@example.com"
-    fill_in "login-confirm", with: "alice@example.com"
-    fill_in "password", with: "foobar"
-    fill_in "password-confirm", with: "foobar"
+    fill_in "user_name", with: user_name
+    fill_in "login", with: email
+    fill_in "login-confirm", with: email
+    fill_in "password", with: password
+    fill_in "password-confirm", with: password
     click_on "Create Account"
+    Account.where(email: email).first
   end
 
-  def verify_account!
-    verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
-
+  def verify_account!(account = nil)
+    account ||= Account.where(email: "alice@example.com").first
+    raise TestAccountMismatchError unless account && account.email == last_mail_to_field
+    verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(last_mail_body)[1]
     visit "/verify-account?key=#{verify_account_key}"
     click_on "Verify Account"
     clean_mailbox
+    account.reload
   end
+
+  def create_and_verify_account!(user_name: "Alice", email: "alice@example.com" , password: "foobar")
+    account = create_account!(user_name: user_name, email: email, password: password)
+    verify_account!(account)
+  end
+
+  # def create_account!
+  #   return if user_exist?
+  #   visit "/create-account"
+  #   fill_in "user_name", with: "Alice"
+  #   fill_in "login", with: "alice@example.com"
+  #   fill_in "login-confirm", with: "alice@example.com"
+  #   fill_in "password", with: "foobar"
+  #   fill_in "password-confirm", with: "foobar"
+  #   click_on "Create Account"
+  # end
+
+  # def verify_account!
+  #   verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
+
+  #   visit "/verify-account?key=#{verify_account_key}"
+  #   click_on "Verify Account"
+  #   clean_mailbox
+  # end
 
   def setup_two_fa!(account_id)
     visit "/account"
@@ -84,28 +114,28 @@ class CapybaraTestCase < HookedTestClass
     click_on "Setup TOTP Authentication"
   end
 
-  def create_and_verify_account!
-    create_account!
-    verify_account!
-  end  
+  # def create_and_verify_account!
+  #   create_account!
+  #   verify_account!
+  # end  
 
-  def logout!
-    account = Account.all.first
+  def logout!(account = nil)
+    account ||= Account.where(email: "alice@example.com").first
     visit "/account"
     click_on "Log Out"
   end
 
-  def login!
-    raise StandardError, "No user to log in" unless user_exist?
+  def login!(email: "alice@example.com", password: "foobar")
+    raise StandardError, "No user to log in" unless user_exist?(email: email)
     visit "/login"
-    fill_in "login", with: "alice@example.com"
-    fill_in "password", with: "foobar"
+    fill_in "login", with: email
+    fill_in "password", with: password
     click_on "Log In"
+    Account.where(email: "alice@example.com").first
   end
 
-  def user_exist?
-    alice_account = Account.all.first
-    alice_account && alice_account.user_name == "Alice" && alice_account.email == "alice@example.com"
+  def user_exist?(email: "alice@example.com")
+    Account.where(email: email).first
   end
 
   def mails_count
@@ -120,8 +150,16 @@ class CapybaraTestCase < HookedTestClass
     Mail::TestMailer.deliveries[mail_index].body.raw_source
   end
 
+  def last_mail_body
+    Mail::TestMailer.deliveries.last.body.raw_source
+  end
+
   def mail_to(mail_index)
     Mail::TestMailer.deliveries[mail_index].to[0]
+  end
+
+  def last_mail_to_field
+    mail_to(-1)
   end
 
   def teardown
