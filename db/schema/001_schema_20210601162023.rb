@@ -132,7 +132,7 @@ Sequel.migration do
     create_table(:entries) do
       primary_key :id
       column :day, "date", :null=>false
-      foreign_key :account_id, :accounts, :null=>false, :key=>[:id]
+      foreign_key :account_id, :accounts, :null=>false, :key=>[:id], :on_delete=>:cascade
       column :note, "text"
       column :weight, "text", :null=>false
       foreign_key :batch_id, :batches, :null=>false, :key=>[:id], :on_delete=>:cascade
