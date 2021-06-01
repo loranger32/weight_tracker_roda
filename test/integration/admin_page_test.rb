@@ -2,10 +2,10 @@ require_relative "../test_helpers"
 
 class AdminPageTest < CapybaraTestCase
   def load_fixtures
-    DB[:accounts].insert(user_name: "test unverified user", email: "test.unverified@example.com",
+    DB[:accounts].insert(user_name: "test unverified account", email: "test.unverified@example.com",
                          password_hash: BCrypt::Password.create("secret", cost: 2),
                          status_id: 1)
-    DB[:accounts].insert(user_name: "test verified user", email: "test.verified@example.com",
+    DB[:accounts].insert(user_name: "test verified account", email: "test.verified@example.com",
                          password_hash: BCrypt::Password.create("secret", cost: 2),
                          status_id: 2)
     DB[:accounts].insert(user_name: "test closed account", email: "test.closed@example.com",

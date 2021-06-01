@@ -49,7 +49,7 @@ module WeightTracker
 
           r.post do
             @target_account.destroy
-            flash["success"] = "Account successfully deleted"
+            flash["notice"] = "Account successfully deleted"
             r.redirect "/admin/accounts"
           end
         end
