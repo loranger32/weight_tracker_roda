@@ -1,7 +1,7 @@
 "use strict"
 
-let printButton = document.querySelector("#print")
-let copyButton = document.querySelector("#copy")
+const printButton = document.querySelector("#print")
+const copyButton = document.querySelector("#copy")
 
 
 printButton.addEventListener("click", printCodes)

@@ -1,13 +1,12 @@
 "use strict"
 
-let userName = document.querySelector("#user_name").textContent;
-console.log(userName);
+const userName = document.querySelector("#user_name").textContent;
 
-let verifyAccountButton = document.querySelector("#verify-acount-button");
+const verifyAccountButton = document.querySelector("#verify-acount-button");
 verifyAccountButton.addEventListener("click", confirmAccountVerification);
 
 function confirmAccountVerification(e) {
-  let confirmationText = prompt("This will verify this account manually ? Type in the username to confirm");
+  const confirmationText = prompt("This will verify this account manually ? Type in the username to confirm");
 
   if (confirmationText != userName) {
     e.preventDefault();

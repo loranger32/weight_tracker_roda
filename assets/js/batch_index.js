@@ -1,12 +1,12 @@
 "use strict"
 
-let newBatchButton = document.querySelector("#new-batch-btn");
+const newBatchButton = document.querySelector("#new-batch-btn");
 newBatchButton.addEventListener("click", displayNewBatchForm);
 
-let createBatchButton = document.querySelector("#create-batch-button");
+const createBatchButton = document.querySelector("#create-batch-button");
 createBatchButton.addEventListener("click", confirmCreateBatch);
 
-let newBatchForm = document.querySelector("#new-batch-form");
+const newBatchForm = document.querySelector("#new-batch-form");
 
 function displayNewBatchForm(e) {
   e.preventDefault();

@@ -1,19 +1,19 @@
 "use strict"
 
-let deleteBatchButton = document.querySelector("#delete-batch-button");
+const deleteBatchButton = document.querySelector("#delete-batch-button");
 deleteBatchButton.addEventListener("click", displayDeleteBatchForm);
 
-let deleteBatchForm = document.querySelector("#delete-batch-form");
+const deleteBatchForm = document.querySelector("#delete-batch-form");
 
 function displayDeleteBatchForm(e) {
     e.preventDefault();
   deleteBatchForm.classList.toggle("invisible");
 }
 
-let confirmDeleteBatchButton = document.querySelector("#confirm-delete-batch-button");
+const confirmDeleteBatchButton = document.querySelector("#confirm-delete-batch-button");
 confirmDeleteBatchButton.addEventListener("click", batchDeletionLastConfirmation);
 
-let confirmBatchDeletionCheckBox = document.querySelector("#confirm-delete-batch-checkbox");
+const confirmBatchDeletionCheckBox = document.querySelector("#confirm-delete-batch-checkbox");
 confirmBatchDeletionCheckBox.addEventListener("click", toggleDeleteBatchButton);
 
 function toggleDeleteBatchButton(e) {
