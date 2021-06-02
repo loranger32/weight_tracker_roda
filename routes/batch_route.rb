@@ -11,8 +11,6 @@ module WeightTracker
         end
 
         r.post do
-          currently_active_batch = Batch.active_for_account(@account_ds[:id])
-
           @batch = Batch.new(account_id: @account_ds[:id], active: false)
 
           submitted = {name: tp.str("name"), target: tp.str("target")}
@@ -22,14 +20,12 @@ module WeightTracker
             @batch.set_active_status
             @batch.save
             flash["notice"] = "Batch successfully created"
-            r.redirect
           elsif !valid_weight_string?(submitted[:target])
             flash["error"] = "Invalid target weight, must be between 20.0 and 999.9"
-            r.redirect
           else
             flash["error"] = format_flash_error(@batch)
-            r.redirect
           end
+          r.redirect
         end
       end
 
@@ -48,8 +44,6 @@ module WeightTracker
 
         r.is do
           r.post do
-            currently_active_batch = Batch.active_for_account(@account_ds[:id])
-
             submitted = {name: tp.str("name"), target: tp.str("target")}
 
             @batch.set(submitted)

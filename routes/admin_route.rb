@@ -33,7 +33,7 @@ module WeightTracker
 
         account_id = tp.int("account_id")
 
-        unless account_id > 0 && @target_account = Account[account_id]
+        unless account_id > 0 && (@target_account = Account[account_id])
           response.status = 404
           r.halt
         end

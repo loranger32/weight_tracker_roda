@@ -88,7 +88,7 @@ class AdminPageTest < CapybaraTestCase
   end
 
   def test_admin_with_2_fa_enabled_can_access_admin_page
-    alice_account = setup_admin
+    setup_admin
 
     visit "/admin"
 
@@ -178,9 +178,9 @@ class AdminPageTest < CapybaraTestCase
     entry = Entry.new(weight: "60.0", day: "2021-06-01", note: "",
                       account_id: soon_deleted_account.id, batch_id: batch_id).save
 
-    logout!(soon_deleted_account)
+    logout!
 
-    alice_account = setup_admin
+    setup_admin
 
     visit "/admin"
     assert_current_path "/admin/accounts"
@@ -206,6 +206,9 @@ class AdminPageTest < CapybaraTestCase
     refute_content "soon deleted"
     refute_content "soondeleted@example.com"
     refute_link "Delete", href: "/admin/accounts/delete?account_id=#{soon_deleted_account.id}"
+
+    assert_nil Batch[batch_id]
+    assert_nil Entry[entry.id]
   end
 
   def test_admin_cannot_delete_an_admin_account
@@ -220,9 +223,9 @@ class AdminPageTest < CapybaraTestCase
 
   def test_admin_can_verify_a_non_admin_account
     unverified_account = create_account!(user_name: "unverified", email: "unverified@example.com")
-    logout!(unverified_account)
+    logout!
 
-    alice_account = setup_admin
+    setup_admin
 
     visit "/admin"
     click_link "Verify", href: "/admin/accounts/verify?account_id=#{unverified_account.id}"
@@ -255,8 +258,8 @@ class AdminPageTest < CapybaraTestCase
 
     assert test_admin.is_admin?
 
-    logout!(test_admin)
-    alice_account = setup_admin
+    logout!
+    setup_admin
     visit "/admin/accounts"
 
     refute_link "Verify", href: "/admin/accounts/verify?account_id=#{test_admin.id}"
@@ -269,9 +272,9 @@ class AdminPageTest < CapybaraTestCase
 
   def test_admin_can_close_a_non_admin_account
     active_account = create_account!(user_name: "active", email: "active@example.com")
-    logout!(active_account)
+    logout!
 
-    alice_account = setup_admin
+    setup_admin
 
     visit "/admin"
     click_link "Close", href: "/admin/accounts/close?account_id=#{active_account.id}"
@@ -310,10 +313,10 @@ class AdminPageTest < CapybaraTestCase
 
   def test_admin_can_open_a_closed_non_admin_account
     soon_reopened_account = create_and_verify_account!(user_name: "soon reopened", email: "soonreopened@example.com")
-    logout!(soon_reopened_account)
+    logout!
     soon_reopened_account.update(status_id: 3)
 
-    alice_account = setup_admin
+    setup_admin
 
     visit "/admin"
     click_link "Open", href: "/admin/accounts/open?account_id=#{soon_reopened_account.id}"

@@ -42,7 +42,7 @@ module WeightTracker
 
       # Create Account
       before_create_account do
-        unless user_name = param_or_nil("user_name")
+        unless (user_name = param_or_nil("user_name"))
           throw_error_status(422, "user_name", "must be present")
         end
         unless user_name.length > 2
@@ -126,8 +126,8 @@ module WeightTracker
     plugin :default_headers,
       "Strict-Transport-Security" => "max-age=63072000; includeSubDomains",
       "X-Content-Type-Options" => "nosniff",
-      "X-Frame-Options" => "deny"
-    "X-XSS-Protection'=>'1; mode=block"
+      "X-Frame-Options" => "deny",
+      "X-XSS-Protection" => "1; mode=block"
 
     plugin :content_security_policy do |csp|
       csp.default_src :none

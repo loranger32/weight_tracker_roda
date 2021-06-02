@@ -58,7 +58,7 @@ class CapybaraTestCase < HookedTestClass
   end
 
   def create_account!(user_name: "Alice", email: "alice@example.com", password: "foobar")
-    return existing_account if existing_account = Account.where(email: email).first
+    return existing_account if (existing_account = Account.where(email: email).first)
 
     visit "/create-account"
     fill_in "user_name", with: user_name
@@ -98,8 +98,7 @@ class CapybaraTestCase < HookedTestClass
     click_on "Setup TOTP Authentication"
   end
 
-  def logout!(account = nil)
-    account ||= Account.where(email: "alice@example.com").first
+  def logout!
     visit "/account"
     click_on "Log Out"
   end

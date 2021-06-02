@@ -137,6 +137,8 @@ class EntriesActionTest < CapybaraTestCase
 
     entry = Entry.where(day: "2021-05-01", account_id: @account_id).first
     assert_equal active_batch.id, entry.batch.id
+
+    assert_equal 0, inactive_batch.entries.length
   end
 
   def test_gets_redirected_to_batches_pages_if_many_batches_but_none_active
@@ -183,8 +185,7 @@ class EntriesActionTest < CapybaraTestCase
 
     assert_equal 1, Batch.where(account_id: @account_id).all.length
     assert_equal 1, Entry.where(account_id: @account_id).all.length
-    assert_equal Batch.where(account_id: @account_id).first,
-      Entry.where(account_id: @account_id).first.batch
+    assert_equal active_batch, Entry.where(account_id: @account_id).first.batch
   end
 
   def test_can_delete_an_entry
@@ -204,7 +205,7 @@ class EntriesActionTest < CapybaraTestCase
     refute_content "Fri 30 Apr 2021"
     refute_content "52.0"
 
-    assert_equal 0, Batch.where(account_id: @account_id).first.entries.length
+    assert_equal 0, active_batch.entries.length
   end
 
   def test_performs_validation_on_weight_before_encryption
