@@ -82,25 +82,6 @@ class CapybaraTestCase < HookedTestClass
     verify_account!(account)
   end
 
-  # def create_account!
-  #   return if user_exist?
-  #   visit "/create-account"
-  #   fill_in "user_name", with: "Alice"
-  #   fill_in "login", with: "alice@example.com"
-  #   fill_in "login-confirm", with: "alice@example.com"
-  #   fill_in "password", with: "foobar"
-  #   fill_in "password-confirm", with: "foobar"
-  #   click_on "Create Account"
-  # end
-
-  # def verify_account!
-  #   verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
-
-  #   visit "/verify-account?key=#{verify_account_key}"
-  #   click_on "Verify Account"
-  #   clean_mailbox
-  # end
-
   def setup_two_fa!(account_id)
     visit "/account"
     click_on "Setup 2FA"
@@ -113,11 +94,6 @@ class CapybaraTestCase < HookedTestClass
 
     click_on "Setup TOTP Authentication"
   end
-
-  # def create_and_verify_account!
-  #   create_account!
-  #   verify_account!
-  # end  
 
   def logout!(account = nil)
     account ||= Account.where(email: "alice@example.com").first
