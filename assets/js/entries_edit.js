@@ -1,3 +1,5 @@
+"use strict"
+
 const deleteEntryButton = document.querySelector("#delete-entry-btn");
 deleteEntryButton.addEventListener('click', confirmEntryDeletion);
 

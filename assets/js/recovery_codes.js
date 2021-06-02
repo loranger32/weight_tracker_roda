@@ -1,3 +1,5 @@
+"use strict"
+
 let printButton = document.querySelector("#print")
 let copyButton = document.querySelector("#copy")
 

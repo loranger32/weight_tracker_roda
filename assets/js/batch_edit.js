@@ -1,3 +1,5 @@
+"use strict"
+
 let deleteBatchButton = document.querySelector("#delete-batch-button");
 deleteBatchButton.addEventListener("click", displayDeleteBatchForm);
 

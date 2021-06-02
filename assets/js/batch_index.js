@@ -1,3 +1,5 @@
+"use strict"
+
 let newBatchButton = document.querySelector("#new-batch-btn");
 newBatchButton.addEventListener("click", displayNewBatchForm);
 

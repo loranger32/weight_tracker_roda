@@ -1,4 +1,4 @@
-console.log("connected");
+"use strict"
 
 let userName = document.querySelector("#user_name").textContent;
 console.log(userName);
