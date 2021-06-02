@@ -27,8 +27,8 @@ class AdminPageTest < CapybaraTestCase
     alice_account.reload
   end
 
-  def test_non_admin_user_cannot_access_admin_page
-    create_and_verify_account!
+  def test_non_admin_user_cannot_access_admin_pages
+    alice_account = create_and_verify_account!
     
     visit "/admin"
     assert_equal 403, status_code
@@ -39,6 +39,24 @@ class AdminPageTest < CapybaraTestCase
     assert_equal 403, status_code
     assert_content "403 ERROR"
     refute_content "Admin Panel"
+
+    visit "/admin/accounts/verify?account_id=#{alice_account.id}"
+    assert_equal 403, status_code
+    assert_content "403 ERROR"
+    refute_content "Admin Panel"
+    
+    visit "/admin/accounts/delete?account_id=#{alice_account.id}"
+    assert_equal 403, status_code
+    assert_content "403 ERROR"
+    refute_content "Admin Panel"
+
+    assert_raises Roda::RodaPlugins::RouteCsrf::InvalidToken do
+      post "/admin/accounts/delete?account_id=#{alice_account.id}"
+    end
+
+    assert_raises Roda::RodaPlugins::RouteCsrf::InvalidToken do
+      post "/admin/accounts/verify?account_id=#{alice_account.id}"
+    end
   end
 
   def test_admin_without_two_fa_cannot_access_admin_page
@@ -66,7 +84,8 @@ class AdminPageTest < CapybaraTestCase
     assert_link "OTP ON"   
     assert_link "OTP OFF"
     assert_link "ADMIN"
-    assert_link "Delete", count: 4
+    assert_link "Delete", count: 3
+    assert_link "Verify", count: 1
 
     assert_content "alice@example.com"
     assert_content "test.unverified@example.com"
@@ -138,6 +157,8 @@ class AdminPageTest < CapybaraTestCase
     entry = Entry.new(weight: "60.0", day: "2021-06-01", note: "",
                       account_id: soon_deleted_account.id, batch_id: batch_id).save
     
+    logout!(soon_deleted_account)
+    
     alice_account = setup_admin
     
     visit "/admin"
@@ -168,12 +189,42 @@ class AdminPageTest < CapybaraTestCase
 
   def test_admin_cannot_delete_an_admin_account
     alice_account = setup_admin
+    visit "/admin"
+    refute_link "Delete", href: "/admin/accounts/delete?account_id=#{alice_account.id}"
+
+    assert_raises Roda::RodaPlugins::RouteCsrf::InvalidToken do
+      post "/admin/accounts/delete?account_id=#{alice_account.id}"
+    end
+  end
+
+  def test_admin_can_verify_an_account
+    unverified_account = create_account!(user_name: "unverified", email: "unverified@example.com")
+    logout!(unverified_account)
+
+    alice_account = setup_admin
 
     visit "/admin"
+    click_link "Verify", href: "/admin/accounts/verify?account_id=#{unverified_account.id}"
+    assert_current_path "/admin/accounts/verify?account_id=#{unverified_account.id}"
+    assert_content "Admin Panel"
+    assert_content "Admin - Alice"
+    assert_content "Verify Account"
+    assert_content "You are about to manually verify this account."
+    assert_content "unverified"
+    assert_content "unverified@example.com"
+    assert_content "1 batches"
+    assert_content "0 entries"
+    assert_content "Last entry: /"
 
-    click_link "Delete", href: "/admin/accounts/delete?account_id=#{alice_account.id}"
+    click_on "Verify Account"
     assert_current_path "/admin/accounts"
-    assert_css ".flash-error"
-    assert_content "Cannot delete an admin user"
+    assert_css ".flash-notice"
+    assert_content "Account successfully verified"
+    assert_content "unverified"
+    assert_content "unverified@example.com"
+    refute_link "Verify", href: "/admin/accounts/verify?account_id=#{unverified_account.id}"
+
+    assert unverified_account.reload.is_verified?
+    assert_nil DB[:account_verification_keys].where(id: unverified_account.id).first
   end
 end

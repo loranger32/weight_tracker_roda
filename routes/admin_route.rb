@@ -30,26 +30,54 @@ module WeightTracker
           view "admin/accounts", layout: "layout-admin"
         end
 
-        r.is "delete" do
-          account_id = tp.int("account_id")
-            
-          unless account_id != 0 && @target_account = Account[account_id]
-            response.status = 404
-            r.halt
-          end
+        # Verify and Delete branches setup
 
-          if @target_account.is_admin?
-            flash["error"] = "Cannot delete an admin user"
+        account_id = tp.int("account_id")
+          
+        unless account_id > 0 && @target_account = Account[account_id]
+          response.status = 404
+          r.halt
+        end
+
+        # Should only be needed for GET request, beacuse for POST requests 
+        # it should normally raise a Roda::RodaPlugins::RouteCsrf:InvalidToken error before
+        # But extra safety
+        if @target_account.is_admin?
+          flash["error"] = "Cannot perform this action on admin user"
+          r.redirect "/admin/accounts"
+        end
+
+        r.is "verify" do
+          unless @target_account.is_unverified?
+            flash["error"] = "This account is already verified"
             r.redirect "/admin/accounts"
           end
 
+          r.get do
+            view "/admin/account-verify", layout: "layout-admin"
+          end
+
+          r.post do
+            @target_account.update(status_id: 2)
+            DB[:account_verification_keys].where(id: @target_account.id).delete
+            flash["notice"] = "Account successfully verified"
+            r.redirect "/admin/accounts"
+          end
+          
+        end
+
+        r.is "delete" do
           r.get do
             view "admin/account-delete", layout: "layout-admin"
           end
 
           r.post do
-            @target_account.destroy
-            flash["notice"] = "Account successfully deleted"
+            if @target_account.destroy
+              flash["notice"] = "Account successfully deleted"
+            else
+              flash["error"] = "Could not delete account"
+            end
+
             r.redirect "/admin/accounts"
           end
         end

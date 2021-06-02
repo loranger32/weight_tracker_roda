@@ -1,6 +1,6 @@
 - @page_title << "Accounts"
 
-.w-600.center-block.flex.justify-between
+.w-700.center-block.flex.justify-between
   %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts"} All
   %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=verified"} Verified
   %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=unverified"} Unverified
@@ -10,7 +10,7 @@
   %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=admin"} ADMIN
 
 - if !@accounts.empty?
-  %table.mt-50.w-600.center-block.center-text
+  %table.mt-50.w-700.center-block.center-text
     %thead.lh-2
       %td.fw-600 USERNAME
       %td.fw-600 EMAIL
@@ -18,6 +18,7 @@
       %td.fw-600 2FA
       %td.fw-600 ADMIN
       %td.fw-600 DELETE
+      %td.fw-600 VERIFY
     %tbody
       - @accounts.each do |account|
         %tr.lh-2
@@ -28,6 +29,10 @@
           %td= DB[:account_recovery_codes].where(id: account.id).empty? ? "" : "x"
           %td= account.is_admin? ? "x" : ""
           %td
-            %a.btn.btn-sm.bg-danger.white{href: "/admin/accounts/delete?account_id=#{account.id}", class: ("btn-disabled" if account.is_admin?)} Delete
+            - unless account.is_admin?
+              %a.btn.btn-sm.bg-danger.white{href: "/admin/accounts/delete?account_id=#{account.id}"} Delete
+          %td
+            - if account.is_unverified?
+              %a.btn.btn-sm.bg-success.white{href: "/admin/accounts/verify?account_id=#{account.id}"} Verify
 - else
   %p.mt-50.fs-2 No Account match these criterias
