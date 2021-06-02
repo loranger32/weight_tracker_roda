@@ -3,7 +3,6 @@ require_relative "db/db"
 Dir["helpers/*.rb"].each { |f| require_relative f }
 
 module WeightTracker
-
   class App < Roda
     opts[:root] = File.dirname(__FILE__)
 
@@ -27,12 +26,12 @@ module WeightTracker
         :change_password_notify, :close_account, :active_sessions, :audit_logging,
         :reset_password, :verify_account, :verify_account_grace_period, :lockout,
         :verify_login_change, :otp, :recovery_codes
-      
+
       # Base
       account_password_hash_column :password_hash
       hmac_secret secret
       title_instance_variable :@page_title
-      
+
       # Email Base
       email_from "weighttracker@example.com"
       email_subject_prefix "WeightTracker - "
@@ -51,16 +50,16 @@ module WeightTracker
         end
         account[:user_name] = user_name
       end
-      
+
       # Login
       login_redirect "/"
-      
+
       # Change Login
       change_login_redirect { "/account" }
 
       # Change Password
       change_password_redirect { "/account" }
-      
+
       # Close Account
       before_close_account do
         unless param_or_nil("confirm-delete-data") == "confirm"
@@ -87,7 +86,7 @@ module WeightTracker
       verify_login_change_notice_flash "Your new email has been verified"
       verify_login_change_email_body do
         scope.render "mails/verify-email-change-email",
-                     locals: { old_email: account[:email], new_email: verify_login_change_new_login }
+          locals: {old_email: account[:email], new_email: verify_login_change_new_login}
       end
 
       # Reset Password
@@ -108,7 +107,7 @@ module WeightTracker
       verify_account_email_subject "Verify your account"
       verify_account_email_body { scope.render "mails/verify-account-email" }
       verify_account_email_sent_redirect "/login"
-      
+
       # Two Factor Base Setup
       two_factor_disable_button "Remove 2FA"
       two_factor_disable_redirect { "/account" }
@@ -116,7 +115,7 @@ module WeightTracker
 
       # OTP setup
       before_otp_setup_route do
-        scope.content_security_policy.add_style_src [:sha256, 'hXLriEz22xKNlZLBZHXTURsF5XZHj1Bkjo1s7SNTzSI=']
+        scope.content_security_policy.add_style_src [:sha256, "hXLriEz22xKNlZLBZHXTURsF5XZHj1Bkjo1s7SNTzSI="]
       end
 
       # Recovery Codes Setup
@@ -128,7 +127,7 @@ module WeightTracker
       "Strict-Transport-Security" => "max-age=63072000; includeSubDomains",
       "X-Content-Type-Options" => "nosniff",
       "X-Frame-Options" => "deny"
-      "X-XSS-Protection'=>'1; mode=block"
+    "X-XSS-Protection'=>'1; mode=block"
 
     plugin :content_security_policy do |csp|
       csp.default_src :none
@@ -179,11 +178,9 @@ module WeightTracker
     plugin :typecast_params
     alias_method :tp, :typecast_params
     plugin :sinatra_helpers
-    
-    
+
     Mail.defaults { delivery_method :smtp, address: "localhost", port: 1025 } if App.development?
     Mail.defaults { delivery_method :test } if App.test?
-
 
     route do |r|
       r.public if App.production?
@@ -197,11 +194,10 @@ module WeightTracker
       ensure_at_least_one_batch_for_account!(@account_ds[:id])
 
       r.hash_branches
-  
+
       r.root do
         r.redirect landing_page(@account_ds)
       end
-
 
       r.is "change-user-name" do
         r.get do
@@ -229,12 +225,12 @@ module WeightTracker
 
         r.post do
           @raw_entry_data = Entry.where(account_id: @account_ds[:id])
-                                 .order(:id)
-                                 .select(:day, :weight, :note, :batch_id)
+            .order(:id)
+            .select(:day, :weight, :note, :batch_id)
           @raw_batch_data = Batch.where(account_id: @account_ds[:id])
-                                 .order(:id)
-                                 .select(:id, :name, :target)
-          
+            .order(:id)
+            .select(:id, :name, :target)
+
           # Hack to ensure proper encoding of notes
           @raw_entry_data_with_decrypted_notes = @raw_entry_data.all.map do |ds_entry|
             ds_entry[:note] = ds_entry.note.force_encoding("UTF-8")
@@ -249,7 +245,7 @@ module WeightTracker
 
           file_name = "wt_data_#{@account_ds[:user_name]}_#{Time.now.strftime("%Y%m%d%H%M%S")}.json"
           data_file_path = File.join(opts[:root], "tmp", file_name)
-          File.open(data_file_path, "w") do |f| 
+          File.open(data_file_path, "w") do |f|
             f.write @raw_entry_data_with_decrypted_notes.to_json + @raw_batch_data_with_decrypted_name.to_json
           end
           send_file data_file_path, type: "application/json", filename: file_name
@@ -258,9 +254,9 @@ module WeightTracker
 
       r.get "security-log" do
         @security_logs = DB[:account_authentication_audit_logs]
-                          .where(account_id: @account_ds[:id])
-                          .reverse(:id)
-                          .select_map([:at, :message, :metadata])
+          .where(account_id: @account_ds[:id])
+          .reverse(:id)
+          .select_map([:at, :message, :metadata])
 
         view "security_log"
       end

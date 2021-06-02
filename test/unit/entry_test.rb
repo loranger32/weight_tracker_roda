@@ -2,8 +2,8 @@ require_relative "../test_helpers"
 
 class EntryBasicTest < HookedTestClass
   def load_fixtures
-    @valid_params= {day: Date.parse("2021-01-01"), weight: "50.0", note: "A good note",
-                    account_id: 1, batch_id: 1}
+    @valid_params = {day: Date.parse("2021-01-01"), weight: "50.0", note: "A good note",
+                     account_id: 1, batch_id: 1}
     clean_fixtures
     Account.insert(user_name: "Alice", email: "alice@example.com",
                    # password = 'foobar'
@@ -110,7 +110,7 @@ class EntryBasicTest < HookedTestClass
   # Because the encryption / decryption processing happens before validation,
   # it raises an error if the attribute is not a string
   def test_raise_error_if_note_before_encryption_is_not_a_string
-    entry = Entry.new(@valid_params.merge(note: ['not a string']))
+    entry = Entry.new(@valid_params.merge(note: ["not a string"]))
     assert_raises { refute entry.valid? }
   end
 
@@ -142,7 +142,7 @@ class EntryBasicTest < HookedTestClass
     Entry.new(@valid_params).save
     refute_equal @valid_params[:note], DB[:entries].first[:note]
     assert DB[:entries].first[:note].size >= 65
-    assert_equal @valid_params[:note], Entry.first.note 
+    assert_equal @valid_params[:note], Entry.first.note
   end
 end
 
@@ -157,15 +157,15 @@ class EntryQueryingTest < HookedTestClass
     Batch.new(account_id: 1, active: true, name: "Batch 2", target: "49.0").save
 
     # Batch 1
-    Entry.new(day: "2020-12-01" , weight: "51.0", note: "", account_id: 1, batch_id: 1).save
-    Entry.new(day: "2020-12-02" , weight: "52.0", note: "", account_id: 1, batch_id: 1).save
+    Entry.new(day: "2020-12-01", weight: "51.0", note: "", account_id: 1, batch_id: 1).save
+    Entry.new(day: "2020-12-02", weight: "52.0", note: "", account_id: 1, batch_id: 1).save
 
     # Batch 2
-    Entry.new(day: "2021-01-01" , weight: "50.0", note: "", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2021-01-02" , weight: "51.0", note: "", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2021-01-03" , weight: "50.5", note: "", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2021-01-04" , weight: "49.1", note: "", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2021-01-05" , weight: "48.5", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2021-01-01", weight: "50.0", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2021-01-02", weight: "51.0", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2021-01-03", weight: "50.5", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2021-01-04", weight: "49.1", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2021-01-05", weight: "48.5", note: "", account_id: 1, batch_id: 2).save
   end
 
   def clean_fixtures
@@ -187,15 +187,15 @@ class EntryQueryingTest < HookedTestClass
 
   def test_all_with_deltas_computes_correct_deltas_when_selecting_all_entries
     results = Entry.all_with_deltas(account_id: 1, batch_id: "all")
-    
+
     assert_equal 0, results.last.delta
     assert_equal 1, results[-2].delta
 
-    assert_equal -2, results[-3].delta
+    assert_equal(-2, results[-3].delta)
     assert_equal 1, results[-4].delta
-    assert_equal -0.5, results[-5].delta
-    assert_equal -1.4, results[-6].delta
-    assert_equal -0.6, results[-7].delta
+    assert_equal(-0.5, results[-5].delta)
+    assert_equal(-1.4, results[-6].delta)
+    assert_equal(-0.6, results[-7].delta)
   end
 
   def test_all_with_deltas_computes_correct_deltas_when_selecting_individuel_batches
@@ -211,27 +211,27 @@ class EntryQueryingTest < HookedTestClass
 
     assert_equal 0, active_results.last.delta
     assert_equal 1, active_results[-2].delta
-    assert_equal -0.5, active_results[-3].delta
-    assert_equal -1.4, active_results[-4].delta
-    assert_equal -0.6, active_results.first.delta
+    assert_equal(-0.5, active_results[-3].delta)
+    assert_equal(-1.4, active_results[-4].delta)
+    assert_equal(-0.6, active_results.first.delta)
   end
 
   def test_all_with_deltas_computes_correct_deltas_to_target_if_target_is_present_for_specific_batch
     batch_id = Batch.where(account_id: 1, active: true).first.id
     results = Entry.all_with_deltas(account_id: 1, batch_id: batch_id) # active batch has target
-    
+
     assert_equal 1.0, results.last.delta_to_target
     assert_equal 2.0, results[-2].delta_to_target
     assert_equal 1.5, results[-3].delta_to_target
     assert_equal 0.1, results[-4].delta_to_target
-    assert_equal -0.5, results[-5].delta_to_target
+    assert_equal(-0.5, results[-5].delta_to_target)
   end
 
   def test_all_with_deltas_sets_a_slash_as_target_to_delta_if_no_target_set_for_specific_batch
     batch_id = Batch.where(account_id: 1, active: false).first.id # passive batch has no target
-    results = Entry.all_with_deltas(account_id: 1, batch_id: batch_id) 
-    
-    # check only the most ancient entries that belongs to first (inactive) batch with no target    
+    results = Entry.all_with_deltas(account_id: 1, batch_id: batch_id)
+
+    # check only the most ancient entries that belongs to first (inactive) batch with no target
     assert_equal "/", results.last.delta_to_target
     assert_equal "/", results[-2].delta_to_target
   end
@@ -246,6 +246,6 @@ class EntryQueryingTest < HookedTestClass
     assert_equal 2.0, results[-4].delta_to_target
     assert_equal 1.5, results[-5].delta_to_target
     assert_equal 0.1, results[-6].delta_to_target
-    assert_equal -0.5, results[-7].delta_to_target
+    assert_equal(-0.5, results[-7].delta_to_target)
   end
 end

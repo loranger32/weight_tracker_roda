@@ -1,7 +1,7 @@
 require "sequel"
 require "logger"
 
-Sequel::Model.plugin :force_encoding, 'UTF-8'
+Sequel::Model.plugin :force_encoding, "UTF-8"
 Sequel::Model.plugin :column_encryption do |enc|
   enc.key 0, ENV["SEQUEL_COLUMN_ENCRYPTION_KEY"]
 end

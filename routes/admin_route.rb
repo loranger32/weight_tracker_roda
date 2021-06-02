@@ -1,7 +1,6 @@
 module WeightTracker
   class App
     hash_branch("admin") do |r|
-
       unless Account[@account_ds[:id]].is_admin?
         response.status = 403
         r.halt
@@ -17,15 +16,15 @@ module WeightTracker
 
       r.on "accounts" do
         r.is do
-          case r.params["query"]
-          when "verified"   then @accounts = Account.verified
-          when "unverified" then @accounts = Account.unverified
-          when "closed"     then @accounts = Account.closed
-          when "otp_on"     then @accounts = Account.otp_on
-          when "otp_off"    then @accounts = Account.otp_off
-          when "admin"      then @accounts = Account.admins
+          @accounts = case r.params["query"]
+          when "verified" then Account.verified
+          when "unverified" then Account.unverified
+          when "closed" then Account.closed
+          when "otp_on" then Account.otp_on
+          when "otp_off" then Account.otp_off
+          when "admin" then Account.admins
           else
-            @accounts = Account.all
+            Account.all
           end
           view "admin/accounts", layout: "layout-admin"
         end
@@ -33,13 +32,13 @@ module WeightTracker
         # Verify , Close and Delete branches setup
 
         account_id = tp.int("account_id")
-          
+
         unless account_id > 0 && @target_account = Account[account_id]
           response.status = 404
           r.halt
         end
 
-        # Should only be needed for GET request, beacuse for POST requests 
+        # Should only be needed for GET request, beacuse for POST requests
         # it should normally raise a Roda::RodaPlugins::RouteCsrf:InvalidToken error before
         # But extra safety
         if @target_account.is_admin?
@@ -81,7 +80,7 @@ module WeightTracker
             @action_title = "Close Account"
             @form_action = "/admin/accounts/close"
             @btn_bg = "bg-warning"
-            
+
             view "admin/admin-action", layout: "layout-admin"
           end
 
@@ -103,7 +102,7 @@ module WeightTracker
             @action_title = "Open Account"
             @form_action = "/admin/accounts/open"
             @btn_bg = "bg-success"
-            
+
             view "admin/admin-action", layout: "layout-admin"
           end
 

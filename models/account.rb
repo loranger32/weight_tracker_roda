@@ -47,7 +47,7 @@ class Account < Sequel::Model
 
   def active_batch_id
     active_batch = batches_dataset.where(active: true).all
-    
+
     # Temporary error - must be dealt with by user on appropriate page
     raise StandardError, "More than one active batch" if active_batch.length > 1
 
@@ -62,7 +62,7 @@ class Account < Sequel::Model
     return false if entries.empty?
 
     today = Time.now.strftime("%d %b %Y")
-    last_entry_date = Entry.where(account_id: id).select_map(:day).sort.reverse.first.strftime("%d %b %Y")
+    last_entry_date = Entry.where(account_id: id).select_map(:day).max.strftime("%d %b %Y")
     today == last_entry_date
   end
 
@@ -85,7 +85,7 @@ class Account < Sequel::Model
   end
 
   def is_unverified?
-    status_id == 1 
+    status_id == 1
   end
 
   def account_status
@@ -102,9 +102,9 @@ class Account < Sequel::Model
     # Delete all rows associated with the account in RODAUTH tables
     rodauth_tables_with_account_id = [:account_active_session_keys, :account_authentication_audit_logs]
     rodauth_tables_with_id = [:account_email_auth_keys, :account_lockouts, :account_login_change_keys,
-                              :account_login_failures, :account_otp_keys, :account_password_reset_keys,
-                              :account_recovery_codes, :account_session_keys,
-                              :account_verification_keys, :account_verification_keys]
+      :account_login_failures, :account_otp_keys, :account_password_reset_keys,
+      :account_recovery_codes, :account_session_keys,
+      :account_verification_keys, :account_verification_keys]
     rodauth_tables_with_account_id.each do |table|
       DB[table].where(account_id: id).delete
     end

@@ -3,7 +3,7 @@ module WeightTracker
     hash_branch("batches") do |r|
       # TODO - Ugly - to refactor
       @current_batch = Batch[Account[@account_ds[:id]].active_batch_id]
-      
+
       r.is do
         r.get do
           @batches = Account[@account_ds[:id]].batches
@@ -35,7 +35,7 @@ module WeightTracker
 
       r.on Integer do |batch_id|
         @batch = Batch[batch_id]
-        
+
         unless @batch
           response.status = 404
           r.halt

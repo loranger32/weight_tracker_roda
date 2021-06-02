@@ -3,14 +3,14 @@ require_relative "../test_helpers"
 class AuthenticationTest < CapybaraTestCase
   def test_user_is_redirected_to_login_page_if_not_signed_in
     restricted_pathes = %w[/ /accounts/1 /security-log /entries /entries/new
-                           /change-login /change-password /change-user-name /export-data
-                           /close-account /admin/accounts]
-    
+      /change-login /change-password /change-user-name /export-data
+      /close-account /admin/accounts]
+
     restricted_pathes.each do |path|
       visit path
       assert_current_path "/login"
       assert_title "WT - Log In"
-      assert_css ".flash-error"  
+      assert_css ".flash-error"
     end
   end
 
@@ -76,7 +76,7 @@ class AuthenticationTest < CapybaraTestCase
 
     fill_in "Authentication Code", with: totp.now
     click_on "Authenticate Using TOTP"
-    
+
     assert_current_path "/entries/new"
     assert_link "Alice", href: "/account"
     assert_css ".flash-notice"

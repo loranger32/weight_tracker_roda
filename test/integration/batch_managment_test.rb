@@ -14,11 +14,11 @@ class BatchManegmentTest < CapybaraTestCase
     Batch.new(account_id: 1, active: false, name: "past batch", target: "50.0").save
 
     # Cannot use insert here beacuse of the column encryption
-    Entry.new(day: "2020-11-01" , weight: "51.0", note: "", account_id: 1, batch_id: 1).save
-    Entry.new(day: "2020-11-02" , weight: "54.0", note: "", account_id: 1, batch_id: 1).save
-    Entry.new(day: "2020-12-01" , weight: "51.0", note: "", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2020-12-02" , weight: "52.0", note: "", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2020-12-03" , weight: "53.0", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2020-11-01", weight: "51.0", note: "", account_id: 1, batch_id: 1).save
+    Entry.new(day: "2020-11-02", weight: "54.0", note: "", account_id: 1, batch_id: 1).save
+    Entry.new(day: "2020-12-01", weight: "51.0", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2020-12-02", weight: "52.0", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2020-12-03", weight: "53.0", note: "", account_id: 1, batch_id: 2).save
   end
 
   def clean_fixtures
@@ -119,7 +119,6 @@ class BatchManegmentTest < CapybaraTestCase
     refute_content "Too Long"
     assert_equal original_number_of_batches, Batch.count
   end
-
 
   def test_can_update_a_batch_name
     visit "/batches"
@@ -244,7 +243,7 @@ class BatchManegmentTest < CapybaraTestCase
     assert_current_path "/batches"
     assert_css ".flash-notice"
     assert_content "Batch has been successfully deleted"
-    
+
     refute_content "New Batch"
     assert_nil Batch.where(name: "New Batch", account_id: 1).first
     assert_equal 0, Entry.where(batch_id: batch.id).count
@@ -265,7 +264,7 @@ class BatchManegmentTest < CapybaraTestCase
     assert_current_path "/batches/#{batch.id}/edit"
     assert_css ".flash-error"
     assert_content "Please tick the checkbox to confirm batch deletion"
-    
+
     refute_nil Batch.where(name: "New Batch", account_id: 1).first
     assert_equal 2, Entry.where(batch_id: batch.id).count
   end

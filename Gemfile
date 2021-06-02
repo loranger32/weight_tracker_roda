@@ -11,11 +11,11 @@ gem "puma", "~> 5.3"
 gem "rake", "~> 13.0", ">= 13.0.1"
 gem "roda", "~> 3.43.1"
 gem "roda-enhanced_logger", "~> 0.4.0"
-gem 'rodauth', '~> 2.12'
+gem "rodauth", "~> 2.12"
 gem "rotp", "~> 6.2"
 gem "rqrcode", "~> 1.2"
-gem 'sendgrid-ruby', '~> 6.4'
-gem 'sequel', '~> 5.43'
+gem "sendgrid-ruby", "~> 6.4"
+gem "sequel", "~> 5.43"
 gem "sequel_pg", "~> 1.14", require: "sequel"
 
 group :development, :test do

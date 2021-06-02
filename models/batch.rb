@@ -25,7 +25,7 @@ class Batch < Sequel::Model
     validates_type [TrueClass, FalseClass], :active
     validates_type String, :name
     validates_type String, :target
-    errors.add(:name, 'must have 30 characters max') if name && name.length > 30
+    errors.add(:name, "must have 30 characters max") if name && name.length > 30
   end
 
   def before_validation
@@ -50,8 +50,8 @@ class Batch < Sequel::Model
   end
 
   private
-    
-    def batch_entries_date
-      @batch_entries_date ||= entries.sort_by(&:day).map { |entry| entry.day.strftime("%d %b %Y") }
-    end
+
+  def batch_entries_date
+    @batch_entries_date ||= entries.sort_by(&:day).map { |entry| entry.day.strftime("%d %b %Y") }
+  end
 end

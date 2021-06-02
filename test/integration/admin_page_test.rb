@@ -29,12 +29,12 @@ class AdminPageTest < CapybaraTestCase
 
   def test_non_admin_user_cannot_access_admin_pages
     alice_account = create_and_verify_account!
-    
+
     visit "/admin"
     assert_equal 403, status_code
     assert_content "403 ERROR"
     refute_content "Admin Panel"
-    
+
     visit "/admin/accounts"
     assert_equal 403, status_code
     assert_content "403 ERROR"
@@ -44,7 +44,7 @@ class AdminPageTest < CapybaraTestCase
     assert_equal 403, status_code
     assert_content "403 ERROR"
     refute_content "Admin Panel"
-    
+
     visit "/admin/accounts/delete?account_id=#{alice_account.id}"
     assert_equal 403, status_code
     assert_content "403 ERROR"
@@ -91,26 +91,26 @@ class AdminPageTest < CapybaraTestCase
     alice_account = setup_admin
 
     visit "/admin"
-    
+
     assert_current_path "/admin/accounts"
     assert_content "Admin Panel"
     assert_content "Admin - Alice"
-    assert_link "All"   
-    assert_link "Verified"   
-    assert_link "Unverified"   
+    assert_link "All"
+    assert_link "Verified"
+    assert_link "Unverified"
     assert_link "Closed"
-    assert_link "OTP ON"   
+    assert_link "OTP ON"
     assert_link "OTP OFF"
     assert_link "ADMIN"
     assert_link "Delete", count: 3
     assert_link "Verify", count: 1
-     # Regexp needed to disambiguate from the "Closed" filter link above
+    # Regexp needed to disambiguate from the "Closed" filter link above
     assert_link "Close", count: 2, href: /\/admin\/accounts\/close/
     assert_link "Open", count: 1
 
     assert_content "alice@example.com"
     assert_content "test.unverified@example.com"
-    assert_content "test.verified@example.com"   
+    assert_content "test.verified@example.com"
     assert_content "test.closed@example.com"
     assert_content "test unverified account"
     assert_content "test verified account"
@@ -118,7 +118,7 @@ class AdminPageTest < CapybaraTestCase
 
     click_on "Verified"
     assert_content "alice@example.com"
-    assert_content "test.verified@example.com"   
+    assert_content "test.verified@example.com"
     assert_content "test verified account"
     refute_content "test.unverified@example.com"
     refute_content "test.closed@example.com"
@@ -128,7 +128,7 @@ class AdminPageTest < CapybaraTestCase
     click_on "Unverified"
     refute_content "alice@example.com"
     assert_content "test.unverified@example.com"
-    refute_content "test.verified@example.com"   
+    refute_content "test.verified@example.com"
     refute_content "test.closed@example.com"
     assert_content "test unverified account"
     refute_content "test verified account"
@@ -137,16 +137,16 @@ class AdminPageTest < CapybaraTestCase
     click_on "Closed"
     refute_content "alice@example.com"
     refute_content "test.unverified@example.com"
-    refute_content "test.verified@example.com"   
+    refute_content "test.verified@example.com"
     assert_content "test.closed@example.com"
     refute_content "test unverified account"
     refute_content "test verified account"
-    assert_content "test closed account"    
+    assert_content "test closed account"
 
     click_on "OTP ON"
     assert_content "alice@example.com"
     refute_content "test.unverified@example.com"
-    refute_content "test.verified@example.com"   
+    refute_content "test.verified@example.com"
     refute_content "test.closed@example.com"
     refute_content "test unverified account"
     refute_content "test verified account"
@@ -155,7 +155,7 @@ class AdminPageTest < CapybaraTestCase
     click_on "OTP OFF"
     refute_content "alice@example.com"
     assert_content "test.unverified@example.com"
-    assert_content "test.verified@example.com"   
+    assert_content "test.verified@example.com"
     assert_content "test.closed@example.com"
     assert_content "test unverified account"
     assert_content "test verified account"
@@ -164,7 +164,7 @@ class AdminPageTest < CapybaraTestCase
     click_on "ADMIN"
     assert_content "alice@example.com"
     refute_content "test.unverified@example.com"
-    refute_content "test.verified@example.com"   
+    refute_content "test.verified@example.com"
     refute_content "test.closed@example.com"
     refute_content "test unverified account"
     refute_content "test verified account"
@@ -177,14 +177,14 @@ class AdminPageTest < CapybaraTestCase
     batch_id = soon_deleted_account.active_batch_id
     entry = Entry.new(weight: "60.0", day: "2021-06-01", note: "",
                       account_id: soon_deleted_account.id, batch_id: batch_id).save
-    
+
     logout!(soon_deleted_account)
-    
+
     alice_account = setup_admin
-    
+
     visit "/admin"
     assert_current_path "/admin/accounts"
-    
+
     click_link "Delete", href: "/admin/accounts/delete?account_id=#{soon_deleted_account.id}"
 
     assert_current_path "/admin/accounts/delete?account_id=#{soon_deleted_account.id}"
@@ -258,7 +258,7 @@ class AdminPageTest < CapybaraTestCase
     logout!(test_admin)
     alice_account = setup_admin
     visit "/admin/accounts"
-    
+
     refute_link "Verify", href: "/admin/accounts/verify?account_id=#{test_admin.id}"
     assert_raises Roda::RodaPlugins::RouteCsrf::InvalidToken do
       post "/admin/accounts/verify?account_id=#{test_admin.id}"

@@ -18,7 +18,7 @@ class AccountManagementTest < CapybaraTestCase
     assert_button "Log Out"
     assert_link "Close Account"
   end
-  
+
   def test_user_can_change_user_name
     create_and_verify_account!
 
@@ -48,7 +48,7 @@ class AccountManagementTest < CapybaraTestCase
 
     account = Account.first
 
-    assert BCrypt::Password.new(account.password_hash) == "barfoo" 
+    assert BCrypt::Password.new(account.password_hash) == "barfoo"
     assert_current_path "/account"
     assert_css ".flash-notice"
     assert_content "Your password has been changed"
@@ -113,10 +113,9 @@ class AccountManagementTest < CapybaraTestCase
     assert_current_path "/account"
   end
 
-
   def test_export_data_to_json
     pre_existing_data_files = Dir.glob("tmp/wt_data_Alice_*.json")
-    
+
     create_and_verify_account!
 
     visit "/export-data"
@@ -126,13 +125,13 @@ class AccountManagementTest < CapybaraTestCase
     existing_data_files = Dir.glob("tmp/wt_data_Alice_*.json")
 
     assert_equal pre_existing_data_files.size + 1, existing_data_files.size
-    
+
     FileUtils.remove_entry_secure((existing_data_files - pre_existing_data_files)[0])
   end
 
   def test_close_account_page
     create_and_verify_account!
-    
+
     visit "/close-account"
     assert_current_path "/close-account"
 
@@ -169,7 +168,7 @@ class AccountManagementTest < CapybaraTestCase
     create_and_verify_account!
 
     assert_equal 2, Account.first.status_id
-    
+
     visit "/close-account"
 
     check "I have backed up my data"
@@ -200,7 +199,7 @@ class AccountManagementMailTest < CapybaraTestCase
     logout!
 
     visit "/login"
-    
+
     11.times do
       fill_in "Email", with: "alice@example.com"
       fill_in "Password", with: "wrong_password"
@@ -228,7 +227,7 @@ class AccountManagementMailTest < CapybaraTestCase
     logout!
 
     visit "/login"
-    
+
     11.times do
       fill_in "Email", with: "alice@example.com"
       fill_in "Password", with: "wrong_password"
@@ -245,7 +244,7 @@ class AccountManagementMailTest < CapybaraTestCase
 
     assert_match(/<a href='http:\/\/www\.example\.com\/unlock-account\?key=/, mail_body(0))
     assert_equal Account.first.id, DB[:account_lockouts].first[:id]
-    
+
     unlock_account_key = /<a href='http:\/\/www\.example\.com\/unlock-account\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
 
     visit "/unlock-account?key=#{unlock_account_key}"
@@ -262,7 +261,7 @@ class AccountManagementMailTest < CapybaraTestCase
     assert_equal 1, mails_count
     assert_match(/<a href='http:\/\/www\.example\.com\/verify-account\?key=/, mail_body(0))
     assert_equal Account.first.id, DB[:account_verification_keys].first[:id]
-    
+
     verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
 
     visit "/verify-account?key=#{verify_account_key}"
@@ -304,7 +303,7 @@ class AccountManagementMailTest < CapybaraTestCase
 
     assert_match(/<a href='http:\/\/www\.example\.com\/verify-account\?key=/, mail_body(1))
     assert_equal Account.first.id, DB[:account_verification_keys].first[:id]
-    
+
     verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(mail_body(1))[1]
 
     visit "/verify-account?key=#{verify_account_key}"
@@ -344,7 +343,7 @@ class AccountManagementMailTest < CapybaraTestCase
     assert_equal 1, mails_count
     assert_match(/<a href='http:\/\/www\.example\.com\/reset-password\?key=/, mail_body(0))
     assert_equal Account.first.id, DB[:account_password_reset_keys].first[:id]
-    
+
     reset_password_key = /<a href='http:\/\/www\.example\.com\/reset-password\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
 
     visit "/reset-password?key=#{reset_password_key}"
@@ -406,7 +405,7 @@ class AccountManagementMailTest < CapybaraTestCase
 
     account = Account.first
 
-    assert_equal "alice@example.com", account.email 
+    assert_equal "alice@example.com", account.email
     assert_current_path "/account"
     assert_css ".flash-notice"
     assert_content "alice@example.com"
@@ -417,7 +416,7 @@ class AccountManagementMailTest < CapybaraTestCase
     assert_equal mail_to(0), new_email # Check email is sent to the new address
     assert_match(/<a href='http:\/\/www\.example\.com\/verify-login-change\?key=/, mail_body(0))
     assert_equal Account.first.id, DB[:account_login_change_keys].first[:id]
-    
+
     verify_login_change_key = /<a href='http:\/\/www\.example\.com\/verify-login-change\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
 
     visit "/verify-login-change?key=#{verify_login_change_key}"
@@ -471,7 +470,7 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     secret = page.find("#otp-secret-key").text
 
     totp = ROTP::TOTP.new(secret)
-    
+
     fill_in "Password", with: "foobar"
     fill_in "Authentication Code", with: totp.now
 
@@ -480,7 +479,7 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
 
     assert_current_path "/entries/new"
     assert_css ".flash-notice"
-    assert_content "TOTP authentication is now setup" 
+    assert_content "TOTP authentication is now setup"
     assert_link "Alice", href: "/account"
 
     visit "/account"
@@ -539,11 +538,11 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     assert_current_path "/recovery-codes"
     refute_content recovery_code
     assert_content "Add Additional Recovery Codes"
-    
+
     fill_in "Password", with: "foobar"
     click_on "Add Authentication Recovery Codes"
-    
-    assert_equal 16, DB[:account_recovery_codes].where(id: account_id).all.size    
+
+    assert_equal 16, DB[:account_recovery_codes].where(id: account_id).all.size
     assert_css ".flash-notice"
     assert_content "Additional authentication recovery codes have been added"
   end

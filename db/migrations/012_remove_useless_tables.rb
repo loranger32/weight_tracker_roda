@@ -12,7 +12,7 @@ Sequel.migration do
     deadline_opts = proc do |days|
       {null: false, default: Sequel.date_add(Sequel::CURRENT_TIMESTAMP, days: days)}
     end
-    
+
     # Used by the webauthn feature
     create_table(:account_webauthn_user_ids) do
       foreign_key :id, :accounts, primary_key: true, type: :Bignum
@@ -36,7 +36,7 @@ Sequel.migration do
       String :code
       DateTime :code_issued_at, null: false, default: Sequel::CURRENT_TIMESTAMP
     end
-    
+
     # Used by the remember me feature
     create_table(:account_remember_keys) do
       foreign_key :id, :accounts, primary_key: true, type: :Bignum

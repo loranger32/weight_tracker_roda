@@ -157,7 +157,7 @@ class EntriesActionTest < CapybaraTestCase
 
   def test_can_update_an_entry
     visit "/entries/new"
-    
+
     fill_in "Day", with: "30/04/2021"
     fill_in "Weight", with: "52.0"
     click_on "Validate"
@@ -165,7 +165,7 @@ class EntriesActionTest < CapybaraTestCase
     active_batch = Batch.where(account_id: @account_id).first
 
     click_on "Fri 30 Apr 2021"
-    
+
     assert_content "Edit Entry"
     assert_field "Day", with: "2021-04-30"
     assert_field "Weight", with: "52.0"
@@ -184,12 +184,12 @@ class EntriesActionTest < CapybaraTestCase
     assert_equal 1, Batch.where(account_id: @account_id).all.length
     assert_equal 1, Entry.where(account_id: @account_id).all.length
     assert_equal Batch.where(account_id: @account_id).first,
-                 Entry.where(account_id: @account_id).first.batch
+      Entry.where(account_id: @account_id).first.batch
   end
 
   def test_can_delete_an_entry
     visit "/entries/new"
-    
+
     fill_in "Day", with: "30/04/2021"
     fill_in "Weight", with: "52.0"
     click_on "Validate"

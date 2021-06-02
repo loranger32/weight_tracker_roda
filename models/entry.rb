@@ -36,7 +36,7 @@ class Entry < Sequel::Model
 
     def all_with_deltas(account_id:, batch_id:)
       entries = all_desc(account_id: account_id, batch_id: batch_id)
-   
+
       add_deltas(entries)
       add_deltas_to_target(entries)
       entries

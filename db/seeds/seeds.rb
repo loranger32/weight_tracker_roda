@@ -22,7 +22,7 @@ accounts = [
    user_name: "Albert",
    password_hash: BCrypt::Password.create("abcdef", cost: 2),
    status_id: 3}
- ]
+]
 
 accounts.each { |account| Account.new(account).save }
 
@@ -40,7 +40,6 @@ entries = [{weight: "85.0", day: "2021-01-01", note: "First day", account_id: 1,
   {weight: "83.2", day: "2021-01-04", note: "Keep going", account_id: 1, batch_id: 2},
   {weight: "84.0", day: "2021-01-05", note: "Don't give up", account_id: 1, batch_id: 2},
   {weight: "84.0", day: "2021-01-02", note: "", account_id: 5, batch_id: 3},
-  {weight: "83.5", day: "2021-01-03", note: "I stop !", account_id: 5, batch_id: 3},
-]
+  {weight: "83.5", day: "2021-01-03", note: "I stop !", account_id: 5, batch_id: 3}]
 
 entries.each { |entry| Entry.new(entry).save }

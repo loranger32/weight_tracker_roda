@@ -16,7 +16,7 @@ class AccountTest < HookedTestClass
     assert_equal "Alice", account.user_name
     assert_equal "alice@example.com", account.email
     assert_equal "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva",
-                 account.password_hash
+      account.password_hash
   end
 
   def test_has_an_entry_association

@@ -2,7 +2,7 @@ require "bundler/setup"
 
 if ENV["RACK_ENV"] == "production"
   Bundler.require(:default, :production)
-  raise StandardError, "Sendrid API key not found" unless ENV['SENDGRID_API_KEY']
+  raise StandardError, "Sendrid API key not found" unless ENV["SENDGRID_API_KEY"]
 else
   require "dotenv"
   Dotenv.load

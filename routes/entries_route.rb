@@ -1,7 +1,6 @@
 module WeightTracker
   class App
     hash_branch("entries") do |r|
-
       # TODO - Ugly - to refactor
       @current_batch = Batch[Account[@account_ds[:id]].active_batch_id]
 
@@ -13,7 +12,7 @@ module WeightTracker
       r.is do
         r.get do
           if (batch_id = tp.pos_int("batch_id"))
-            
+
             unless account_owns_batch?(Account[@account_ds[:id]], batch_id)
               response.status = 404
               r.halt
@@ -41,7 +40,6 @@ module WeightTracker
                        note: tp.str("note"),
                        account_id: @account_ds[:id]}
 
-          
           @entry.set(submitted)
           @entry.set(batch_id: @current_batch.id)
 

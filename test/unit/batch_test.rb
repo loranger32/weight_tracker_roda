@@ -7,8 +7,8 @@ class BatchBasicTest < HookedTestClass
                    # password = 'foobar'
                    password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva")
     Batch.new(account_id: 1, active: true, name: "Batch 1", target: "50.0").save
-    Entry.new(day: "2020-12-01" , weight: "51.0", note: "", account_id: 1, batch_id: 1).save
-    Entry.new(day: "2020-12-02" , weight: "52.0", note: "", account_id: 1, batch_id: 1).save
+    Entry.new(day: "2020-12-01", weight: "51.0", note: "", account_id: 1, batch_id: 1).save
+    Entry.new(day: "2020-12-02", weight: "52.0", note: "", account_id: 1, batch_id: 1).save
   end
 
   def clean_fixtures
@@ -90,7 +90,6 @@ class BatchBasicTest < HookedTestClass
     assert batch.valid?
   end
 
-
   # TO DO : active param is always evaluated in a boolean context, which means it's always
   # true or false. Validation should be more specific
   # def test_active_must_be_boolean
@@ -111,11 +110,11 @@ class BatchAdvancedTest < HookedTestClass
     Batch.new(account_id: 1, active: true, name: "active one").save
 
     # Cannot use insert here beacuse of the column encryption
-    Entry.new(day: "2020-11-01" , weight: "51.0", note: "", account_id: 1, batch_id: 1).save
-    Entry.new(day: "2020-11-02" , weight: "54.0", note: "", account_id: 1, batch_id: 1).save
-    Entry.new(day: "2020-12-01" , weight: "51.0", note: "", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2020-12-02" , weight: "52.0", note: "", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2020-12-03" , weight: "53.0", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2020-11-01", weight: "51.0", note: "", account_id: 1, batch_id: 1).save
+    Entry.new(day: "2020-11-02", weight: "54.0", note: "", account_id: 1, batch_id: 1).save
+    Entry.new(day: "2020-12-01", weight: "51.0", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2020-12-02", weight: "52.0", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2020-12-03", weight: "53.0", note: "", account_id: 1, batch_id: 2).save
 
     @account = Account.where(user_name: "Alice").first
   end
@@ -143,7 +142,7 @@ class BatchAdvancedTest < HookedTestClass
 
   def test_batch_active_for_account_returns_all_active_batches_for_given_account
     actual = Batch.active_for_account(@account.id)
-    
+
     assert_instance_of Array, actual
     assert_equal 1, actual.length
     actual.each { |batch| assert_instance_of Batch, batch }
@@ -154,7 +153,6 @@ class BatchAdvancedTest < HookedTestClass
     batch = @account.add_batch(active: true)
     assert_equal "New Batch", batch.name
   end
-
 
   def test_set_a_default_name_if_is_empty_string
     batch = @account.add_batch(active: true, name: "")
@@ -177,7 +175,7 @@ class BatchAdvancedTest < HookedTestClass
 
   def test_set_active_status
     # Be sure that the preconditions are met
-    refute_nil first_batch  = Batch.where(name: "active one", active: true).first
+    refute_nil first_batch = Batch.where(name: "active one", active: true).first
     refute_nil second_batch = Batch.where(name: "non active", active: false).first
 
     # set_active_status does nothing if the batch is already active

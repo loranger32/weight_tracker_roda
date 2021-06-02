@@ -39,8 +39,11 @@ class HookedTestClass < Minitest::Test
     super
   end
 
-  def load_fixtures; end
-  def clean_fixtures; end
+  def load_fixtures
+  end
+
+  def clean_fixtures
+  end
 end
 
 class CapybaraTestCase < HookedTestClass
@@ -77,7 +80,7 @@ class CapybaraTestCase < HookedTestClass
     account.reload
   end
 
-  def create_and_verify_account!(user_name: "Alice", email: "alice@example.com" , password: "foobar")
+  def create_and_verify_account!(user_name: "Alice", email: "alice@example.com", password: "foobar")
     account = create_account!(user_name: user_name, email: email, password: password)
     verify_account!(account)
   end
@@ -88,7 +91,7 @@ class CapybaraTestCase < HookedTestClass
     secret = page.find("#otp-secret-key").text
 
     totp = ROTP::TOTP.new(secret)
-    
+
     fill_in "Password", with: "foobar"
     fill_in "Authentication Code", with: totp.now
 
@@ -144,4 +147,3 @@ class CapybaraTestCase < HookedTestClass
     clean_mailbox
   end
 end
-

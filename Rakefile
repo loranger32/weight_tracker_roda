@@ -113,7 +113,7 @@ namespace :db do
     Sequel.connect(ENV["DATABASE_URL"]) do |db|
       tables.each do |table|
         if db.table_exists?(table)
-          db[table].delete 
+          db[table].delete
           puts "Table #{table} deleted"
         end
       end
