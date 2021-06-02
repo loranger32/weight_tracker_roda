@@ -232,8 +232,8 @@ module WeightTracker
                                  .order(:id)
                                  .select(:day, :weight, :note, :batch_id)
           @raw_batch_data = Batch.where(account_id: @account_ds[:id])
-                                  .order(:id)
-                                  .select(:id, :name, :target)
+                                 .order(:id)
+                                 .select(:id, :name, :target)
           
           # Hack to ensure proper encoding of notes
           @raw_entry_data_with_decrypted_notes = @raw_entry_data.all.map do |ds_entry|
