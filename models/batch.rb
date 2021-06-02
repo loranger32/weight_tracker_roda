@@ -50,8 +50,8 @@ class Batch < Sequel::Model
   end
 
   private
-
-  def batch_entries_date
-    @batch_entries_date ||= entries.sort_by(&:day).map { |entry| entry.day.strftime("%d %b %Y") }
-  end
+    
+    def batch_entries_date
+      @batch_entries_date ||= entries.sort_by(&:day).map { |entry| entry.day.strftime("%d %b %Y") }
+    end
 end
