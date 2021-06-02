@@ -50,12 +50,21 @@ class AdminPageTest < CapybaraTestCase
     assert_content "403 ERROR"
     refute_content "Admin Panel"
 
+    visit "/admin/accounts/close?account_id=#{alice_account.id}"
+    assert_equal 403, status_code
+    assert_content "403 ERROR"
+    refute_content "Admin Panel"
+
     assert_raises Roda::RodaPlugins::RouteCsrf::InvalidToken do
       post "/admin/accounts/delete?account_id=#{alice_account.id}"
     end
 
     assert_raises Roda::RodaPlugins::RouteCsrf::InvalidToken do
       post "/admin/accounts/verify?account_id=#{alice_account.id}"
+    end
+
+    assert_raises Roda::RodaPlugins::RouteCsrf::InvalidToken do
+      post "/admin/accounts/close?account_id=#{alice_account.id}"
     end
   end
 
@@ -80,12 +89,14 @@ class AdminPageTest < CapybaraTestCase
     assert_link "All"   
     assert_link "Verified"   
     assert_link "Unverified"   
-    assert_link "Closed"   
+    assert_link "Closed"
     assert_link "OTP ON"   
     assert_link "OTP OFF"
     assert_link "ADMIN"
     assert_link "Delete", count: 3
     assert_link "Verify", count: 1
+     # Regexp needed to disambiguate from the "Closed" filter link above
+    assert_link "Close", count: 2, href: /\/admin\/accounts\/close/
 
     assert_content "alice@example.com"
     assert_content "test.unverified@example.com"
@@ -226,5 +237,64 @@ class AdminPageTest < CapybaraTestCase
 
     assert unverified_account.reload.is_verified?
     assert_nil DB[:account_verification_keys].where(id: unverified_account.id).first
+  end
+
+  def test_admin_cannot_verify_an_admin_account
+    test_admin = create_account!(user_name: "test admin", email: "test_admin@example.com")
+    Admin.new(account_id: test_admin.id).save
+
+    assert test_admin.is_admin?
+
+    logout!(test_admin)
+    alice_account = setup_admin
+    visit "/admin/accounts"
+    
+    refute_link "Verify", href: "/admin/accounts/verify?account_id=#{test_admin.id}"
+    assert_raises Roda::RodaPlugins::RouteCsrf::InvalidToken do
+      post "/admin/accounts/verify?account_id=#{test_admin.id}"
+    end
+
+    assert test_admin.reload.is_unverified?
+  end
+
+  def test_admin_can_close_an_account
+    active_account = create_account!(user_name: "active", email: "active@example.com")
+    logout!(active_account)
+
+    alice_account = setup_admin
+
+    visit "/admin"
+    click_link "Close", href: "/admin/accounts/close?account_id=#{active_account.id}"
+    assert_current_path "/admin/accounts/close?account_id=#{active_account.id}"
+    assert_content "Admin Panel"
+    assert_content "Admin - Alice"
+    assert_content "Close Account"
+    assert_content "You are about to manually close this account."
+    assert_content "active"
+    assert_content "active@example.com"
+    assert_content "1 batches"
+    assert_content "0 entries"
+    assert_content "Last entry: /"
+
+    click_on "Close Account"
+    assert_current_path "/admin/accounts"
+    assert_css ".flash-notice"
+    assert_content "Account successfully closed"
+    assert_content "active"
+    assert_content "active@example.com"
+    refute_link "Close", href: "/admin/accounts/close?account_id=#{active_account.id}"
+
+    assert active_account.reload.is_closed?
+  end
+
+  def test_admin_cannot_close_an_admin_account
+    alice_account = setup_admin
+    visit "/admin/accounts"
+
+    refute_link "Close", href: "/admin/accounts/delete?account_id=#{alice_account.id}"
+
+    assert_raises Roda::RodaPlugins::RouteCsrf::InvalidToken do
+      post "/admin/accounts/close?account_id=#{alice_account.id}"
+    end
   end
 end

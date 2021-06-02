@@ -1,0 +1,16 @@
+- @page_title << @action_title
+
+%h3.mt-50.center-text!= @action_title
+
+%p.mt-30.center-text#action-info You are about to manually #{@action_name} this account.
+
+!= partial("partials/admin-account-show")
+
+%form{action: @form_action, method: :post}
+  != csrf_tag(@form_action)
+
+  %input{type: :hidden, name: "account_id", value: @target_account.id}
+
+  %input.mt-30.w-200.center-block.btn.btn-lg.white#admin-action-button{type: :submit, value: @action_title, class: @btn_bg}
+
+- content_for :js, assets([:js, :admin_actions])

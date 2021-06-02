@@ -167,7 +167,7 @@ module WeightTracker
       js: {main: "main.js", close_account: "close_account.js",
            recovery_codes: "recovery_codes.js", entries_edit: "entries_edit.js",
            batch_index: "batch_index.js", batch_edit: "batch_edit.js",
-           delete_account: "delete-account.js", verify_account: "verify-account.js"},
+           admin_actions: "admin_actions.js"},
       group_subdirs: false,
       gzip: true
     compile_assets if production?

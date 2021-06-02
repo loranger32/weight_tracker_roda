@@ -19,7 +19,7 @@
   != partial("partials/flash")
 
   .block.mt-40.w-200.center-block.center-text
-    .btn.bg-warning.white Admin - #{@account_ds[:user_name]}
+    %a.block.btn.bg-warning.white{href: "/admin/accounts"} Admin - #{@account_ds[:user_name]}
   
   != yield
 

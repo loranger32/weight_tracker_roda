@@ -17,7 +17,7 @@
       %td.fw-600 STATUS
       %td.fw-600 2FA
       %td.fw-600 ADMIN
-      %td.fw-600{colspan: "2"}
+      %td.fw-600{colspan: "3"}
     %tbody
       - @accounts.each do |account|
         %tr.lh-2
@@ -28,10 +28,14 @@
           %td= DB[:account_recovery_codes].where(id: account.id).empty? ? "" : "x"
           %td= account.is_admin? ? "x" : ""
           %td
+            - if account.is_unverified? && !account.is_admin?
+              %a.btn.btn-sm.bg-success.white{href: "/admin/accounts/verify?account_id=#{account.id}"} Verify
+          %td
+            - unless account.is_closed? || account.is_admin?
+              %a.btn.btn-sm.bg-warning.white{href: "/admin/accounts/close?account_id=#{account.id}"} Close
+          %td
             - unless account.is_admin?
               %a.btn.btn-sm.bg-danger.white{href: "/admin/accounts/delete?account_id=#{account.id}"} Delete
-          %td
-            - if account.is_unverified?
-              %a.btn.btn-sm.bg-success.white{href: "/admin/accounts/verify?account_id=#{account.id}"} Verify
+
 - else
-  %p.mt-50.fs-2 No Account match these criterias
+  %p.mt-50.fs-2.center-text No Account matches these criteria

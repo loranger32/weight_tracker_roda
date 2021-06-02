@@ -30,7 +30,7 @@ module WeightTracker
           view "admin/accounts", layout: "layout-admin"
         end
 
-        # Verify and Delete branches setup
+        # Verify , Close and Delete branches setup
 
         account_id = tp.int("account_id")
           
@@ -54,7 +54,12 @@ module WeightTracker
           end
 
           r.get do
-            view "/admin/account-verify", layout: "layout-admin"
+            @action_name = "verify"
+            @action_title = "Verify Account"
+            @form_action = "/admin/accounts/verify"
+            @btn_bg = "bg-success"
+
+            view "/admin/admin-action", layout: "layout-admin"
           end
 
           r.post do
@@ -63,12 +68,38 @@ module WeightTracker
             flash["notice"] = "Account successfully verified"
             r.redirect "/admin/accounts"
           end
-          
+        end
+
+        r.is "close" do
+          if @target_account.is_closed?
+            flash["error"] = "This account is already closed"
+            r.redirect "/admin/accounts"
+          end
+
+          r.get do
+            @action_name = "close"
+            @action_title = "Close Account"
+            @form_action = "/admin/accounts/close"
+            @btn_bg = "bg-warning"
+            
+            view "admin/admin-action", layout: "layout-admin"
+          end
+
+          r.post do
+            @target_account.update(status_id: 3)
+            flash["notice"] = "Account successfully closed"
+            r.redirect "/admin/accounts"
+          end
         end
 
         r.is "delete" do
           r.get do
-            view "admin/account-delete", layout: "layout-admin"
+            @action_name = "delete"
+            @action_title = "Delete Account"
+            @form_action = "/admin/accounts/delete"
+            @btn_bg = "bg-danger"
+
+            view "admin/admin-action", layout: "layout-admin"
           end
 
           r.post do
