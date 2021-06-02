@@ -55,6 +55,11 @@ class AdminPageTest < CapybaraTestCase
     assert_content "403 ERROR"
     refute_content "Admin Panel"
 
+    visit "/admin/accounts/open?account_id=#{alice_account.id}"
+    assert_equal 403, status_code
+    assert_content "403 ERROR"
+    refute_content "Admin Panel"
+
     assert_raises Roda::RodaPlugins::RouteCsrf::InvalidToken do
       post "/admin/accounts/delete?account_id=#{alice_account.id}"
     end
@@ -65,6 +70,10 @@ class AdminPageTest < CapybaraTestCase
 
     assert_raises Roda::RodaPlugins::RouteCsrf::InvalidToken do
       post "/admin/accounts/close?account_id=#{alice_account.id}"
+    end
+
+    assert_raises Roda::RodaPlugins::RouteCsrf::InvalidToken do
+      post "/admin/accounts/open?account_id=#{alice_account.id}"
     end
   end
 
@@ -97,6 +106,7 @@ class AdminPageTest < CapybaraTestCase
     assert_link "Verify", count: 1
      # Regexp needed to disambiguate from the "Closed" filter link above
     assert_link "Close", count: 2, href: /\/admin\/accounts\/close/
+    assert_link "Open", count: 1
 
     assert_content "alice@example.com"
     assert_content "test.unverified@example.com"
@@ -208,7 +218,7 @@ class AdminPageTest < CapybaraTestCase
     end
   end
 
-  def test_admin_can_verify_an_account
+  def test_admin_can_verify_a_non_admin_account
     unverified_account = create_account!(user_name: "unverified", email: "unverified@example.com")
     logout!(unverified_account)
 
@@ -257,7 +267,7 @@ class AdminPageTest < CapybaraTestCase
     assert test_admin.reload.is_unverified?
   end
 
-  def test_admin_can_close_an_account
+  def test_admin_can_close_a_non_admin_account
     active_account = create_account!(user_name: "active", email: "active@example.com")
     logout!(active_account)
 
@@ -296,5 +306,36 @@ class AdminPageTest < CapybaraTestCase
     assert_raises Roda::RodaPlugins::RouteCsrf::InvalidToken do
       post "/admin/accounts/close?account_id=#{alice_account.id}"
     end
+  end
+
+  def test_admin_can_open_a_closed_non_admin_account
+    soon_reopened_account = create_and_verify_account!(user_name: "soon reopened", email: "soonreopened@example.com")
+    logout!(soon_reopened_account)
+    soon_reopened_account.update(status_id: 3)
+
+    alice_account = setup_admin
+
+    visit "/admin"
+    click_link "Open", href: "/admin/accounts/open?account_id=#{soon_reopened_account.id}"
+    assert_current_path "/admin/accounts/open?account_id=#{soon_reopened_account.id}"
+    assert_content "Admin Panel"
+    assert_content "Admin - Alice"
+    assert_content "Open Account"
+    assert_content "You are about to manually open this account."
+    assert_content "soon reopened"
+    assert_content "soonreopened@example.com"
+    assert_content "1 batches"
+    assert_content "0 entries"
+    assert_content "Last entry: /"
+
+    click_on "Open Account"
+    assert_current_path "/admin/accounts"
+    assert_css ".flash-notice"
+    assert_content "Account successfully opened and set to verified status"
+    assert_content "soon reopened"
+    assert_content "soonreopened@example.com"
+    refute_link "Open", href: "/admin/accounts/open?account_id=#{soon_reopened_account.id}"
+
+    refute soon_reopened_account.reload.is_closed?
   end
 end

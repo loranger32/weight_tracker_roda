@@ -92,6 +92,29 @@ module WeightTracker
           end
         end
 
+        r.is "open" do
+          unless @target_account.is_closed?
+            flash["error"] = "This account is already open"
+            r.redirect "/admin/accounts"
+          end
+
+          r.get do
+            @action_name = "open"
+            @action_title = "Open Account"
+            @form_action = "/admin/accounts/open"
+            @btn_bg = "bg-success"
+            
+            view "admin/admin-action", layout: "layout-admin"
+          end
+
+          r.post do
+            # Note that (re)opeining an account will set its status to "verified"
+            @target_account.update(status_id: 2)
+            flash["notice"] = "Account successfully opened and set to verified status"
+            r.redirect "/admin/accounts"
+          end
+        end
+
         r.is "delete" do
           r.get do
             @action_name = "delete"
