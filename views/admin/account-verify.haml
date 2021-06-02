@@ -13,7 +13,7 @@
   %li.mt-10.center-text Last entry: #{@target_account.last_entry_date}
 
 
-%form#delete-account-form{action: "/admin/accounts/verify", method: :post}
+%form#verify-account-form{action: "/admin/accounts/verify", method: :post}
   != csrf_tag("/admin/accounts/verify")
 
   %input{type: :hidden, name: "account_id", value: @target_account.id}
