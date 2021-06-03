@@ -60,7 +60,6 @@ body {
   margin-right: auto;
 }
 
-
 #create-account-form input[type=submit]{
   display: block;
   max-width: 400px;
@@ -113,6 +112,12 @@ body {
 
 #otp-auth-code {
   text-align: center;
+}
+
+#qrcode-otp {
+  max-width: 456px;
+  margin-left: auto;
+  margin-right: auto;
 }
 /* 
 .rodauth {
@@ -172,12 +177,6 @@ body {
 
 #close_account_button {
   background-color: var(--danger-color);
-}
-
-#qrcode-otp {
-  max-width: 456px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 #recovery-codes {
