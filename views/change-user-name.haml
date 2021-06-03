@@ -1,18 +1,21 @@
 - @page_title = "Change User Name"
 
 %form.rodauth#change-user-name-form{action: "/change-user-name", method: :post, role: "form"}
-  
+  %a.d-block.btn.btn-secondary.w-50.mx-auto.mb-5{href: "/account"} Back to Account
+  %h3.text-center.mb-3 Change User Name
+  %p.text-center.mb-5
+    Current: 
+    %strong= @account_ds[:user_name]
+
   != csrf_tag("/change-user-name")
   
-  .form-group
+  .form-group.mb-3
     %label{for: "user_name"} New User Name
     %input.form-control#user-name{type: :text, name: "user_name", required: true, value: "" }
 
-  .form-group
+  .form-group.mb-3
     %label{for: "password"} Password
     %input.form-control#password{type: :password, name: "password", autocomplete: "current-password", required: true, value: ""} 
 
-  .form-group
+  .form-group.mb-3
     %input.btn.btn-primary{type: :submit, value: "Change User Name"}
-
-!= partial("partials/rodauth_cancel_btn")

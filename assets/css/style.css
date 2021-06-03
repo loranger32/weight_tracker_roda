@@ -32,7 +32,7 @@ body {
 }
 
 .flash {
-  max-width: 500px;
+  max-width: 400px;
   margin: 30px auto;
   border: 1px solid;
   border-radius: 5px;
@@ -54,6 +54,67 @@ body {
 
 /* RODAUTH FORMS */
 
+.rodauth {
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+#create-account-form input[type=submit]{
+  display: block;
+  max-width: 400px;
+  margin: 30px auto;
+}
+
+.rodauth-login-form-footer-links-heading {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.rodauth-login-footer-links {
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.rodauth-login-footer-links li {
+  margin-bottom: 10px;
+}
+.rodauth-two-factor-auth-links {
+  margin-top: 60px;
+}
+
+.rodauth-two-factor-auth-links li {
+  width: 200px;
+  margin: 20px auto;
+  text-align: center;
+  background-color:#0d6efd;
+  padding: 5px 10px;
+  border-radius: 3px;
+  list-style: none;
+}
+
+.rodauth-two-factor-auth-links li a {
+  text-decoration: none;
+  color: white;
+}
+
+#otp-auth-form {
+  max-width: 800px;
+  margin: 50px auto;
+}
+
+#otp-auth-form div {
+  width: 235px;
+  margin: 10px auto;
+  text-align: center;
+}
+
+#otp-auth-code {
+  text-align: center;
+}
+/* 
 .rodauth {
   width: 300px;
   margin: 50px auto 0 auto;
@@ -123,17 +184,4 @@ body {
   margin-top: 40px;
   text-align: center;
 }
-
-.rodauth-two-factor-auth-links {
-  margin-top: 60px;
-}
-
-.rodauth-two-factor-auth-links li {
-  width: 200px;
-  margin: 20px auto;
-  text-align: center;
-  background-color: var(--primary-color);
-  padding: 5px 10px;
-  border-radius: 5px;
-  color: white;
-}
+*/

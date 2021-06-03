@@ -31,6 +31,7 @@ module WeightTracker
       account_password_hash_column :password_hash
       hmac_secret secret
       title_instance_variable :@page_title
+      login_label "Email"
 
       # Email Base
       email_from "weighttracker@example.com"
@@ -41,6 +42,7 @@ module WeightTracker
       password_hash_cost(App.test? ? 2 : 12)
 
       # Create Account
+      create_account_additional_form_tags { scope.render("rodauth/create_account_aft") }
       before_create_account do
         unless (user_name = param_or_nil("user_name"))
           throw_error_status(422, "user_name", "must be present")
@@ -56,9 +58,11 @@ module WeightTracker
 
       # Change Login
       change_login_redirect { "/account" }
+      change_login_additional_form_tags { scope.render("rodauth/change_login_aft", locals: {current_email: account[:email]}) }
 
       # Change Password
       change_password_redirect { "/account" }
+      change_password_additional_form_tags { scope.render("rodauth/change_password_aft") }
 
       # Close Account
       before_close_account do
@@ -162,11 +166,11 @@ module WeightTracker
     plugin :render, engine: "haml", template_opts: {escape_html: true}
     plugin :partials
     plugin :assets,
-      css: %w[lg_utilities_20201112.css style.css],
-      js: {main: "main.js", close_account: "close_account.js",
-           recovery_codes: "recovery_codes.js", entries_edit: "entries_edit.js",
-           batch_index: "batch_index.js", batch_edit: "batch_edit.js",
-           admin_actions: "admin_actions.js"},
+      css: %w[bootstrap_5_0_1.min.css style.css],
+      js: {main: "main.js", bootstrap_js: "bootstrap_5_0_1.bundle.min.js",
+           close_account: "close_account.js", recovery_codes: "recovery_codes.js",
+           entries_edit: "entries_edit.js", batch_index: "batch_index.js",
+           batch_edit: "batch_edit.js", admin_actions: "admin_actions.js"},
       group_subdirs: false,
       gzip: true
     compile_assets if production?

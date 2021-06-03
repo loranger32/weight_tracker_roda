@@ -13,17 +13,54 @@
   %title!= set_page_title(@page_title)
 
 %body
-  %h1.w-200.center-block.center-text.mt-25.fs-3.fw-300
-    %a{href: '/entries' } Weight Tracker
-  != partial("partials/flash")
+  %nav.navbar.navbar-expand-md.navbar-light.bg-light.mb-5
+    .container-fluid
+      %a.navbar-brand{href: "/"} Weight Tracker
+      %button.navbar-toggler{type: "button", "data-bs-toggle" => "collapse", "data-bs-target" => "#navbarToggler",
+        "aria-controls" => "navbarToggler", "aria-expanded" => false, "aria-label" => "Toggle navigation"}
+        %span.navbar-toggler-icon
 
-  - if rodauth.authenticated?
-    .block.mt-40.w-200.center-block.center-text
-      - @account_ds ||= rodauth.account_from_session # @account_ds is not always set on when on rodauth branch
-      %a.btn.btn-sm.bg-light{href: "/account"}= @account_ds[:user_name]
-  
-  != yield
+      .collapse.navbar-collapse#navbarToggler
+        %ul.navbar-nav.me-auto.mb-2.mb-sm-0
+          %li.nav-item
+            %a.nav-link.active{href: "/entries", "aria-current" => "page"} Entries
+          %li.nav-item
+            %a.nav-link{href: "/entries/new"} New Entry
+          %li.nav-item
+            %a.nav-link{href: "/batches"} Batches
+          %li.nav-item
+            %a.nav-link{href: "/about"} About
+        .nav-item.dropdown
+          - if rodauth.authenticated?
+            - @account_ds ||= rodauth.account_from_session
+            %a.nav-link.dropdown-toggle#navbarDropdownMenuLink{href: "#", role: "button", "data-bs-toggle" => "dropdown",
+              "aria-expanded" => false}= @account_ds[:user_name]
+            %ul.dropdown-menu{"aria-labelledby" => "navbarDropdownMenuLink"}
+              %li
+                %a.dropdown-item{href: "/account"} Account
+              %li
+                %a.dropdown-item{href: rodauth.logout_path} Log Out
+          - else
+            %a.nav-link.dropdown-toggle#navbarDropdownMenuLink{href: "#", role: "button", "data-bs-toggle" => "dropdown",
+              "aria-expanded" => false}
+              Login / Signup
+            %ul.dropdown-menu{"aria-labelledby" => "navbarDropdownMenuLink"}
+              %li
+                %a.dropdown-item{href: "/login"} Login
+              %li
+                %a.dropdown-item{href: "/create-account"} Sign Up
 
-  .mt-50
+  .container-fluid
+    %h1.h2.text-center.mb-5
+      Record your daily weight
+      %br
+      %span.text-muted See your progress
+    
+    != partial("partials/flash")
+
+  .container.sm
+    != yield
+
   != assets([:js, :main])
+  != assets([:js, :bootstrap_js])
   != content_for(:js)
