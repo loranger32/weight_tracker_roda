@@ -118,12 +118,6 @@ module WeightTracker
       two_factor_need_authentication_error_flash nil
       two_factor_disable_additional_form_tags { scope.render("rodauth/multifactor_disable_aft") }
 
-      # OTP setup
-      before_otp_setup_route do
-        scope.content_security_policy.add_style_src :unsafe_inline
-        #[:sha256, "hXLriEz22xKNlZLBZHXTURsF5XZHj1Bkjo1s7SNTzSI="]
-      end
-
       # Recovery Codes Setup
       auto_add_recovery_codes? true
       auto_remove_recovery_codes? true
