@@ -2,6 +2,14 @@ body {
   font-family: 'Ubuntu', sans-serif;
 }
 
+.bg-gray {
+  background-color: var(--bs-gray);
+}
+
+.bg-gray-md {
+  background-color: #f1f1f1;
+}
+
 @media print {
   .no-print{
     display:none;
@@ -33,23 +41,12 @@ body {
 
 .flash {
   max-width: 400px;
-  margin: 30px auto;
-  border: 1px solid;
-  border-radius: 5px;
-  text-align: center;
-  padding: 15px 0;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.flash-notice {
-  color: green;
-  border-color: green;
-  background-color: lightgreen;
-}
-
-.flash-error {
-  color: red;
-  border-color: red;
-  background-color: tomato;
+.no-decoration {
+  text-decoration: none;
 }
 
 /* RODAUTH FORMS */

@@ -1,34 +1,31 @@
 - @page_title = 'Entries'
 
-%h2.mt-40.w-200.center-block.center-text.p-20.bg-gold.white.fs-1-5 Progress
-%a{href: "/entries/new"}
-  .w-70.center-block.center-text.mt-20.p-10.bg-primary.white.rounded-10.fw-500 New
+%h2.text-center.mb-4 Progress
 
-%article.mt-50
-  %a.block.mb-30.btn.w-200.center-block.bg-secondary.white{href: "/batches"}
-    %p= @batch_info[:name]
-    - if @batch_info[:target]
-      %p.mt-10
-        Target:
-        = @batch_info[:target]
-  
-  - if @entries.empty?
-    %p.center-text No entries in this batch yet
-  - else
-    %table.w-300.center-block.center-text
-      %thead.lh-2
-        %td.fw-600 DAY
-        %td.fw-600 WEIGHT
-        %td.fw-600 + / -
-        %td.fw-600 LEFT
-      %tbody
-        - @entries.each do |entry|
-          %tr.lh-1-5
-            %td.tooltip
-              - unless entry.note.empty?
-                %span.tooltip-text= entry.note
-              %a{href: "/entries/#{entry.id}/edit"}= entry.day.strftime("%a %d %b %Y")
-            %td= entry.weight.to_f
-            %td{ class: weight_delta_color(entry.delta) }= format_delta(entry.delta)
-            %td= @current_batch.target ? entry.delta_to_target : "/"
+%a.d-block.no-decoration.alert.alert-primary.w-25.mx-auto.text-center.mb-3{href: "/batches"}
+  = @current_batch.name
+  %br
+  Target: #{@current_batch.target}
+
+%a.d-block.btn.btn-primary.w-25.mx-auto.mb-5{href: "/entries/new"} New
+
+.row
+  .col-12.col-md-10.offset-md-1.col-lg-8.offset-lg-2.col-xl-6.offset-xl-3
+    - if @entries.empty?
+      %p.center-text No entries in this batch yet
+    - else
+      %table.table.table-hover.table-borderless
+        %thead.table-light
+          %td.text-center DAY
+          %td.text-center WEIGHT
+          %td.text-center + / -
+          %td.text-center LEFT
+        %tbody
+          - @entries.each do |entry|
+            %tr
+              %td.text-center
+                %a.no-decoration{href: "/entries/#{entry.id}/edit"}= entry.day.strftime("%a %d %b %Y")
+              %td.text-center= entry.weight.to_f
+              %td.text-center{ class: weight_delta_color(entry.delta) }= format_delta(entry.delta)
+              %td.text-center= @current_batch.target ? entry.delta_to_target : "/"
     

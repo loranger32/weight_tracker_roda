@@ -1,20 +1,24 @@
 - @page_title = "Security Log"
 
-%h2.w-250.mt-50.center-block.center-text.fs-2.bg-gold.white.p-15 Security Log
+%a.d-block.btn.btn-secondary.w-50.mx-auto.mb-5{href: "/account"} Back to Account
 
-%p.mt-30.center-text Review the access to your account
+%h2.text-center.mb-3 Security Log
 
-%table.mt-50.w-350.center-block.center-text
-  %thead.lh-2
-    %td.fw-600 ACTION
-    %td.fw-600 DATE
-    %td.fw-600 IP
-  %tbody
-    - @security_logs.each do |sl|
-      %tr.lh-2
-        %td.px-6.rounded-5.white{class: format_auth_log_action(sl[1])}!= sl[1] 
-        %td!= sl[0].strftime("%a %d %b %Y - %k:%M:%S")
-        %td.rounded-5.px-2.bg-info.white!= JSON.parse(sl[2])["ip"]
+%p.mb-5.text-center Review the access to your account
+
+.row
+  .col-lg-10.offset-lg-1.col-xl-8.offset-xl-2
+    %table.table.text-center
+      %thead
+        %td ACTION
+        %td DATE
+        %td IP
+      %tbody
+        - @security_logs.each do |security_log|
+          %tr
+            %td{class: format_auth_log_action(security_log[1])}!= security_log[1] 
+            %td!= security_log[0].strftime("%a %d %b %Y - %k:%M:%S")
+            %td!= JSON.parse(security_log[2])["ip"]
 
 
 

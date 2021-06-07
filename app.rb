@@ -94,6 +94,7 @@ module WeightTracker
       end
 
       # Reset Password
+      reset_password_additional_form_tags { scope.render("rodauth/reset_password_aft") }
       reset_password_email_subject "Reset Password Link"
       reset_password_email_body { scope.render "mails/reset-password-email" }
       reset_password_email_sent_redirect "/login"

@@ -105,8 +105,11 @@ module WeightTracker
         end
 
         r.post "delete" do
-          @entry.delete
-
+          if @entry.delete
+            flash["notice"] = "Entry has been deleted"
+          else
+            flash["error"] = "Something went wrong, entry has NOT been deleted"
+          end
           r.redirect "/entries"
         end
       end

@@ -10,11 +10,11 @@ module WeightTracker
 
     def weight_delta_color(delta)
       if delta == 0
-        "blue"
+        "text-primary"
       elsif delta > 0
-        "red"
+        "text-danger"
       else
-        "green"
+        "text-success"
       end
     end
 
@@ -38,6 +38,11 @@ module WeightTracker
       else
         "bg-secondary"
       end
+    end
+
+    def batch_link(current_batch)
+      return "/entries/index" unless current_batch
+      "/entries?batch_id=#{current_batch.id}"
     end
 
     def entries_index_batch_badge_infos(batch_info)

@@ -1,46 +1,49 @@
 - @page_title = "Batches list"
 
-%h2.mt-40.w-200.center-block.center-text.p-20.bg-gold.white.fs-1-5 Batches
+%h2.mb-4.text-center Batches
 
-%a.block.mt-30.w-100.center-block.btn.bg-primary.white.fw-500#new-batch-btn{href: "#"} New
+.row
+  .col-10.offset-1.col-sm-8.offset-sm-2.col-md-6.offset-md-3.col-lg-4.offset-lg-4
+    %a.d-block.no-decoration.alert.alert-primary.w-100.mx-auto.text-center.mb-3{href: batch_link(@current_batch)}
+      - if @current_batch
+        = @current_batch.name
+        %br
+        Target: #{@current_batch.target}
+      - else 
+        No Active Batch
 
-%form.mt-15.w-300.center-block.invisible#new-batch-form{action: "/batches", method: :post, role: "forme"}
-  != csrf_tag("/batches")
-  .flex.justify-between.items-center
-    %input.w-150.lh-2.pl-5#name{type: :text, name: "name", value: "", placeholder: "Batch Name", autofocus: true, size: "15", maxlength: "40"}
-    %input.w-150.lh-2.pl-5#target-weight{type: :number, name: "target", value: "", min: 20, max: 200, step: 0.1, placeholder: "Target Weight", size: "15", maxlength: "40"}
+    %button.d-block.btn.btn-primary.w-100.mx-auto.mb-5{type: "button", "data-bs-toggle" => "collapse", "data-bs-target" => "#new-batch-form", "aria-expanded" => false, "aria-controls" => "new-batch-form"} New
 
-  %input.mt-10.w-150.center-block.lh-1-5.btn.btn-sm.bg-primary.white#create-batch-button{type: :submit, value: "Create"}
+    %form.mb-4.collapse#new-batch-form{action: "/batches", method: :post, role: "forme"}
+      != csrf_tag("/batches")
+      %fieldset
+        %input.form-control.mb-3#name{type: :text, name: "name", value: "", placeholder: "Batch Name", autofocus: true, size: "15", maxlength: "40"}
+        %input.form-control.mb-3#target-weight{type: :number, name: "target", value: "", min: 20, max: 200, step: 0.1, placeholder: "Target Weight", size: "15", maxlength: "40"}
 
-%a{href: "/entries"}
-  .mt-20.mb-30.btn.w-150.center-block.bg-secondary.white
-    %h3 Current batch
-    - if @current_batch 
-      %p= @current_batch.name
-      %p Target Weight: #{@current_batch.target || "/"}
+      %input.btn.btn-primary#create-batch-button{type: :submit, value: "Create"}
+
+.row
+  .col-12.col-md-10.offset-md-1.col-lg-8.offset-lg-2.col-xl-6.offset-xl-3
+    - if @batches.empty?
+      %p.text-center No batch created yet
     - else
-      %p No Active Batch
-  
-- if @batches.empty?
-  %p.center-text No batch created yet
-- else
-  %table.w-400.center-block.center-text
-    %thead.lh-2
-      %td.fw-600 NAME
-      %td.fw-600 TARGET
-      %td.fw-600 FIRST
-      %td.fw-600 LAST
-      %td.fw-600 ACTIVE
-      %td.fw-600 ENTRIES
-    %tbody
-      - @batches.each do |batch|
-        %tr.lh-1-5
-          %td
-            %a{href: "/batches/#{batch.id}/edit"}= batch.name || "/"
-          %td= batch.target || "/"
-          %td= batch.first_date
-          %td= batch.last_date
-          %td= batch.active
-          %td= batch.entries.length
+      %table.table.table-hover.table-borderless
+        %thead.table-light
+          %td.text-center NAME
+          %td.text-center TARGET
+          %td.text-center FIRST
+          %td.text-center LAST
+          %td.text-center ACTIVE
+          %td.text-center ENTRIES
+        %tbody
+          - @batches.each do |batch|
+            %tr
+              %td.text-center
+                %a.no-decoration{href: "/batches/#{batch.id}/edit"}= batch.name || "/"
+              %td.text-center= batch.target || "/"
+              %td.text-center= batch.first_date
+              %td.text-center= batch.last_date
+              %td.text-center= batch.active
+              %td.text-center= batch.entries.length
 
 - content_for :js, assets([:js, :batch_index])

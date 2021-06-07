@@ -1,14 +1,16 @@
 - @page_title = 'Export data'
 
-%h2.mt-40.w-200.center-block.center-text.p-20.bg-gold.white.fs-1-5 Export Data
+.row
+  .col-sm-10.offset-sm-1.col-md-8.offset-md-2.col-lg-6.offset-lg-3.col-xxl-4.offset-xxl-4
+    %a.d-block.w-50.mx-auto.btn.btn-secondary.mb-5{href: "/account"} Back to Account
 
-%p.mt-80.center-text Your data will be exported in a JSON text file, which is a very common file format
+    %h2.text-center.mb-4 Export Your Data
 
-%form.mt-60.w-300.center-block{action: "/export-data", method: :post}
-  
-  !=csrf_tag("/export-data")
-  
-  %input.mt-30.w-200.center-block.btn.bg-primary.white.lh-2{type: :submit, value: "Download"}
+    %p.text-center.mb-5 Your data will be exported in a JSON text file, which is a very common file format
 
-!= partial("partials/rodauth_cancel_btn")
+    %form{action: "/export-data", method: :post}
+      
+      !=csrf_tag("/export-data")
+      
+      %input.d-block.w-50.mx-auto.btn.btn-primary{type: :submit, value: "Download"}
 
