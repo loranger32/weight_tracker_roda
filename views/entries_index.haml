@@ -2,17 +2,19 @@
 
 %h2.text-center.mb-4 Progress
 
-%a.d-block.no-decoration.alert.alert-primary.w-25.mx-auto.text-center.mb-3{href: "/batches"}
-  = @current_batch.name
-  %br
-  Target: #{@current_batch.target}
+.row
+  .col-10.offset-1.col-sm-8.offset-sm-2.col-md-6.offset-md-3.col-lg-4.offset-lg-4
+    %a.d-block.no-decoration.alert.alert-info.w-75.mx-auto.text-center.mb-3{href: "/batches"}
+      = @current_batch.name
+      %br
+      Target: #{@current_batch.target}
 
-%a.d-block.btn.btn-primary.w-25.mx-auto.mb-5{href: "/entries/new"} New
+    %a.d-block.btn.btn-primary.w-75.mx-auto.mb-5{href: "/entries/new"} New Entry
 
 .row
   .col-12.col-md-10.offset-md-1.col-lg-8.offset-lg-2.col-xl-6.offset-xl-3
     - if @entries.empty?
-      %p.center-text No entries in this batch yet
+      %p.text-center No entries in this batch yet
     - else
       %table.table.table-hover.table-borderless
         %thead.table-light

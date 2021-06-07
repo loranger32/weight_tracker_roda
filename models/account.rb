@@ -63,7 +63,6 @@ class Account < Sequel::Model
 
     today = Time.now.strftime("%d %b %Y")
     last_entry_date = Entry.where(account_id: id).select_map(:day).max.strftime("%d %b %Y")
-    binding.pry
     today == last_entry_date
   end
 

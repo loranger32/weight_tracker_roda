@@ -1,51 +1,54 @@
 - @page_title = "Edit batch"
-
-%h2.w-250.mt-50.center-block.center-text.fs-2.bg-gold.white.p-15 Edit Batch
-
-%a{href: "/entries?batch_id=#{@batch.id}"}
-  .w-70.center-block.center-text.mt-20.p-10.bg-primary.white.rounded-10.fw-500 View
-
-.mt-40.w-250.center-block
-  .flex.justify-between.items-center
-    %p First Entry
-    %p= @batch.first_date || "/"
-
-  .mt-10.flex.justify-between.items-center
-    %p Last Entry
-    %p= @batch.last_date || "/"
-
-  %form.mt-20{action: "/batches/#{@batch.id}", method: :post, role: "forme"}
-    != csrf_tag("/batches/#{@batch.id}")
-
-    .mt-30.flex.justify-between.items-center
-      %label.w-50{for: "name"} Name
-      %input.w-150.lh-2.rounded-5#name{type: :text, name: "name", value: @batch.name}
-
-    .mt-30.flex.justify-between.items-center
-      %label.w-50{for: "target"} Target Weight
-      %input.w-150.lh-2.rounded-5#target{type: :number, min: 20, max: 200, step: 0.1, name: "target", value: @batch.target || 20.0}
-
-    - if @batch.active
-      %p.mt-30.center-text This batch is currently active
-      %input{type: :hidden, name: "confirm-make-batch-active", value: "confirm"}
-    - else
-      .mt-30.flex.justify-evenly.items-center
-        %label{for: "confirm-make-batch-active"} Make active
-        %input#confirm-make-batch-active{type: :checkbox, name: "confirm-make-batch-active", value: "confirm",  checked: false}
-
-    .mt-30.flex.justify-between.items-center
-      %input.w-150.btn.bg-primary.white.rounded-5{type: :submit, value: "Validate"}
-      %a.btn.bg-warning.white.rounded-5#delete-batch-button{href: "#"} Delete
-
-  %form.mt-20.w-250.center-block.invisible#delete-batch-form{action: "/batches/#{@batch.id}/delete", method: :post, role: "forme"}
-    !=csrf_tag("/batches/#{@batch.id}/delete")
-    .flex.justify-between.items-center
-      %label{for: "confirm-delete-batch"} #{@batch.entries.length} entries will be deleted !
-      %input#confirm-delete-batch-checkbox{type: :checkbox, name: "confirm-delete-batch", value: "confirm", checked: false}
-    %input.mt-10.w-200.center-block.btn.btn-disabled.bg-danger.white#confirm-delete-batch-button{type: :submit, value: "Confirm Deletion"}
+- update_form_action = "/batches/#{@batch.id}"
+- delete_form_action = "/batches/#{@batch.id}/delete"
 
 
-%a{href: "/batches"}
-  .block.mt-20.center-block.w-250.btn.bg-danger.white Cancel
+.row.mb-5
+  .col-10.offset-1.col-md-8.offset-md-2.col-lg-6.offset-lg-3.col-xl-4.offset-xl-4
+    %a.d-block.btn.btn-secondary.w-75.mx-auto.mb-5{href: "/batches"} Back to index
+
+    %h2.text-center.mb-4 Edit Batch
+
+    .alert.alert-info.mb-3
+      %p.text-center First Entry: #{@batch.first_date || "/"}
+      %p.text-center Last Entry: #{@batch.last_date || "/"}
+      %a.d-block.btn.btn-secondary.w-75.mx-auto.mb-4{href: "/entries?batch_id=#{@batch.id}"} View Entries
+
+    %form{action: update_form_action, method: :post, role: "forme"}
+      != csrf_tag(update_form_action)
+
+      .form-group.mb-3
+        %label.form-label{for: "name"} Name
+        %input.form-control#name{type: :text, name: "name", value: @batch.name}
+
+      .form-group.mb-3
+        %label.form-label{for: "target"} Target Weight
+        %input.form-control#target{type: :number, min: 20, max: 200, step: 0.1, name: "target", value: @batch.target || 20.0}
+
+      - if @batch.active
+        %p.text-center.mb-4
+          This batch is
+          %strong currently active
+        %input{type: :hidden, name: "confirm-make-batch-active", value: "confirm"}
+      - else
+        .form-group.form-check.mb-4
+          %input.form-check-input#confirm-make-batch-active{type: :checkbox, name: "confirm-make-batch-active", value: "confirm",  checked: false}
+          %label.form-check-label{for: "confirm-make-batch-active"} Make active
+
+      .row.mb-4
+        .col
+          %input.w-100.btn.btn-primary{type: :submit, value: "Update Batch"}
+        .col
+          %button.w-100.btn.btn-danger{type: "button", "data-bs-toggle" => "collapse", "data-bs-target" => "#delete-batch-form",
+            "aria-expanded" => false, "aria-controls" => "delete-batch-form"} Delete
+
+    %form.collapse#delete-batch-form{action: delete_form_action, method: :post, role: "forme"}
+      !=csrf_tag(delete_form_action)
+      
+      .form-group.form-check.mb-3
+        %input.form-check-input#confirm-delete-batch-checkbox{type: :checkbox, name: "confirm-delete-batch", value: "confirm", checked: false}
+        %label.form-check-label{for: "confirm-delete-batch"} #{@batch.entries.length} entries will be deleted !
+      
+      %input.btn.btn-danger.disabled#confirm-delete-batch-button{type: :submit, value: "Confirm Deletion"}
 
 - content_for :js, assets([:js, :batch_edit])

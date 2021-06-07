@@ -13,15 +13,18 @@
   %title!= set_page_title(@page_title)
 
 %body
-  %h1.w-200.center-block.center-text.mt-25.fs-3.fw-300
-    %a{href: '/entries' } Weight Tracker
-  %h2.w-200.center-block.center-text.mt-40.fs-2.fw-500 Admin Panel
+  != partial("partials/navbar")
+
+  %h1.text-center.mb-3 Weight Tracker
+  %h2.text-center.mb-5 Admin Panel
+  
   != partial("partials/flash")
 
-  .block.mt-40.w-200.center-block.center-text
-    %a.block.btn.bg-warning.white{href: "/admin/accounts"} Admin - #{@account_ds[:user_name]}
+  %a.d-block.w-50.mx-auto.no-decoration.text-center{href: "/admin/accounts"}
+    .alert.alert-warning  Admin - #{@account_ds[:user_name]}
   
-  != yield
+  .container-sm
+    != yield
 
   .mt-50
   != assets([:js, :main])

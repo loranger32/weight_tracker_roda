@@ -1,0 +1,39 @@
+%nav.navbar.navbar-expand-md.navbar-light.bg-light.mb-5
+  .container-fluid
+    %a.navbar-brand{href: "/"} Weight Tracker
+    %button.navbar-toggler{type: "button", "data-bs-toggle" => "collapse", "data-bs-target" => "#navbarToggler",
+      "aria-controls" => "navbarToggler", "aria-expanded" => false, "aria-label" => "Toggle navigation"}
+      %span.navbar-toggler-icon
+
+    .collapse.navbar-collapse#navbarToggler
+      %ul.navbar-nav.me-auto.mb-2.mb-sm-0
+        %li.nav-item
+          %a.nav-link.active{href: "/entries", "aria-current" => "page"} Entries
+        %li.nav-item
+          %a.nav-link{href: "/entries/new"} New Entry
+        %li.nav-item
+          %a.nav-link{href: "/batches"} Batches
+        %li.nav-item
+          %a.nav-link{href: "/about"} About
+      .nav-item.dropdown
+        - if rodauth.authenticated?
+          - @account_ds ||= rodauth.account_from_session
+          %a.nav-link.dropdown-toggle#navbarDropdownMenuLink{href: "#", role: "button", "data-bs-toggle" => "dropdown",
+            "aria-expanded" => false}= @account_ds[:user_name]
+          %ul.dropdown-menu{"aria-labelledby" => "navbarDropdownMenuLink"}
+            %li
+              %a.dropdown-item{href: "/account"} Account
+            - if Account[@account_ds[:id]].is_admin?
+              %li
+                %a.dropdown-item{href: "/admin"} Admin Panel
+            %li
+              %a.dropdown-item{href: rodauth.logout_path} Log Out
+        - else
+          %a.nav-link.dropdown-toggle#navbarDropdownMenuLink{href: "#", role: "button", "data-bs-toggle" => "dropdown",
+            "aria-expanded" => false}
+            Login / Signup
+          %ul.dropdown-menu{"aria-labelledby" => "navbarDropdownMenuLink"}
+            %li
+              %a.dropdown-item{href: "/login"} Login
+            %li
+              %a.dropdown-item{href: "/create-account"} Sign Up

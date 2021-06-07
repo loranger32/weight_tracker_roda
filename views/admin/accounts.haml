@@ -1,46 +1,57 @@
 - @page_title << "Accounts"
 
-.w-600.center-block.flex.justify-between
-  %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts"} All
-  %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=verified"} Verified
-  %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=unverified"} Unverified
-  %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=closed"} Closed
-  %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=otp_on"} OTP ON
-  %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=otp_off"} OTP OFF
-  %a.block.mt-40.btn.btn-sm.bg-primary.white{href: "/admin/accounts?query=admin"} ADMIN
+.row.mb-5
+  .col-12.col-lg-10.offset-lg-1
+    %ul.nav.nav-tabs.justify-content-center
+      %li.nav-item
+        %a.no-decoration.nav-link{href: "/admin/accounts", class: ("active" if @clicked_link.nil?) } All
+      %li.nav-item
+        %a.no-decoration.nav-link{href: "/admin/accounts?query=verified", class: ("active" if @clicked_link == "verified") } Verified
+      %li.nav-item
+        %a.no-decoration.nav-link{href: "/admin/accounts?query=unverified", class: ("active" if @clicked_link == "unverified")} Unverified
+      %li.nav-item
+        %a.no-decoration.nav-link{href: "/admin/accounts?query=closed", class: ("active" if @clicked_link == "closed")} Closed
+      %li.nav-item
+        %a.no-decoration.nav-link{href: "/admin/accounts?query=otp_on", class: ("active" if @clicked_link == "otp_on")} OTP ON
+      %li.nav-item
+        %a.no-decoration.nav-link{href: "/admin/accounts?query=otp_off", class: ("active" if @clicked_link == "otp_off")} OTP OFF
+      %li.nav-item
+        %a.no-decoration.nav-link{href: "/admin/accounts?query=admin", class: ("active" if @clicked_link == "admin")} ADMIN
 
 - if !@accounts.empty?
-  %table.mt-50.w-800.center-block.center-text
-    %thead.lh-2
-      %td.fw-600 USERNAME
-      %td.fw-600 EMAIL
-      %td.fw-600 STATUS
-      %td.fw-600 2FA
-      %td.fw-600 ADMIN
-      %td.fw-600{colspan: "3"}
-    %tbody
-      - @accounts.each do |account|
-        %tr.lh-2
-          %td
-            %a{href: "/admin/account/#{account.id}"}= account.user_name 
-          %td= account.email
-          %td= DB[:account_statuses].where(id: account.status_id).first[:name]
-          %td= DB[:account_recovery_codes].where(id: account.id).empty? ? "" : "x"
-          %td= account.is_admin? ? "x" : ""
-          - if account.is_admin?
-            %td{colspan: "3"}
-          - else
-            %td
-              - if account.is_unverified?
-                %a.btn.btn-sm.bg-success.white{href: "/admin/accounts/verify?account_id=#{account.id}"} Verify
-            %td
-              - if account.is_closed?
-                %a.btn.btn-sm.bg-success.white{href: "/admin/accounts/open?account_id=#{account.id}"} Open
-            %td
-              - unless account.is_closed?
-                %a.btn.btn-sm.bg-warning.white{href: "/admin/accounts/close?account_id=#{account.id}"} Close
-            %td
-              %a.btn.btn-sm.bg-danger.white{href: "/admin/accounts/delete?account_id=#{account.id}"} Delete
+  .row
+    .col-12
+      %table.table.table-hover.table-borderless
+        %thead.table-light
+          %td.text-center USERNAME
+          %td.text-center EMAIL
+          %td.text-center STATUS
+          %td.text-center.d-none 2FA
+          %td.text-center.d-none ADMIN
+          %td.text-center.d-none{colspan: "3"}
+        %tbody
+          - @accounts.each do |account|
+            %tr
+              %td.text-center
+                %a{href: "/admin/account/#{account.id}"}= account.user_name 
+              %td.text-center= account.email
+              %td.text-center= DB[:account_statuses].where(id: account.status_id).first[:name]
+              %td.text-center.d-none= DB[:account_recovery_codes].where(id: account.id).empty? ? "" : "x"
+              %td.text-center.d-none= account.is_admin? ? "x" : ""
+              - if account.is_admin?
+                %td.text-center.d-none{colspan: "3"}
+              - else
+                %td.text-center.d-none
+                  - if account.is_unverified?
+                    %a.btn.btn-success{href: "/admin/accounts/verify?account_id=#{account.id}"} Verify
+                %td.text-center.d-none
+                  - if account.is_closed?
+                    %a.btn.btn-success{href: "/admin/accounts/open?account_id=#{account.id}"} Open
+                %td.text-center.d-none
+                  - unless account.is_closed?
+                    %a.btn.btn-warning{href: "/admin/accounts/close?account_id=#{account.id}"} Close
+                %td.text-center.d-none
+                  %a.btn.btn-danger{href: "/admin/accounts/delete?account_id=#{account.id}"} Delete
 
 - else
-  %p.mt-50.fs-2.center-text No Account matches these criteria
+  %p.text-center No Account matches these criteria

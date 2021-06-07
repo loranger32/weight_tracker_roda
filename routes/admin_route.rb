@@ -16,7 +16,8 @@ module WeightTracker
 
       r.on "accounts" do
         r.is do
-          @accounts = case r.params["query"]
+          @clicked_link = tp.str("query")
+          @accounts = case @clicked_link
           when "verified" then Account.verified
           when "unverified" then Account.unverified
           when "closed" then Account.closed

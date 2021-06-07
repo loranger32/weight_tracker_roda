@@ -4,7 +4,7 @@
       != csrf_tag(create_or_update_entry_action(@entry))
 
       %a.no-decoration.mb-3{href: "/batches"}
-        .alert.alert-primary.w-50.mx-auto.text-center
+        .alert.alert-info.w-75.mx-auto.text-center
           = @current_batch.name
           %br
           Target: #{@current_batch.target}
