@@ -36,8 +36,8 @@ module WeightTracker
         r.post do
           @entry = Entry.new
           submitted = {day: tp.date("day"),
-                       weight: tp.str("weight"),
-                       note: tp.str("note"),
+                       weight: h(tp.str("weight")),
+                       note: h(tp.str("note")),
                        account_id: @account_ds[:id]}
 
           @entry.set(submitted)
@@ -80,8 +80,8 @@ module WeightTracker
         r.is do
           r.post do
             submitted = {day: tp.date("day"),
-                         weight: tp.str("weight"),
-                         note: tp.str("note"),
+                         weight: h(tp.str("weight")),
+                         note: h(tp.str("note")),
                          account_id: @account_ds[:id]}
 
             @entry.set(submitted)

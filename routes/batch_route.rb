@@ -13,7 +13,7 @@ module WeightTracker
         r.post do
           @batch = Batch.new(account_id: @account_ds[:id], active: false)
 
-          submitted = {name: tp.str("name"), target: tp.str("target")}
+          submitted = {name: h(tp.str("name")), target: h(tp.str("target"))}
           @batch.set(submitted)
 
           if @batch.valid? && valid_weight_string?(submitted[:target])
@@ -44,7 +44,7 @@ module WeightTracker
 
         r.is do
           r.post do
-            submitted = {name: tp.str("name"), target: tp.str("target")}
+            submitted = {name: h(tp.str("name")), target: h(tp.str("target"))}
 
             @batch.set(submitted)
 

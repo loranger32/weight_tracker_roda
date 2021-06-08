@@ -207,7 +207,7 @@ module WeightTracker
 
         r.post do
           account = Account[@account_ds[:id]]
-          account.set(user_name: r.params["user_name"])
+          account.set(user_name: h(tp.str("user_name")))
           if account.valid?
             account.save
             flash["notice"] = "User Name successfully changed"
