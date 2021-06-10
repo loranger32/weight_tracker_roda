@@ -54,7 +54,7 @@ module WeightTracker
     end
 
     def truncate(str, index)
-      str[0..index] + "..."
+      str.length <= index ? str : str[0..index] + "..."
     end
   end
 end
