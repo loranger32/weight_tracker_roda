@@ -26,31 +26,31 @@
           %td.text-center USERNAME
           %td.text-center EMAIL
           %td.text-center STATUS
-          %td.text-center.d-none 2FA
-          %td.text-center.d-none ADMIN
-          %td.text-center.d-none{colspan: "3"}
+          %td.text-center.d-none.d-md-table-cell 2FA
+          %td.text-center.d-none.d-md-table-cell ADMIN
+          %td.text-center.d-none.d-lg-table-cell{colspan: "4"}
         %tbody
           - @accounts.each do |account|
             %tr
               %td.text-center
-                %a{href: "/admin/account/#{account.id}"}= account.user_name 
+                %a{href: "/admin/accounts/#{account.id}"}= truncate(account.user_name, 20)
               %td.text-center= account.email
               %td.text-center= DB[:account_statuses].where(id: account.status_id).first[:name]
-              %td.text-center.d-none= DB[:account_recovery_codes].where(id: account.id).empty? ? "" : "x"
-              %td.text-center.d-none= account.is_admin? ? "x" : ""
+              %td.text-center.d-none.d-md-table-cell= DB[:account_recovery_codes].where(id: account.id).empty? ? "" : "x"
+              %td.text-center.d-none.d-md-table-cell= account.is_admin? ? "x" : ""
               - if account.is_admin?
-                %td.text-center.d-none{colspan: "3"}
+                %td.text-center.d-none.d-lg-table-cell{colspan: "3"}
               - else
-                %td.text-center.d-none
+                %td.text-center.d-none.d-lg-table-cell
                   - if account.is_unverified?
                     %a.btn.btn-success{href: "/admin/accounts/verify?account_id=#{account.id}"} Verify
-                %td.text-center.d-none
+                %td.text-center.d-none.d-lg-table-cell
                   - if account.is_closed?
                     %a.btn.btn-success{href: "/admin/accounts/open?account_id=#{account.id}"} Open
-                %td.text-center.d-none
+                %td.text-center.d-none.d-lg-table-cell
                   - unless account.is_closed?
                     %a.btn.btn-warning{href: "/admin/accounts/close?account_id=#{account.id}"} Close
-                %td.text-center.d-none
+                %td.text-center.d-none.d-lg-table-cell
                   %a.btn.btn-danger{href: "/admin/accounts/delete?account_id=#{account.id}"} Delete
 
 - else

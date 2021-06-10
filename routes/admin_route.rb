@@ -30,102 +30,61 @@ module WeightTracker
           view "admin/accounts", layout: "layout-admin"
         end
 
-        # Verify , Close and Delete branches setup
+        r.on Integer do |account_id|
+          #account_id = account_id.to_i
+          unless account_id > 0 && (@target_account = Account[account_id])
+            response.status = 404
+            r.halt
+          end
 
-        account_id = tp.int("account_id")
-
-        unless account_id > 0 && (@target_account = Account[account_id])
-          response.status = 404
-          r.halt
-        end
-
-        # Should only be needed for GET request, beacuse for POST requests
-        # it should normally raise a Roda::RodaPlugins::RouteCsrf:InvalidToken error before
-        # But extra safety
-        if @target_account.is_admin?
-          flash["error"] = "Cannot perform this action on admin user"
-          r.redirect "/admin/accounts"
-        end
-
-        r.is "verify" do
-          unless @target_account.is_unverified?
-            flash["error"] = "This account is already verified"
+          # Should only be needed for GET request, beacuse for POST requests
+          # it should normally raise a Roda::RodaPlugins::RouteCsrf:InvalidToken error before
+          # But extra safety
+          if @target_account.is_admin?
+            flash["error"] = "Cannot perform this action on admin user"
             r.redirect "/admin/accounts"
           end
 
           r.get do
-            @action_name = "verify"
-            @action_title = "Verify Account"
-            @form_action = "/admin/accounts/verify"
-            @btn_bg = "bg-success"
-
-            view "/admin/admin-action", layout: "layout-admin"
+            view "/admin/account", layout: "layout-admin"
           end
 
-          r.post do
+          r.post "verify" do
+            unless @target_account.is_unverified?
+              flash["error"] = "This account is already verified"
+              r.redirect "/admin/accounts"
+            end
+
             @target_account.update(status_id: 2)
             DB[:account_verification_keys].where(id: @target_account.id).delete
             flash["notice"] = "Account successfully verified"
-            r.redirect "/admin/accounts"
-          end
-        end
-
-        r.is "close" do
-          if @target_account.is_closed?
-            flash["error"] = "This account is already closed"
-            r.redirect "/admin/accounts"
+            r.redirect "/admin/accounts/#{@target_account.id}"
           end
 
-          r.get do
-            @action_name = "close"
-            @action_title = "Close Account"
-            @form_action = "/admin/accounts/close"
-            @btn_bg = "bg-warning"
+          r.post "close" do
+            if @target_account.is_closed?
+              flash["error"] = "This account is already closed"
+              r.redirect "/admin/accounts"
+            end
 
-            view "admin/admin-action", layout: "layout-admin"
-          end
-
-          r.post do
             @target_account.update(status_id: 3)
             flash["notice"] = "Account successfully closed"
-            r.redirect "/admin/accounts"
-          end
-        end
-
-        r.is "open" do
-          unless @target_account.is_closed?
-            flash["error"] = "This account is already open"
-            r.redirect "/admin/accounts"
+            r.redirect "/admin/accounts/#{@target_account.id}"
           end
 
-          r.get do
-            @action_name = "open"
-            @action_title = "Open Account"
-            @form_action = "/admin/accounts/open"
-            @btn_bg = "bg-success"
+          r.post "open" do
+            unless @target_account.is_closed?
+              flash["error"] = "This account is already open"
+              r.redirect "/admin/accounts"
+            end
 
-            view "admin/admin-action", layout: "layout-admin"
-          end
-
-          r.post do
             # Note that (re)opeining an account will set its status to "verified"
             @target_account.update(status_id: 2)
             flash["notice"] = "Account successfully opened and set to verified status"
-            r.redirect "/admin/accounts"
-          end
-        end
-
-        r.is "delete" do
-          r.get do
-            @action_name = "delete"
-            @action_title = "Delete Account"
-            @form_action = "/admin/accounts/delete"
-            @btn_bg = "bg-danger"
-
-            view "admin/admin-action", layout: "layout-admin"
+            r.redirect "/admin/accounts/#{@target_account.id}"
           end
 
-          r.post do
+          r.post "delete" do
             if @target_account.destroy
               flash["notice"] = "Account successfully deleted"
             else

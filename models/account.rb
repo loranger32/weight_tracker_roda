@@ -45,6 +45,10 @@ class Account < Sequel::Model
     !admin.nil?
   end
 
+  def otp_on?
+    !DB[:account_otp_keys].where(id: id).first.nil?
+  end
+
   def active_batch_id
     active_batch = batches_dataset.where(active: true).all
 
@@ -82,6 +86,10 @@ class Account < Sequel::Model
 
   def is_closed?
     status_id == 3
+  end
+
+  def is_open?
+    is_unverified? || is_verified?
   end
 
   def is_unverified?

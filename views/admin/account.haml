@@ -1,0 +1,40 @@
+- @page_title << "Account Summary"
+
+%h3.text-center.mb-4 Account Summary
+
+.row
+  %article.col-10.offset-1.col-lg-8.offset-lg-2.col-xl-6.offset-xl-3.mb-5
+    %section.bg-light.rounded.p-3.mb-3
+      %p.mb-3#user_name= @target_account.user_name
+      %p.mb-3= @target_account.email
+      %p.mb-3= @target_account.account_status
+      %p.mb-3= @target_account.otp_on? ? "OTP ON" : "OTP OFF"
+      %p.mb-3 #{@target_account.batches.length} batches
+      %p.mb-3 #{@target_account.entries.length} entries
+      %p Last entry: #{@target_account.last_entry_date}
+
+    - if @target_account.is_admin?
+      %p Admin account - can't be managed with the GUI
+    - else
+      %section.row.justify-content-evenly
+        - if @target_account.is_unverified?
+          %form.col-3{action: "/admin/accounts/#{@target_account.id}/verify", method: :post}
+            != csrf_tag("/admin/accounts/#{@target_account.id}/verify")
+            %input{type: :hidden, name: "account_id", value: @target_account.id}
+            %input.btn.btn-success#verify-account-button{type: :submit, value: "Verify"}
+        - if @target_account.is_closed?
+          %form.col-3{action: "/admin/accounts/#{@target_account.id}/open", method: :post}
+            != csrf_tag("/admin/accounts/#{@target_account.id}/open")
+            %input{type: :hidden, name: "account_id", value: @target_account.id}
+            %input.btn.btn-success#open-account-button{type: :submit, value: "Open"}
+        - if @target_account.is_open?
+          %form.col-3{action: "/admin/accounts/#{@target_account.id}/close", method: :post}
+            != csrf_tag("/admin/accounts/#{@target_account.id}/close")
+            %input{type: :hidden, name: "account_id", value: @target_account.id}
+            %input.btn.btn-warning#close-account-button{type: :submit, value: "Close"}
+        %form.col-3{action: "/admin/accounts/#{@target_account.id}/delete", method: :post}
+          != csrf_tag("/admin/accounts/#{@target_account.id}/delete")
+          %input{type: :hidden, name: "account_id", value: @target_account.id}
+          %input.btn.btn-danger#delete-account-button{type: :submit, value: "Delete"}
+
+- content_for :js, assets([:js, :admin_actions])

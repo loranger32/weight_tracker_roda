@@ -52,5 +52,9 @@ module WeightTracker
         batch_info[:name]
       end
     end
+
+    def truncate(str, index)
+      str[0..index] + "..."
+    end
   end
 end

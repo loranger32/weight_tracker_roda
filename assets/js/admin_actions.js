@@ -1,12 +1,26 @@
 "use strict"
 
 const userName = document.querySelector("#user_name").textContent;
-const actionInfo = document.querySelector("#action-info").textContent;
-const adminActionButton = document.querySelector("#admin-action-button");
-adminActionButton.addEventListener("click", confirmAdminAction);
+const verifyAccountBtn = document.querySelector("#verify-account-button");
+const closeAccountBtn = document.querySelector("#close-account-button");
+const openAccountBtn = document.querySelector("#open-account-button");
+const deleteAccountBtn = document.querySelector("#delete-account-button");
 
-function confirmAdminAction(e) {
-  const confirmationText = prompt(`${actionInfo} Type in the username to confirm.`);
+[verifyAccountBtn, closeAccountBtn, openAccountBtn, deleteAccountBtn].forEach(function (el) {
+  if (el) {
+    el.addEventListener("click", confirmAction);  
+  }
+});
+
+const confirmActionPromptText = {
+  "close-account-button": "You are about to close this account.",
+  "verify-account-button": "You are about to verify this account.",
+  "open-account-button": "You are about to reopen this account.",
+  "delete-account-button": "You are about to PERMANENTLY delete this account and all associated data. Are you sur you want to pursue ?"
+}
+
+function confirmAction(e) {
+  const confirmationText = prompt(`${confirmActionPromptText[e.target.id]} Type in the username to confirm.`);
 
   if (confirmationText != userName) {
     e.preventDefault();
