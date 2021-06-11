@@ -59,6 +59,7 @@ module WeightTracker
       # Change Login
       change_login_redirect { "/account" }
       change_login_additional_form_tags { scope.render("rodauth/change_login_aft", locals: {current_email: account[:email]}) }
+      change_login_button "Change Email"
 
       # Change Password
       change_password_redirect { "/account" }
@@ -167,7 +168,8 @@ module WeightTracker
       js: {main: "main.js", bootstrap_js: "bootstrap_5_0_1.bundle.min.js",
            close_account: "close_account.js", recovery_codes: "recovery_codes.js",
            entries_edit: "entries_edit.js", batch_index: "batch_index.js",
-           batch_edit: "batch_edit.js", admin_actions: "admin_actions.js"},
+           batch_edit: "batch_edit.js", admin_actions: "admin_actions.js",
+           bs_tooltip: "bs_tooltip.js"},
       group_subdirs: false,
       gzip: true
     compile_assets if production?

@@ -10,7 +10,7 @@ class BatchManegmentTest < CapybaraTestCase
     assert_equal 1, @account.id
 
     # After login, which redirects to /entries/new, a new active batch is automatically
-    # created, with name "Batch 1". Here we insert a second one
+    # created, with name "New Batch". Here we insert a second one
     Batch.new(account_id: 1, active: false, name: "past batch", target: "50.0").save
 
     # Cannot use insert here beacuse of the column encryption
@@ -40,11 +40,9 @@ class BatchManegmentTest < CapybaraTestCase
 
     assert_current_path "/batches"
     assert_content "Batches"
-    assert_link "New", href: "#"
-    refute_link "Cancel", href: "#"
-    assert_css ".invisible"
+    assert_button "New Batch"
 
-    assert_content "Current batch"
+    assert_css ".alert-info"
     assert_content "NAME"
     assert_content "TARGET"
     assert_content "FIRST"
@@ -65,16 +63,19 @@ class BatchManegmentTest < CapybaraTestCase
   end
 
   def test_link_to_batch_related_entries_in_batch_edit_page
-    visit "/batches"
-    click_on "New Batch"
     batch = Batch.where(name: "New Batch", account_id: 1, active: true).first
-    assert_current_path "/batches/#{batch.id}/edit"
-    assert_link href: "/entries?batch_id=#{batch.id}"
+    visit "/batches"
+    assert_current_path "/batches"
+    assert_link "New Batch", href: "/batches/#{batch.id}/edit" 
+    click_link "New Batch", href: "/batches/#{batch.id}/edit"
+    assert_link "View Entries", href: "/entries?batch_id=#{batch.id}"
+    click_link "View Entries"
+    assert_current_path "/entries?batch_id=#{batch.id}"
   end
 
   def test_can_add_new_batch_with_valid_inputs
     visit "/batches"
-    click_on "New"
+    click_button "New Batch"
 
     fill_in "Batch Name", with: "test batch"
     fill_in "Target Weight", with: "50.0"
@@ -82,7 +83,7 @@ class BatchManegmentTest < CapybaraTestCase
 
     assert_current_path "/batches"
     assert_content "Batch successfully created"
-    assert_css ".flash-notice"
+    assert_css ".alert-success"
     assert_content "test batch"
   end
 
@@ -90,7 +91,7 @@ class BatchManegmentTest < CapybaraTestCase
     original_number_of_batches = Batch.count
 
     visit "/batches"
-    click_on "New"
+    click_button "New Batch"
 
     fill_in "Batch Name", with: "Too Long" * 20
     fill_in "Target Weight", with: "50.0"
@@ -98,7 +99,7 @@ class BatchManegmentTest < CapybaraTestCase
 
     assert_current_path "/batches"
     assert_content "name must have 30 characters max"
-    assert_css ".flash-error"
+    assert_css ".alert-danger"
     refute_content "Too Long"
     assert_equal original_number_of_batches, Batch.count
   end
@@ -107,7 +108,7 @@ class BatchManegmentTest < CapybaraTestCase
     original_number_of_batches = Batch.count
 
     visit "/batches"
-    click_on "New"
+    click_button "New Batch"
 
     fill_in "Batch Name", with: "Test Batch"
     fill_in "Target Weight", with: "50000.0"
@@ -115,7 +116,7 @@ class BatchManegmentTest < CapybaraTestCase
 
     assert_current_path "/batches"
     assert_content "Invalid target weight, must be between 20.0 and 999.9"
-    assert_css ".flash-error"
+    assert_css ".alert-danger"
     refute_content "Too Long"
     assert_equal original_number_of_batches, Batch.count
   end
@@ -134,7 +135,7 @@ class BatchManegmentTest < CapybaraTestCase
 
     fill_in "Name", with: "Old Batch"
 
-    click_on "Validate"
+    click_on "Update Batch"
 
     assert_current_path "/batches"
     assert_content "Old Batch"
@@ -155,7 +156,7 @@ class BatchManegmentTest < CapybaraTestCase
 
     fill_in "Target Weight", with: "55.0"
 
-    click_on "Validate"
+    click_on "Update Batch"
 
     assert_current_path "/batches"
     assert_content "55.0"
@@ -176,10 +177,10 @@ class BatchManegmentTest < CapybaraTestCase
 
     fill_in "Target Weight", with: "fifty-five"
 
-    click_on "Validate"
+    click_on "Update Batch"
 
     assert_current_path "/batches/#{batch.id}"
-    assert_css ".flash-error"
+    assert_css ".alert-danger"
     assert_content "Invalid target weight, must be between 20.0 and 999.9"
     refute_content "fifty-five"
   end
@@ -198,10 +199,10 @@ class BatchManegmentTest < CapybaraTestCase
 
     fill_in "Name", with: "Too Long" * 20
 
-    click_on "Validate"
+    click_on "Update Batch"
 
     assert_current_path "/batches/#{batch.id}"
-    assert_css ".flash-error"
+    assert_css ".alert-danger"
     assert_content "name must have 30 characters max"
     refute_content "Too Long"
   end
@@ -216,7 +217,7 @@ class BatchManegmentTest < CapybaraTestCase
 
     check "Make active"
 
-    click_on "Validate"
+    click_on "Update Batch"
 
     assert_current_path "/batches"
 
@@ -227,13 +228,13 @@ class BatchManegmentTest < CapybaraTestCase
   end
 
   def test_can_delete_a_batch_with_check_box_checked
-    visit "/batches"
-
-    click_on "New Batch"
     batch = Batch.where(name: "New Batch", account_id: 1, active: true).first
     refute_nil batch
     assert_equal 2, batch.entries.size
+    
+    visit "/batches"
 
+    click_link "New Batch", href: "/batches/#{batch.id}/edit"
     assert_current_path "/batches/#{batch.id}/edit"
 
     click_on "Delete"
@@ -241,28 +242,29 @@ class BatchManegmentTest < CapybaraTestCase
     click_on "Confirm Deletion"
 
     assert_current_path "/batches"
-    assert_css ".flash-notice"
+    assert_css ".alert-success"
     assert_content "Batch has been successfully deleted"
 
-    refute_content "New Batch"
+    refute_link "New Batch"
     assert_nil Batch.where(name: "New Batch", account_id: 1).first
     assert_equal 0, Entry.where(batch_id: batch.id).count
   end
 
   def test_cannot_delete_a_batch_if_check_box_is_not_checked
-    visit "/batches"
-
-    click_on "New Batch"
     batch = Batch.where(name: "New Batch", account_id: 1, active: true).first
     refute_nil batch
     assert_equal 2, batch.entries.size
+    
+    visit "/batches"
+
+    click_link "New Batch", href: "/batches/#{batch.id}/edit"
 
     assert_current_path "/batches/#{batch.id}/edit"
 
     click_on "Confirm Deletion"
 
     assert_current_path "/batches/#{batch.id}/edit"
-    assert_css ".flash-error"
+    assert_css ".alert-danger"
     assert_content "Please tick the checkbox to confirm batch deletion"
 
     refute_nil Batch.where(name: "New Batch", account_id: 1).first

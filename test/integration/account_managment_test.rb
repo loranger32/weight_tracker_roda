@@ -15,7 +15,7 @@ class AccountManagementTest < CapybaraTestCase
     assert_link "Change Password"
     assert_link "Security Log"
     assert_link "Export Data"
-    assert_button "Log Out"
+    assert_link "Log Out"
     assert_link "Close Account"
   end
 
@@ -28,11 +28,11 @@ class AccountManagementTest < CapybaraTestCase
     fill_in "password", with: "foobar"
     click_on "Change User Name"
 
-    account = Account.first
+    account = Account.where(email: "alice@example.com").first
 
     assert_equal new_user_name, account.user_name
     assert_current_path "/account"
-    assert_css ".flash-notice"
+    assert_css ".alert-success"
     assert_content new_user_name
   end
 
@@ -50,7 +50,7 @@ class AccountManagementTest < CapybaraTestCase
 
     assert BCrypt::Password.new(account.password_hash) == "barfoo"
     assert_current_path "/account"
-    assert_css ".flash-notice"
+    assert_css ".alert-success"
     assert_content "Your password has been changed"
   end
 
@@ -62,19 +62,23 @@ class AccountManagementTest < CapybaraTestCase
     logout!
 
     visit "/login"
-    fill_in "login", with: "alice@example.com"
-    fill_in "password", with: "wrongpassword"
-    click_on "Log In"
+    within("form#login-form") do
+      fill_in "login", with: "alice@example.com"
+      fill_in "password", with: "wrongpassword"
+      click_on "Login"
+    end
     login!
 
     visit "/security-log"
 
     assert_current_path "/security-log"
     assert_content "Review the access to your account"
-    assert_content "create_account", count: 1
-    assert_content /\slogin\s/, count: 2
-    assert_content "logout", count: 2
-    assert_content "login_failure", count: 1
+    within("table") do
+      assert_content "create_account", count: 1
+      assert_content /\slogin\s/, count: 2
+      assert_content "logout", count: 2
+      assert_content "login_failure", count: 1
+    end
   end
 
   def test_export_data_page
@@ -83,34 +87,10 @@ class AccountManagementTest < CapybaraTestCase
     visit "/export-data"
 
     assert_current_path "/export-data"
-    assert_content "Export Data"
+    assert_content "Export Your Data"
     assert_content "JSON"
 
     assert_selector "input", count: 1
-  end
-
-  def test_cancel_button_behavior
-    visit "/create-account"
-    click_on "Cancel"
-    assert_current_path "/login"
-
-    create_and_verify_account!
-
-    visit "/change-user-name"
-    click_on "Cancel"
-    assert_current_path "/account"
-
-    visit "/change-login"
-    click_on "Cancel"
-    assert_current_path "/account"
-
-    visit "/change-password"
-    click_on "Cancel"
-    assert_current_path "/account"
-
-    visit "/export-data"
-    click_on "Cancel"
-    assert_current_path "/account"
   end
 
   def test_export_data_to_json
@@ -158,7 +138,7 @@ class AccountManagementTest < CapybaraTestCase
     click_on "Close Account"
 
     assert_current_path "/close-account"
-    assert_css ".flash-error"
+    assert_css ".alert-danger"
     assert_content "You did not confirm you made a backup of your data"
 
     assert_equal 2, Account.first.status_id
@@ -166,8 +146,9 @@ class AccountManagementTest < CapybaraTestCase
 
   def test_can_close_account_if_checkbox_is_checked
     create_and_verify_account!
+    account = Account.where(user_name: "Alice").first
 
-    assert_equal 2, Account.first.status_id
+    assert_equal 2, account.status_id
 
     visit "/close-account"
 
@@ -177,14 +158,16 @@ class AccountManagementTest < CapybaraTestCase
 
     assert_current_path "/login"
 
-    assert_equal 3, Account.first.status_id
+    assert_equal 3, account.reload.status_id
 
-    fill_in "Email", with: "Alice"
-    fill_in "Password", with: "foobar"
-    click_on "Log In"
+    within("form#login-form") do
+      fill_in "Email", with: "Alice"
+      fill_in "Password", with: "foobar"
+      click_on "Login"
+    end
 
     assert_current_path "/login"
-    assert_css ".flash-error"
+    assert_css ".alert-danger"
   end
 end
 
@@ -201,24 +184,28 @@ class AccountManagementMailTest < CapybaraTestCase
     visit "/login"
 
     11.times do
-      fill_in "Email", with: "alice@example.com"
-      fill_in "Password", with: "wrong_password"
-      click_on "Log In"
+      within("form#login-form") do
+        fill_in "Email", with: "alice@example.com"
+        fill_in "Password", with: "wrong_password"
+        click_on "Login"
+      end
     end
 
     assert_current_path "/login"
-    assert_css ".flash-error"
+    assert_css ".alert-danger"
     assert_content "This account is currently locked out and cannot be logged in to"
     assert_content :all, "Request Account Unlock"
 
     visit "/login"
-    fill_in "Email", with: "alice@example.com"
-    fill_in "Password", with: "foobar"
-    click_on "Log In"
+    within("form#login-form") do
+      fill_in "Email", with: "alice@example.com"
+      fill_in "Password", with: "foobar"
+      click_on "Login"
+    end
 
     assert_current_path "/login"
     assert_content "This account is currently locked out and cannot be logged in to"
-    assert_css ".flash-error"
+    assert_css ".alert-danger"
     assert_content :all, "Request Account Unlock"
   end
 
@@ -229,13 +216,15 @@ class AccountManagementMailTest < CapybaraTestCase
     visit "/login"
 
     11.times do
-      fill_in "Email", with: "alice@example.com"
-      fill_in "Password", with: "wrong_password"
-      click_on "Log In"
+      within("form#login-form") do
+        fill_in "Email", with: "alice@example.com"
+        fill_in "Password", with: "wrong_password"
+        click_on "Login"
+      end
     end
 
     assert_current_path "/login"
-    assert_css ".flash-error"
+    assert_css ".alert-danger"
     assert_content "This account is currently locked out and cannot be logged in to"
     assert_content :all, "Request Account Unlock"
 
@@ -251,7 +240,7 @@ class AccountManagementMailTest < CapybaraTestCase
     assert_current_path "/unlock-account"
     click_on "Unlock Account"
     assert_current_path "/entries/new"
-    assert_css ".flash-notice"
+    assert_css ".alert-success"
     assert_content "Your account has been unlocked"
     assert_link "Alice"
   end
@@ -268,7 +257,7 @@ class AccountManagementMailTest < CapybaraTestCase
     assert_current_path "/verify-account"
     click_on "Verify Account"
     assert_current_path "/entries/new"
-    assert_css ".flash-notice"
+    assert_css ".alert-success"
     assert_content "Your account has been verified"
     assert_link "Alice"
   end
@@ -290,14 +279,14 @@ class AccountManagementMailTest < CapybaraTestCase
 
     login!
 
-    assert_css ".flash-error"
+    assert_css ".alert-danger"
     assert_content "The account you tried to login with is currently awaiting verification"
     click_on "Send Verification Email Again"
 
     assert_equal 2, mails_count
 
     assert_current_path "/login"
-    assert_css ".flash-notice"
+    assert_css ".alert-success"
 
     refute_equal hacked_email_last_sent, DB[:account_verification_keys].first[:email_last_sent]
 
@@ -310,19 +299,20 @@ class AccountManagementMailTest < CapybaraTestCase
     assert_current_path "/verify-account"
     click_on "Verify Account"
     assert_current_path "/entries/new"
-    assert_css ".flash-notice"
+    assert_css ".alert-success"
     assert_content "Your account has been verified"
     assert_link "Alice"
   end
 
   def test_request_password_reset_does_not_send_email_to_unknown_account
     visit "/"
-    click_on "Reset Password"
+    click_on "Forgot Password?"
     assert_current_path "/reset-password-request"
     fill_in "Email", with: "notregistered@example.com"
     click_on "Password Reset"
 
     assert_current_path "/reset-password-request"
+    assert_css ".alert-danger"
     assert_content "There was an error requesting a password reset"
     assert_equal 0, mails_count
   end
@@ -332,7 +322,7 @@ class AccountManagementMailTest < CapybaraTestCase
     logout!
 
     visit "/"
-    click_on "Reset Password"
+    click_on "Forgot Password?"
 
     assert_current_path "/reset-password-request"
     fill_in "Email", with: "alice@example.com"
@@ -362,16 +352,20 @@ class AccountManagementMailTest < CapybaraTestCase
 
     visit "/login"
 
-    fill_in "Email", with: "alice@example.com"
-    fill_in "Password", with: "foobar" # Old Password
-    click_on "Log In"
+    within("form#login-form") do
+      fill_in "Email", with: "alice@example.com"
+      fill_in "Password", with: "foobar" # Old Password
+      click_on "Login"
+    end
 
     assert_current_path "/login"
     assert_content "There was an error logging in"
 
-    fill_in "Email", with: "alice@example.com"
-    fill_in "Password", with: "supersecret"
-    click_on "Log In"
+    within("form#login-form") do
+      fill_in "Email", with: "alice@example.com"
+      fill_in "Password", with: "supersecret"
+      click_on "Login"
+    end
 
     assert_current_path "/entries/new" # Test user has no entry for current day
     assert_content "You have been logged in"
@@ -399,15 +393,14 @@ class AccountManagementMailTest < CapybaraTestCase
 
     visit "/change-login"
     fill_in "login", with: new_email
-    fill_in "login-confirm", with: new_email
     fill_in "password", with: "foobar"
     click_on "Change Email"
 
-    account = Account.first
+    account = Account.where(user_name: "Alice").first
 
     assert_equal "alice@example.com", account.email
     assert_current_path "/account"
-    assert_css ".flash-notice"
+    assert_css ".alert-success"
     assert_content "alice@example.com"
     assert_content "An email has been sent to your new email verify it"
 
@@ -426,7 +419,7 @@ class AccountManagementMailTest < CapybaraTestCase
     click_on "Verify Email Change"
 
     assert_current_path "/entries/new"
-    assert_css ".flash-notice"
+    assert_css ".alert-success"
     assert_content "Your new email has been verified"
     assert_content "Alice"
 
@@ -434,16 +427,20 @@ class AccountManagementMailTest < CapybaraTestCase
 
     visit "/login"
 
-    fill_in "Email", with: "alice@example.com" # Old email
-    fill_in "Password", with: "foobar"
-    click_on "Log In"
+    within("form#login-form") do
+      fill_in "Email", with: "alice@example.com" # Old email
+      fill_in "Password", with: "foobar"
+      click_on "Login"
+    end
 
     assert_current_path "/login"
     assert_content "There was an error logging in"
 
-    fill_in "Email", with: new_email
-    fill_in "Password", with: "foobar"
-    click_on "Log In"
+    within("form#login-form") do
+      fill_in "Email", with: new_email
+      fill_in "Password", with: "foobar"
+      click_on "Login"
+    end
 
     assert_current_path "/entries/new" # Test User has no entry for current day
     assert_content "You have been logged in"
@@ -453,7 +450,7 @@ end
 class TwoFactorAuthenticationTest < CapybaraTestCase
   def test_can_activate_two_factor_authentication
     create_and_verify_account!
-    account_id = Account.first.id
+    account_id = Account.where(user_name: "Alice").first.id
 
     visit "/account"
 
@@ -464,7 +461,7 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     click_on "Setup 2FA"
 
     assert_current_path "/otp-setup"
-    assert_link "Alice", href: "/account"
+    assert_link "Back to Account", href: "/account"
     assert_css("#qrcode-otp")
 
     secret = page.find("#otp-secret-key").text
@@ -478,9 +475,9 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     assert_equal 16, DB[:account_recovery_codes].where(id: account_id).all.size
 
     assert_current_path "/entries/new"
-    assert_css ".flash-notice"
+    assert_css ".alert-success"
     assert_content "TOTP authentication is now setup"
-    assert_link "Alice", href: "/account"
+    assert_link "Alice", href: "#" # Bootstrap navbar collapse link
 
     visit "/account"
     refute_content "Setup 2FA"
@@ -490,7 +487,7 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
 
   def test_can_see_recovery_codes
     create_and_verify_account!
-    account_id = Account.first.id
+    account_id = Account.where(user_name: "Alice").first.id
     setup_two_fa!(account_id)
 
     visit "/account"
@@ -500,9 +497,9 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     click_on "View Authentication Recovery Codes"
 
     assert_current_path "/recovery-codes"
+    assert_link "Back to Account", href: "/account"
     assert_content "Print"
     assert_content "Copy"
-    assert_content "Cancel"
 
     recovery_codes = DB[:account_recovery_codes].where(id: account_id).map(:code)
     recovery_codes.each do |code|
@@ -512,7 +509,7 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
 
   def test_can_add_recovery_code
     create_and_verify_account!
-    account_id = Account.first.id
+    account_id = Account.where(user_name: "Alice").first.id
     setup_two_fa!(account_id)
     logout!
     login!
@@ -537,19 +534,19 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
 
     assert_current_path "/recovery-codes"
     refute_content recovery_code
-    assert_content "Add Additional Recovery Codes"
+    assert_content "Refill your recovery codes ?"
 
     fill_in "Password", with: "foobar"
     click_on "Add Authentication Recovery Codes"
 
     assert_equal 16, DB[:account_recovery_codes].where(id: account_id).all.size
-    assert_css ".flash-notice"
+    assert_css ".alert-success"
     assert_content "Additional authentication recovery codes have been added"
   end
 
   def test_can_disable_two_factors_authentication
     create_and_verify_account!
-    account_id = Account.first.id
+    account_id = Account.where(user_name: "Alice").first.id
     visit "/account"
     click_on "Setup 2FA"
     secret = page.find("#otp-secret-key").text
@@ -573,14 +570,14 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     click_on "Disable 2FA"
 
     assert_current_path "/multifactor-disable"
-    assert_link "Alice", href: "/account"
+    assert_link "Back to Account", href: "/account"
 
     fill_in "Password", with: "foobar"
     click_on "Remove 2FA"
 
-    assert_css ".flash-notice"
+    assert_css ".alert-success"
     assert_content "All multifactor authentication methods have been disabled"
-    assert_link "Alice", href: "/account"
+    assert_link "Alice", href: "#" # Bootstrap navbar collapse link
     assert_current_path "/account"
 
     assert_equal 0, DB[:account_recovery_codes].where(id: account_id).all.size

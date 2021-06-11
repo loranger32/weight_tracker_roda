@@ -9,8 +9,9 @@ class AuthenticationTest < CapybaraTestCase
     restricted_pathes.each do |path|
       visit path
       assert_current_path "/login"
-      assert_title "WT - Log In"
-      assert_css ".flash-error"
+      assert_title "WT - Login"
+      assert_css ".alert-danger"
+      assert_content "Please login to continue"
     end
   end
 
@@ -18,12 +19,11 @@ class AuthenticationTest < CapybaraTestCase
     visit "/create-account"
     fill_in "user_name", with: "Alice"
     fill_in "login", with: "alice@example.com"
-    fill_in "login-confirm", with: "alice@example.com"
     fill_in "password", with: "foobar"
     fill_in "password-confirm", with: "foobar"
     click_on "Create Account"
     assert_current_path "/entries/new"
-    assert_css ".flash-notice"
+    assert_css ".alert-success"
     assert_content "Alice"
   end
 
@@ -33,21 +33,23 @@ class AuthenticationTest < CapybaraTestCase
     login!
 
     assert_current_path "/entries/new" # Test User has no entry for current day
-    assert_css ".flash-notice"
+    assert_css ".alert-success"
     assert_content "Alice"
+    refute_content "Login / Signup"
   end
 
   def test_user_can_logout
     create_and_verify_account!
     logout!
     assert_current_path "/login"
-    assert_css ".flash-notice"
+    assert_css ".alert-success"
     assert_content "You have been logged out"
+    assert_content "Login / Signup"
   end
 
   def test_can_authenticate_with_two_factor_authentication
     create_and_verify_account!
-    account_id = Account.first.id
+    account_id = Account.where(user_name: "Alice").first.id
     visit "/account"
     click_on "Setup 2FA"
     secret = page.find("#otp-secret-key").text
@@ -78,8 +80,8 @@ class AuthenticationTest < CapybaraTestCase
     click_on "Authenticate Using TOTP"
 
     assert_current_path "/entries/new"
-    assert_link "Alice", href: "/account"
-    assert_css ".flash-notice"
+    assert_link "Alice", href: "#" # Bootstrap navbar collapse link
+    assert_css ".alert-success"
     assert_content "You have been multifactor authenticated"
   end
 
@@ -114,8 +116,8 @@ class AuthenticationTest < CapybaraTestCase
     click_on "Authenticate via Recovery Code"
 
     assert_current_path "/entries/new"
-    assert_link "Alice", href: "/account"
-    assert_css ".flash-notice"
+    assert_link "Alice", href: "#" # Bootstrap navbar collapse link
+    assert_css ".alert-success"
     assert_content "You have been multifactor authenticated"
 
     assert_equal 15, DB[:account_recovery_codes].where(id: account_id).all.size

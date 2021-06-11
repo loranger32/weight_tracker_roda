@@ -78,13 +78,15 @@ class AdminPageTest < CapybaraTestCase
   end
 
   def test_admin_without_two_fa_cannot_access_admin_page
-    account = create_and_verify_account!(user_name: "admin", email: "admin@example.com")
+    account = create_and_verify_account!(user_name: "test admin", email: "admin@example.com")
     Admin.new(account_id: account.id).save
 
     visit "/admin"
 
     assert_current_path "/otp-setup"
-    refute_content "Admin Panel"
+    refute_content "Admin - test admin"
+    user_names = DB[:accounts].exclude(user_name: "test admin").select_map(:user_name)
+    user_names.each { |user_name| refute_content user_name }
   end
 
   def test_admin_with_2_fa_enabled_can_access_admin_page
@@ -102,17 +104,12 @@ class AdminPageTest < CapybaraTestCase
     assert_link "OTP ON"
     assert_link "OTP OFF"
     assert_link "ADMIN"
-    assert_link "Delete", count: 3
-    assert_link "Verify", count: 1
-    # Regexp needed to disambiguate from the "Closed" filter link above
-    assert_link "Close", count: 2, href: /\/admin\/accounts\/close/
-    assert_link "Open", count: 1
 
     assert_content "alice@example.com"
     assert_content "test.unverified@example.com"
     assert_content "test.verified@example.com"
     assert_content "test.closed@example.com"
-    assert_content "test unverified account"
+    assert_content "test unverified accou..." # Test the truncate view helpers method
     assert_content "test verified account"
     assert_content "test closed account"
 
@@ -122,7 +119,7 @@ class AdminPageTest < CapybaraTestCase
     assert_content "test verified account"
     refute_content "test.unverified@example.com"
     refute_content "test.closed@example.com"
-    refute_content "test unverified account"
+    refute_content "test unverified accou..."
     refute_content "test closed account"
 
     click_on "Unverified"
@@ -130,7 +127,7 @@ class AdminPageTest < CapybaraTestCase
     assert_content "test.unverified@example.com"
     refute_content "test.verified@example.com"
     refute_content "test.closed@example.com"
-    assert_content "test unverified account"
+    assert_content "test unverified accou..."
     refute_content "test verified account"
     refute_content "test closed account"
 
@@ -139,7 +136,7 @@ class AdminPageTest < CapybaraTestCase
     refute_content "test.unverified@example.com"
     refute_content "test.verified@example.com"
     assert_content "test.closed@example.com"
-    refute_content "test unverified account"
+    refute_content "test unverified accou..."
     refute_content "test verified account"
     assert_content "test closed account"
 
@@ -148,7 +145,7 @@ class AdminPageTest < CapybaraTestCase
     refute_content "test.unverified@example.com"
     refute_content "test.verified@example.com"
     refute_content "test.closed@example.com"
-    refute_content "test unverified account"
+    refute_content "test unverified accou..."
     refute_content "test verified account"
     refute_content "test closed account"
 
@@ -157,7 +154,7 @@ class AdminPageTest < CapybaraTestCase
     assert_content "test.unverified@example.com"
     assert_content "test.verified@example.com"
     assert_content "test.closed@example.com"
-    assert_content "test unverified account"
+    assert_content "test unverified accou..."
     assert_content "test verified account"
     assert_content "test closed account"
 
@@ -166,12 +163,12 @@ class AdminPageTest < CapybaraTestCase
     refute_content "test.unverified@example.com"
     refute_content "test.verified@example.com"
     refute_content "test.closed@example.com"
-    refute_content "test unverified account"
+    refute_content "test unverified accou..."
     refute_content "test verified account"
     refute_content "test closed account"
   end
 
-  def test_admin_can_delete_a_non_admin_account
+  def test_admin_can_delete_a_non_admin_account_with_checkbox_checked
     soon_deleted_account = create_and_verify_account!(user_name: "soon deleted",
                                                       email: "soondeleted@example.com")
     batch_id = soon_deleted_account.active_batch_id
@@ -185,9 +182,9 @@ class AdminPageTest < CapybaraTestCase
     visit "/admin"
     assert_current_path "/admin/accounts"
 
-    click_link "Delete", href: "/admin/accounts/delete?account_id=#{soon_deleted_account.id}"
+    click_link "soon deleted", href: "/admin/accounts/#{soon_deleted_account.id}/delete"
 
-    assert_current_path "/admin/accounts/delete?account_id=#{soon_deleted_account.id}"
+    assert_current_path "/admin/accounts/#{soon_deleted_account.id}/delete"
     assert_content "Admin Panel"
     assert_content "Admin - Alice"
 
@@ -229,7 +226,10 @@ class AdminPageTest < CapybaraTestCase
 
     visit "/admin"
     click_link "Verify", href: "/admin/accounts/verify?account_id=#{unverified_account.id}"
+
+    assert_equal 200, statud_code
     assert_current_path "/admin/accounts/verify?account_id=#{unverified_account.id}"
+
     assert_content "Admin Panel"
     assert_content "Admin - Alice"
     assert_content "Verify Account"

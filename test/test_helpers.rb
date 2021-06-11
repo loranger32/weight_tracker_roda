@@ -63,7 +63,6 @@ class CapybaraTestCase < HookedTestClass
     visit "/create-account"
     fill_in "user_name", with: user_name
     fill_in "login", with: email
-    fill_in "login-confirm", with: email
     fill_in "password", with: password
     fill_in "password-confirm", with: password
     click_on "Create Account"
@@ -101,14 +100,18 @@ class CapybaraTestCase < HookedTestClass
   def logout!
     visit "/account"
     click_on "Log Out"
+    assert_current_path "/logout"
+    click_on "Logout"
   end
 
   def login!(email: "alice@example.com", password: "foobar")
     raise StandardError, "No user to log in" unless user_exist?(email: email)
     visit "/login"
-    fill_in "login", with: email
-    fill_in "password", with: password
-    click_on "Log In"
+    within("form#login-form") do
+      fill_in "login", with: email
+      fill_in "password", with: password
+      click_on "Login"
+    end
     Account.where(email: "alice@example.com").first
   end
 
