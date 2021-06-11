@@ -26,8 +26,11 @@
           - @entries.each do |entry|
             %tr
               %td.text-center
-                %a.no-decoration{href: "/entries/#{entry.id}/edit"}= entry.day.strftime("%a %d %b %Y")
+                %a.no-decoration{href: "/entries/#{entry.id}/edit", "data-bs-toggle" => "tooltip",
+                "data-bs-placement" => "bottom", title: entry.note}= entry.day.strftime("%a %d %b %Y")
               %td.text-center= entry.weight.to_f
               %td.text-center{ class: weight_delta_color(entry.delta) }= format_delta(entry.delta)
               %td.text-center= @current_batch.target ? entry.delta_to_target : "/"
     
+
+- content_for :js, assets([:js, :bs_tooltip])
