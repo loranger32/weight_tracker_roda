@@ -16,7 +16,7 @@
     - if @target_account.is_admin?
       %p Admin account - can't be managed with the GUI
     - else
-      %section.row.justify-content-evenly
+      %section.row.justify-content-evenly.mb-3
         - if @target_account.is_unverified?
           %form.col-3{action: "/admin/accounts/#{@target_account.id}/verify", method: :post}
             != csrf_tag("/admin/accounts/#{@target_account.id}/verify")
@@ -32,9 +32,16 @@
             != csrf_tag("/admin/accounts/#{@target_account.id}/close")
             %input{type: :hidden, name: "account_id", value: @target_account.id}
             %input.btn.btn-warning#close-account-button{type: :submit, value: "Close"}
-        %form.col-3{action: "/admin/accounts/#{@target_account.id}/delete", method: :post}
-          != csrf_tag("/admin/accounts/#{@target_account.id}/delete")
-          %input{type: :hidden, name: "account_id", value: @target_account.id}
-          %input.btn.btn-danger#delete-account-button{type: :submit, value: "Delete"}
+        .col-3
+          %button.btn.btn-danger{type: "button", "data-bs-toggle" => "collapse",
+            "data-bs-target" => "#delete-account-form", "aria-expanded" => false,
+            "aria-controls" => "delete-account-form"} Delete
+      %form.collapse#delete-account-form{action: "/admin/accounts/#{@target_account.id}/delete", method: :post}
+        != csrf_tag("/admin/accounts/#{@target_account.id}/delete")
+        %input{type: :hidden, name: "account_id", value: @target_account.id}
+        .form-group.form-check.mb-3
+          %input.form-check-input#confirm-delete-account-checkbox{type: :checkbox, name: "confirm-delete-account", value: "confirm", checked: false}
+          %label.form-check-label{for: "confirm-delete-account-checkbox"} #{@target_account.entries.length} entries will be deleted ! Please confirm
+        %input.btn.btn-danger.w-100.disabled#confirm-delete-account-button{type: :submit, value: "Confirm Deletion"}
 
 - content_for :js, assets([:js, :admin_actions])
