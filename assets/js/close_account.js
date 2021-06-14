@@ -1,17 +1,17 @@
 "use strict"
 
 const closeAccountButton = document.querySelector("#close_account_button");
-const confirmDeleteData = document.querySelector("#confirm-delete-data");
+const confirmDeleteDataCheckbox = document.querySelector("#confirm-delete-data");
 const closeAccountForm = document.querySelector("#close-account-form");
 
-confirmDeleteData.addEventListener('click', toggleCloseAccountButton);
+confirmDeleteDataCheckbox.addEventListener('click', toggleCloseAccountButton);
 closeAccountForm.addEventListener('submit', confirmAccountDeletion);
 
 function toggleCloseAccountButton(e) {
-	if (confirmDeleteData.checked == true) {
-		closeAccountButton.classList.remove('btn-disabled');
+	if (confirmDeleteDataCheckbox.checked == true) {
+		closeAccountButton.classList.remove('disabled');
 	} else {
-		closeAccountButton.classList.add('btn-disabled');
+		closeAccountButton.classList.add('disabled');
 	}
 }
 

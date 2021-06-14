@@ -26,6 +26,6 @@
         %input.form-control#password{type: :password, name: "password", autocomplete: "current-password", required: true, claue: ""}
 
       .form-group.mb-3
-        %input.form-control.btn.btn-danger.btn-disabled#close_account_button{type: :submit, value: "Close Account"}
+        %input.form-control.btn.btn-danger.disabled#close_account_button{type: :submit, value: "Close Account"}
 
 - content_for :js, assets([:js, :close_account])
