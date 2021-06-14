@@ -9,8 +9,8 @@
       %p.mb-3= @target_account.email
       %p.mb-3= @target_account.account_status
       %p.mb-3= @target_account.otp_on? ? "OTP ON" : "OTP OFF"
-      %p.mb-3 #{@target_account.batches.length} batches
-      %p.mb-3 #{@target_account.entries.length} entries
+      %p.mb-3= pluralize_batches(@target_account.batches.length)
+      %p.mb-3= pluralize_entries(@target_account.entries.length)
       %p Last entry: #{@target_account.last_entry_date}
 
     - if @target_account.is_admin?

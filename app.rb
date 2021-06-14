@@ -268,6 +268,13 @@ module WeightTracker
         @account = Account[@account_ds[:id]]
         view "account_show"
       end
+
+      r.get "about" do
+        about_text = File.read("README.md")
+        @html = Kramdown::Document.new(about_text).to_html
+
+        view "about"
+      end
     end
   end
 end

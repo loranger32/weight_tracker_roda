@@ -56,5 +56,15 @@ module WeightTracker
     def truncate(str, index)
       str.length <= index ? str : str[0..index] + "..."
     end
+
+    def pluralize_batches(number_of_batches)
+      word = number_of_batches == 1 ? "Batch" : "Batches"
+      "#{number_of_batches} #{word}"
+    end
+
+    def pluralize_entries(number_of_entries)
+      word = number_of_entries == 1 ? "Entry" : "Entries"
+      "#{number_of_entries} #{word}"
+    end
   end
 end

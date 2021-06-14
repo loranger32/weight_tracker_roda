@@ -80,6 +80,5 @@ Entries weight, entries note and batch target weight are encrypted before being 
 
 ## Next Features
 
-- Currently the front end is quite ugly. Given that I'm not a css pro, I'll rely on Bootstrap 5.
-
-- After that will come the time to add fancy and useful charts ! Probably whit Chart.js
+- Add fancy and useful charts ! Probably whit Chart.js
+- Add a BMI calculator feature

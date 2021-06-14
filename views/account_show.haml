@@ -11,8 +11,8 @@
           %p.mb-3.alert.alert-success.w-100.text-center Verfied Account
         - elsif @account.is_unverified?
           %p.mb-3.alert.alert-warning.w-100 Unverified Account
-        %a.d-block.mb-3.w-100.btn.btn-primary{href: "/batches"} #{@account.batches.length} batches
-        %a.d-block.mb-3.w-100.btn.btn-primary{href: "/entries"} #{@account.entries.length} entries
+        %a.d-block.mb-3.w-100.btn.btn-primary{href: "/batches"}= pluralize_batches(@account.batches.length)
+        %a.d-block.mb-3.w-100.btn.btn-primary{href: "/entries"}= pluralize_entries(@account.entries.length)
         %p.small.text-center Last entry: #{@account.last_entry_date}
   
   .col-10.offset-1.col-md-5.offset-md-2.col-xl-5.offset-xl-2.col-xl-5.mb-3.bg-gray-md.py-3.rounded
