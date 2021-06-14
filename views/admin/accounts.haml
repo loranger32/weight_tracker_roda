@@ -30,13 +30,16 @@
           %td.text-center.d-none.d-md-table-cell ADMIN
         %tbody
           - @accounts.each do |account|
-            %tr
-              %td.text-center
-                %a{href: "/admin/accounts/#{account.id}"}= truncate(account.user_name, 20)
-              %td.text-center= account.email
-              %td.text-center= DB[:account_statuses].where(id: account.status_id).first[:name]
-              %td.text-center.d-none.d-md-table-cell= DB[:account_recovery_codes].where(id: account.id).empty? ? "" : "x"
-              %td.text-center.d-none.d-md-table-cell= account.is_admin? ? "x" : ""
+            %tr.text-center
+              - if account.is_admin?
+                %td= truncate(account.user_name, 20)
+              - else
+                %td
+                  %a{href: "/admin/accounts/#{account.id}"}= truncate(account.user_name, 20)
+              %td= account.email
+              %td= DB[:account_statuses].where(id: account.status_id).first[:name]
+              %td.d-none.d-md-table-cell= DB[:account_recovery_codes].where(id: account.id).empty? ? "" : "x"
+              %td.d-none.d-md-table-cell= account.is_admin? ? "x" : ""
 
 - else
   %p.text-center No Account matches these criteria

@@ -168,6 +168,31 @@ class AdminPageTest < CapybaraTestCase
     refute_content "test closed account"
   end
 
+  def test_cannot_access_show_page_of_an_admin_account
+    alice_account = setup_admin
+
+    visit "/admin/accounts"
+
+    refute_link "Alice", href: "/admin/accounts/#{alice_account.id}"
+
+    visit "/admin/accounts/#{alice_account.id}"
+
+    assert_current_path "/admin/accounts"
+    assert_css ".alert-danger"
+    assert_content "Cannot perform this action on admin user"
+  end
+
+
+  def test_admin_cannot_perform_post_actions_on_admin_accounts
+    alice_account = setup_admin
+    actions = %w[open close verify delete]
+    actions.each do |action|
+      assert_raises Roda::RodaPlugins::RouteCsrf::InvalidToken do
+        post "/admin/accounts/#{alice_account.id}/#{action}"
+      end
+    end
+  end
+
   def test_admin_can_delete_a_non_admin_account_with_checkbox_checked
     soon_deleted_account = create_and_verify_account!(user_name: "soon deleted",
                                                       email: "soondeleted@example.com")
@@ -176,46 +201,67 @@ class AdminPageTest < CapybaraTestCase
                       account_id: soon_deleted_account.id, batch_id: batch_id).save
 
     logout!
-
     setup_admin
 
-    visit "/admin"
-    assert_current_path "/admin/accounts"
+    visit "/admin/accounts"
 
-    click_link "soon deleted", href: "/admin/accounts/#{soon_deleted_account.id}/delete"
+    click_link "soon deleted", href: "/admin/accounts/#{soon_deleted_account.id}"
 
-    assert_current_path "/admin/accounts/#{soon_deleted_account.id}/delete"
+    assert_current_path "/admin/accounts/#{soon_deleted_account.id}"
     assert_content "Admin Panel"
     assert_content "Admin - Alice"
 
-    assert_content "Delete Account"
+    assert_content "Account Summary"
     assert_content "soon deleted"
     assert_content "soondeleted@example.com"
     assert_content "1 batches" # The default one
     assert_content "1 entries"
     assert_content "Last entry: 01 Jun 2021"
+    check "confirm-delete-account"
 
-    click_on "Delete Account"
+    click_on "Confirm Deletion"
 
     assert_current_path "/admin/accounts"
-    assert_css ".flash-notice"
+    assert_css ".alert-success"
     assert_content "Account successfully deleted"
     refute_content "soon deleted"
     refute_content "soondeleted@example.com"
-    refute_link "Delete", href: "/admin/accounts/delete?account_id=#{soon_deleted_account.id}"
+    refute_link "soon deleted", href: "/admin/accounts/#{soon_deleted_account.id}"
 
+    assert_nil Account[soon_deleted_account.id]
     assert_nil Batch[batch_id]
     assert_nil Entry[entry.id]
   end
 
-  def test_admin_cannot_delete_an_admin_account
-    alice_account = setup_admin
-    visit "/admin"
-    refute_link "Delete", href: "/admin/accounts/delete?account_id=#{alice_account.id}"
+  def test_admin_cannot_delete_a_non_admin_account_without_checking_confirmation_checkbox
+    not_soon_deleted_account = create_and_verify_account!(user_name: "not soon deleted",
+                                                          email: "notsoondeleted@example.com")
+    batch_id = not_soon_deleted_account.active_batch_id
+    entry = Entry.new(weight: "60.0", day: "2021-06-01", note: "",
+                      account_id: not_soon_deleted_account.id, batch_id: batch_id).save
 
-    assert_raises Roda::RodaPlugins::RouteCsrf::InvalidToken do
-      post "/admin/accounts/delete?account_id=#{alice_account.id}"
-    end
+    logout!
+    setup_admin
+
+    visit "/admin/accounts"
+
+    click_link "not soon deleted", href: "/admin/accounts/#{not_soon_deleted_account.id}"
+    assert_current_path "/admin/accounts/#{not_soon_deleted_account.id}"
+    
+    click_on "Confirm Deletion"
+
+    assert_current_path "/admin/accounts/#{not_soon_deleted_account.id}"
+    assert_css ".alert-danger"
+    assert_content "You did not checked the confirmation checkbox, action cancelled."
+    assert_content "not soon deleted"
+    assert_content "soondeleted@example.com"
+
+    refute_nil Account[not_soon_deleted_account.id]
+    refute_nil Batch[batch_id]
+    refute_nil Entry[entry.id]
+
+    visit "/admin/accounts"
+    assert_link "not soon deleted", href: "/admin/accounts/#{not_soon_deleted_account.id}"
   end
 
   def test_admin_can_verify_a_non_admin_account
@@ -225,49 +271,33 @@ class AdminPageTest < CapybaraTestCase
     setup_admin
 
     visit "/admin"
-    click_link "Verify", href: "/admin/accounts/verify?account_id=#{unverified_account.id}"
+    click_link "unverified", href: "/admin/accounts/#{unverified_account.id}"
 
-    assert_equal 200, statud_code
-    assert_current_path "/admin/accounts/verify?account_id=#{unverified_account.id}"
+    assert_equal 200, status_code
+    assert_current_path "/admin/accounts/#{unverified_account.id}"
 
     assert_content "Admin Panel"
     assert_content "Admin - Alice"
-    assert_content "Verify Account"
-    assert_content "You are about to manually verify this account."
+    assert_content "Account Summary"
     assert_content "unverified"
     assert_content "unverified@example.com"
     assert_content "1 batches"
     assert_content "0 entries"
     assert_content "Last entry: /"
 
-    click_on "Verify Account"
-    assert_current_path "/admin/accounts"
-    assert_css ".flash-notice"
+    click_on "Verify"
+    assert_equal 200, status_code
+    assert_current_path "/admin/accounts/#{unverified_account.id}"
+    assert_css ".alert-success"
     assert_content "Account successfully verified"
     assert_content "unverified"
+    assert_content "Account Summary"
     assert_content "unverified@example.com"
-    refute_link "Verify", href: "/admin/accounts/verify?account_id=#{unverified_account.id}"
-
+    
     assert unverified_account.reload.is_verified?
     assert_nil DB[:account_verification_keys].where(id: unverified_account.id).first
-  end
 
-  def test_admin_cannot_verify_an_admin_account
-    test_admin = create_account!(user_name: "test admin", email: "test_admin@example.com")
-    Admin.new(account_id: test_admin.id).save
-
-    assert test_admin.is_admin?
-
-    logout!
-    setup_admin
-    visit "/admin/accounts"
-
-    refute_link "Verify", href: "/admin/accounts/verify?account_id=#{test_admin.id}"
-    assert_raises Roda::RodaPlugins::RouteCsrf::InvalidToken do
-      post "/admin/accounts/verify?account_id=#{test_admin.id}"
-    end
-
-    assert test_admin.reload.is_unverified?
+    refute_button "Verify"
   end
 
   def test_admin_can_close_a_non_admin_account
@@ -277,68 +307,57 @@ class AdminPageTest < CapybaraTestCase
     setup_admin
 
     visit "/admin"
-    click_link "Close", href: "/admin/accounts/close?account_id=#{active_account.id}"
-    assert_current_path "/admin/accounts/close?account_id=#{active_account.id}"
+    click_link "active", href: "/admin/accounts/#{active_account.id}"
+    assert_current_path "/admin/accounts/#{active_account.id}"
     assert_content "Admin Panel"
     assert_content "Admin - Alice"
-    assert_content "Close Account"
-    assert_content "You are about to manually close this account."
+    assert_content "Account Summary"
     assert_content "active"
     assert_content "active@example.com"
     assert_content "1 batches"
     assert_content "0 entries"
     assert_content "Last entry: /"
 
-    click_on "Close Account"
-    assert_current_path "/admin/accounts"
-    assert_css ".flash-notice"
+    click_on "Close"
+    assert_current_path "/admin/accounts/#{active_account.id}"
+    assert_css ".alert-success"
     assert_content "Account successfully closed"
     assert_content "active"
     assert_content "active@example.com"
-    refute_link "Close", href: "/admin/accounts/close?account_id=#{active_account.id}"
+    refute_button "Close"
+    assert_button "Open"
 
     assert active_account.reload.is_closed?
   end
 
-  def test_admin_cannot_close_an_admin_account
-    alice_account = setup_admin
-    visit "/admin/accounts"
-
-    refute_link "Close", href: "/admin/accounts/delete?account_id=#{alice_account.id}"
-
-    assert_raises Roda::RodaPlugins::RouteCsrf::InvalidToken do
-      post "/admin/accounts/close?account_id=#{alice_account.id}"
-    end
-  end
-
   def test_admin_can_open_a_closed_non_admin_account
-    soon_reopened_account = create_and_verify_account!(user_name: "soon reopened", email: "soonreopened@example.com")
+    soon_reopened_account = create_and_verify_account!(user_name: "soon reopened",
+                                                       email: "soonreopened@example.com")
     logout!
     soon_reopened_account.update(status_id: 3)
 
     setup_admin
 
     visit "/admin"
-    click_link "Open", href: "/admin/accounts/open?account_id=#{soon_reopened_account.id}"
-    assert_current_path "/admin/accounts/open?account_id=#{soon_reopened_account.id}"
+    click_link "soon reopened", href: "/admin/accounts/#{soon_reopened_account.id}"
+    assert_current_path "/admin/accounts/#{soon_reopened_account.id}"
     assert_content "Admin Panel"
     assert_content "Admin - Alice"
-    assert_content "Open Account"
-    assert_content "You are about to manually open this account."
+    assert_content "Account Summary"
     assert_content "soon reopened"
     assert_content "soonreopened@example.com"
     assert_content "1 batches"
     assert_content "0 entries"
     assert_content "Last entry: /"
 
-    click_on "Open Account"
-    assert_current_path "/admin/accounts"
-    assert_css ".flash-notice"
+    click_on "Open"
+    assert_current_path "/admin/accounts/#{soon_reopened_account.id}"
+    assert_css ".alert-success"
     assert_content "Account successfully opened and set to verified status"
     assert_content "soon reopened"
     assert_content "soonreopened@example.com"
-    refute_link "Open", href: "/admin/accounts/open?account_id=#{soon_reopened_account.id}"
-
+    refute_button "Open"
+    assert_button "Close"
     refute soon_reopened_account.reload.is_closed?
   end
 end
