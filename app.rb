@@ -1,6 +1,7 @@
 require_relative "db/db"
 
 Dir["helpers/*.rb"].each { |f| require_relative f }
+Dir["jobs/*.rb"].each { |f| require_relative f }
 
 module WeightTracker
   class App < Roda
@@ -64,7 +65,7 @@ module WeightTracker
         if App.environment == :production
           MailHelpers.send_mail_with_sendgrid(mail)
         else
-          mail.deliver!
+          NewUserNotificationJob.perform_async(mail)
         end
       end
 

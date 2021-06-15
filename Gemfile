@@ -18,6 +18,7 @@ gem "rqrcode", "~> 1.2"
 gem "sendgrid-ruby", "~> 6.4"
 gem "sequel", "~> 5.43"
 gem "sequel_pg", "~> 1.14", require: "sequel"
+gem 'sucker_punch', '~> 3.0', '>= 3.0.1'
 
 group :development, :test do
   gem "awesome_print", "~> 1.9", ">= 1.9.2"
