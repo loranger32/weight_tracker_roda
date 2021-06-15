@@ -61,12 +61,7 @@ module WeightTracker
           subject "Weight Tracker - New User Signed Up"
           body "A new user signed up"
         end
-
-        if App.environment == :production
-          MailHelpers.send_mail_with_sendgrid(mail)
-        else
-          NewUserNotificationJob.perform_async(mail)
-        end
+        NewUserNotificationJob.perform_async(mail, App.environment)
       end
 
       # Login
