@@ -55,13 +55,7 @@ module WeightTracker
       end
 
       after_create_account do
-        mail = Mail.new do
-          from "weighttracker@example.com"
-          to ENV["MY_EMAIL"]
-          subject "Weight Tracker - New User Signed Up"
-          body "A new user signed up"
-        end
-        NewUserNotificationJob.perform_async(mail, App.environment)
+        NewUserNotificationJob.perform_async(App.environment)
       end
 
       # Login

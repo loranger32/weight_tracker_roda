@@ -1,7 +1,14 @@
 class NewUserNotificationJob
   include SuckerPunch::Job
 
-  def perform(mail, env)
+  def perform(env)
+    mail = Mail.new do
+      from "weighttracker@example.com"
+      to ENV["MY_EMAIL"]
+      subject "Weight Tracker - New User Signed Up"
+      body "A new user signed up"
+    end
+    
     if env == :production
       WeightTracker::MailHelpers.send_mail_with_sendgrid(mail)
     else
