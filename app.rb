@@ -53,6 +53,21 @@ module WeightTracker
         account[:user_name] = user_name
       end
 
+      after_create_account do
+        mail = Mail.new do
+          from "weighttracker@example.com"
+          to ENV["MY_EMAIL"]
+          subject "Weight Tracker - New User Signed Up"
+          body "A new user signed up"
+        end
+
+        if App.environment == :production
+          MailHelpers.send_mail_with_sendgrid(mail)
+        else
+          mail.deliver!
+        end
+      end
+
       # Login
       login_redirect "/"
 
