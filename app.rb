@@ -37,7 +37,7 @@ module WeightTracker
       # Email Base
       email_from "weighttracker@example.com"
       email_subject_prefix "WeightTracker - "
-      send_email { |mail| MailHelpers.send_mail_with_sendgrid(mail) } if App.production?
+      send_email { |mail| SendEmailInProductionJob.perform_async(mail) } if App.production?
 
       # Login Password Requirements Base
       password_hash_cost(App.test? ? 2 : 12)
@@ -55,7 +55,17 @@ module WeightTracker
       end
 
       after_create_account do
-        NewUserNotificationJob.perform_async(App.environment)
+        mail = Mail.new do
+          from "weighttracker@example.com"
+          to ENV["MY_EMAIL"]
+          subject "Weight Tracker - New User Signed Up"
+          body "A new user signed up"
+        end
+        case App.environment
+        when :production then SendEmailInProductionJob.perform_async(mail)
+        when :development then mail.deliver!
+        # Don't send email in tests (for the moment - complicates tests and not major feature)
+        end
       end
 
       # Login
