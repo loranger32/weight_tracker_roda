@@ -214,8 +214,8 @@ class AdminPageTest < CapybaraTestCase
     assert_content "Account Summary"
     assert_content "soon deleted"
     assert_content "soondeleted@example.com"
-    assert_content "1 batches" # The default one
-    assert_content "1 entries"
+    assert_content "1 Batch" # The default one
+    assert_content "1 Entry"
     assert_content "Last entry: 01 Jun 2021"
     check "confirm-delete-account"
 
@@ -281,8 +281,8 @@ class AdminPageTest < CapybaraTestCase
     assert_content "Account Summary"
     assert_content "unverified"
     assert_content "unverified@example.com"
-    assert_content "1 batches"
-    assert_content "0 entries"
+    assert_content "1 Batch"
+    assert_content "0 Entries"
     assert_content "Last entry: /"
 
     click_on "Verify"
@@ -314,8 +314,8 @@ class AdminPageTest < CapybaraTestCase
     assert_content "Account Summary"
     assert_content "active"
     assert_content "active@example.com"
-    assert_content "1 batches"
-    assert_content "0 entries"
+    assert_content "1 Batch"
+    assert_content "0 Entries"
     assert_content "Last entry: /"
 
     click_on "Close"
@@ -346,8 +346,8 @@ class AdminPageTest < CapybaraTestCase
     assert_content "Account Summary"
     assert_content "soon reopened"
     assert_content "soonreopened@example.com"
-    assert_content "1 batches"
-    assert_content "0 entries"
+    assert_content "1 Batch"
+    assert_content "0 Entries"
     assert_content "Last entry: /"
 
     click_on "Open"

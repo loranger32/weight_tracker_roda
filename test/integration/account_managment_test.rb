@@ -124,7 +124,7 @@ class AccountManagementTest < CapybaraTestCase
 
     visit "/close-account"
     refute_checked_field "I have backed up my data"
-    assert_css ".btn-disabled"
+    assert_css ".disabled"
   end
 
   def test_cannot_close_account_if_checkbox_is_not_checked
