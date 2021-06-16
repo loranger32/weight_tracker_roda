@@ -26,6 +26,12 @@ accounts = [
 
 accounts.each { |account| Account.new(account).save }
 
+mensurations = [{account_id: 1, height: "1.92"}, {account_id: 2, height: "1.75"},
+  {account_id: 3, height: "1.89"}, {account_id: 4, height: "1.56"},
+  {account_id: 5, height: "1.75"}]
+
+mensurations.each { |mensuration| Mensuration.new(mensuration).save }
+
 Admin.new(account_id: 3).save
 
 batches = [{account_id: 1, active: false, name: "First run", target: "80.0"},

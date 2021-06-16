@@ -4,6 +4,7 @@ class Account < Sequel::Model
   one_to_many :entries
   one_to_many :batches
   one_to_one :admin
+  one_to_one :mensuration
 
   def self.verified
     where(status_id: 2).all
