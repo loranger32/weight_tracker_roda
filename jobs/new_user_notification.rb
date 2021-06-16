@@ -1,10 +1,10 @@
 class NewUserNotificationJob
   include SuckerPunch::Job
 
-  def perform(my_email, env)
+  def perform(env)
     mail = Mail.new do
       from "weighttracker@example.com"
-      to my_email
+      to my_ENV["MY_EMAIL"]
       subject "Weight Tracker - New User Signed Up"
       body "A new user signed up"
     end

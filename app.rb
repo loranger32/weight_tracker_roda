@@ -55,7 +55,7 @@ module WeightTracker
       end
 
       after_create_account do
-        NewUserNotificationJob.perform_async(ENV["MY_EMAIL"], App.environment)
+        NewUserNotificationJob.perform_async(App.environment)
       end
 
       # Login
