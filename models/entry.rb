@@ -34,11 +34,11 @@ class Entry < Sequel::Model
       end
     end
 
-    def all_with_deltas(account_id:, batch_id:)
+    def all_with_deltas(account_id:, batch_id:, batch_target:)
       entries = all_desc(account_id: account_id, batch_id: batch_id)
 
       add_deltas(entries)
-      add_deltas_to_target(entries)
+      add_deltas_to_target(entries, batch_target)
       entries
     end
 
@@ -52,8 +52,10 @@ class Entry < Sequel::Model
       end
     end
 
-    def add_deltas_to_target(entries)
-      entries.each(&:add_delta_to_target)
+    def add_deltas_to_target(entries, batch_target)
+      entries.each do |entry|
+        entry.add_delta_to_target(batch_target)
+      end
     end
   end
 
@@ -74,12 +76,17 @@ class Entry < Sequel::Model
     batch.target.to_f
   end
 
-  def add_delta_to_target
-    @delta_to_target = compute_delta_to_target
+  def add_delta_to_target(batch_target)
+    @delta_to_target = compute_delta_to_target(batch_target)
   end
 
-  def compute_delta_to_target
-    return -(target - weight.to_f).round(1) unless target == 0.0
-    "/"
+  def compute_delta_to_target(batch_target)
+    if batch_target.nil?
+      return -(target - weight.to_f).round(1) unless target == 0.0
+      "/"
+    else
+      return -(batch_target - weight.to_f).round(1) unless batch_target == 0.0
+      "/"
+    end
   end
 end

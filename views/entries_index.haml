@@ -5,9 +5,9 @@
 .row
   .col-10.offset-1.col-sm-8.offset-sm-2.col-md-6.offset-md-3.col-lg-4.offset-lg-4
     %a.d-block.no-decoration.alert.alert-info.w-75.mx-auto.text-center.mb-3{href: "/batches"}
-      = @current_batch.name
+      = @batch_info[:name]
       %br
-      Target: #{@current_batch.target}
+      Target: #{@batch_info[:target]}
 
     %a.d-block.btn.btn-primary.w-75.mx-auto.mb-5{href: "/entries/new"} New Entry
 
@@ -29,8 +29,8 @@
                 %a.no-decoration{href: "/entries/#{entry.id}/edit", "data-bs-toggle" => "tooltip",
                 "data-bs-placement" => "bottom", title: entry.note}= entry.day.strftime("%a %d %b %Y")
               %td.text-center= entry.weight.to_f
-              %td.text-center{ class: weight_delta_color(entry.delta) }= format_delta(entry.delta)
-              %td.text-center= @current_batch.target ? entry.delta_to_target : "/"
+              %td.text-center{class: weight_delta_color(entry.delta)}= format_delta(entry.delta)
+              %td.text-center= @batch_info[:target] ? entry.delta_to_target : "/"
     
 
 - content_for :js, assets([:js, :bs_tooltip])

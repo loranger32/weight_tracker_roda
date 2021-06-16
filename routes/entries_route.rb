@@ -18,16 +18,20 @@ module WeightTracker
               r.halt
             end
 
-            @entries = Entry.all_with_deltas(account_id: @account_ds[:id], batch_id: batch_id)
-            @batch_info = {name: Batch[batch_id].name, target: Batch[batch_id].target || "/"}
+            batch = Batch[batch_id]
+
+            @batch_info = {name: batch.name, target: batch.target || "/"}
+            @entries = Entry.all_with_deltas(account_id: @account_ds[:id], batch_id: batch_id,
+                                             batch_target: batch.target.to_f)
 
           elsif tp.str("all_batches") == "true"
-            @entries = Entry.all_with_deltas(account_id: @account_ds[:id], batch_id: "all")
             @batch_info = {name: "All Batches"}
+            @entries = Entry.all_with_deltas(account_id: @account_ds[:id], batch_id: "all",
+                                             batch_target: nil)
           else
-            @entries = Entry.all_with_deltas(account_id: @account_ds[:id],
-                                             batch_id: @current_batch.id)
             @batch_info = {name: @current_batch.name, target: @current_batch.target || "/"}
+            @entries = Entry.all_with_deltas(account_id: @account_ds[:id], batch_id: @current_batch.id,
+                                             batch_target: @current_batch.target.to_f)
           end
 
           view "entries_index"
