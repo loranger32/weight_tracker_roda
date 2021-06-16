@@ -81,9 +81,14 @@ class Entry < Sequel::Model
   end
 
   def compute_delta_to_target(batch_target)
+    # When querying all entries of all batches, batch_target is set to nil
+    # This implies querying the batch target for each entries,
+    # which leads to as many queries as there are entries - TO FIX
     if batch_target.nil?
       return -(target - weight.to_f).round(1) unless target == 0.0
       "/"
+
+    # Querying all entries for a specific batch
     else
       return -(batch_target - weight.to_f).round(1) unless batch_target == 0.0
       "/"

@@ -186,7 +186,7 @@ class EntryQueryingTest < HookedTestClass
   end
 
   def test_all_with_deltas_computes_correct_deltas_when_selecting_all_entries
-    results = Entry.all_with_deltas(account_id: 1, batch_id: "all")
+    results = Entry.all_with_deltas(account_id: 1, batch_id: "all", batch_target: 49.0)
 
     assert_equal 0, results.last.delta
     assert_equal 1, results[-2].delta
@@ -202,12 +202,12 @@ class EntryQueryingTest < HookedTestClass
     active_batch_id = Batch.where(account_id: 1, active: true).first.id
     inactive_batch_id = Batch.where(account_id: 1, active: false).first.id
 
-    inactive_results = Entry.all_with_deltas(account_id: 1, batch_id: inactive_batch_id)
+    inactive_results = Entry.all_with_deltas(account_id: 1, batch_id: inactive_batch_id, batch_target: 0.0)
 
     assert_equal 0, inactive_results.last.delta
     assert_equal 1, inactive_results[-2].delta
 
-    active_results = Entry.all_with_deltas(account_id: 1, batch_id: active_batch_id)
+    active_results = Entry.all_with_deltas(account_id: 1, batch_id: active_batch_id, batch_target: 0.0)
 
     assert_equal 0, active_results.last.delta
     assert_equal 1, active_results[-2].delta
@@ -218,7 +218,7 @@ class EntryQueryingTest < HookedTestClass
 
   def test_all_with_deltas_computes_correct_deltas_to_target_if_target_is_present_for_specific_batch
     batch_id = Batch.where(account_id: 1, active: true).first.id
-    results = Entry.all_with_deltas(account_id: 1, batch_id: batch_id) # active batch has target
+    results = Entry.all_with_deltas(account_id: 1, batch_id: batch_id, batch_target: 49.0)
 
     assert_equal 1.0, results.last.delta_to_target
     assert_equal 2.0, results[-2].delta_to_target
@@ -229,7 +229,7 @@ class EntryQueryingTest < HookedTestClass
 
   def test_all_with_deltas_sets_a_slash_as_target_to_delta_if_no_target_set_for_specific_batch
     batch_id = Batch.where(account_id: 1, active: false).first.id # passive batch has no target
-    results = Entry.all_with_deltas(account_id: 1, batch_id: batch_id)
+    results = Entry.all_with_deltas(account_id: 1, batch_id: batch_id, batch_target: 0.0)
 
     # check only the most ancient entries that belongs to first (inactive) batch with no target
     assert_equal "/", results.last.delta_to_target
@@ -237,7 +237,7 @@ class EntryQueryingTest < HookedTestClass
   end
 
   def test_all_with_deltas_computes_delta_to_target_or_set_slash_when_viewing_all_batches
-    results = Entry.all_with_deltas(account_id: 1, batch_id: "all")
+    results = Entry.all_with_deltas(account_id: 1, batch_id: "all", batch_target: nil)
 
     assert_equal "/", results.last.delta_to_target
     assert_equal "/", results[-2].delta_to_target
