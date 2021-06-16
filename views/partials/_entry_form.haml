@@ -5,9 +5,9 @@
 
       %a.no-decoration.mb-3{href: "/batches"}
         .alert.alert-info.w-75.mx-auto.text-center
-          = @current_batch.name
+          = @batch_info[:name]
           %br
-          Target: #{@current_batch.target}
+          Target: #{@batch_info[:target]}
 
       .form-group.mb-3
         %label.form-label{for: "day"} Day
