@@ -4,17 +4,28 @@ class EntryBasicTest < HookedTestClass
   def load_fixtures
     @valid_params = {day: Date.parse("2021-01-01"), weight: "50.0", note: "A good note",
                      account_id: 1, batch_id: 1}
-    clean_fixtures
-    Account.insert(user_name: "Alice", email: "alice@example.com",
-                   # password = 'foobar'
-                   password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva")
+    
+    Account.new(user_name: "Alice", email: "alice@example.com",
+                # password = 'foobar'
+                password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva").save
+    
     Batch.new(account_id: 1, active: true, name: "Batch 1").save
   end
 
-  def clean_fixtures
-    [:batches, :entries, :accounts].each do |table|
-      DB[table].delete
-      DB.reset_primary_key_sequence(table)
+  def before_all
+    super
+    clean_test_db!
+    load_fixtures
+  end
+
+  def after_all
+    clean_test_db!
+    super
+  end
+
+  def around
+    DB.transaction(rollback: :always, savepoint: true, auto_savepoint: true) do
+      super
     end
   end
 
@@ -148,7 +159,6 @@ end
 
 class EntryQueryingTest < HookedTestClass
   def load_fixtures
-    clean_fixtures
     Account.insert(user_name: "Alice", email: "alice@example.com",
                    # password = 'foobar'
                    password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva")
@@ -168,10 +178,20 @@ class EntryQueryingTest < HookedTestClass
     Entry.new(day: "2021-01-05", weight: "48.5", note: "", account_id: 1, batch_id: 2).save
   end
 
-  def clean_fixtures
-    [:batches, :entries, :accounts].each do |table|
-      DB[table].delete
-      DB.reset_primary_key_sequence(table)
+  def before_all
+    super
+    clean_test_db!
+    load_fixtures
+  end
+
+  def after_all
+    clean_test_db!
+    super
+  end
+
+  def around
+    DB.transaction(rollback: :always, savepoint: true, auto_savepoint: true) do
+      super
     end
   end
 

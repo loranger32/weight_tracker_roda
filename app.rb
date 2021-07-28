@@ -163,7 +163,7 @@ module WeightTracker
 
     # Routing
     plugin :hash_routes
-    Dir["routes/*.rb"].each { |f| require_relative f }
+    Dir["controllers/*.rb"].each { |f| require_relative f }
 
     plugin :status_handler
 
@@ -209,6 +209,7 @@ module WeightTracker
       rodauth.require_authentication
       @account_ds = rodauth.account_from_session
 
+      ensure_mensuration_is_setup_for_account(@account_ds[:id])
       ensure_at_least_one_batch_for_account!(@account_ds[:id])
 
       r.hash_branches

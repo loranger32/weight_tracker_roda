@@ -1,6 +1,22 @@
 require_relative "../test_helpers"
 
 class AuthenticationTest < CapybaraTestCase
+  def before_all
+    super
+    clean_test_db!
+  end
+
+  def after_all
+    clean_test_db!
+    super
+  end
+
+  def around
+    DB.transaction(rollback: :always, savepoint: true, auto_savepoint: true) do
+      super
+    end
+  end
+
   def test_user_is_redirected_to_login_page_if_not_signed_in
     restricted_pathes = %w[/ /accounts/1 /security-log /entries /entries/new
       /change-login /change-password /change-user-name /export-data

@@ -17,32 +17,14 @@ class TestAccountMismatchError < StandardError; end
 class HookedTestClass < Minitest::Test
   include Minitest::Hooks
 
-  def around_all
-    DB.transaction(rollback: :always) do
-      super
-    end
-  end
-
-  def around
-    DB.transaction(rollback: :always, savepoint: true, auto_savepoint: true) do
-      super
-    end
-  end
-
-  def before_all
-    super
-    load_fixtures
-  end
-
-  def after_all
-    clean_fixtures
-    super
-  end
-
-  def load_fixtures
-  end
-
-  def clean_fixtures
+  def clean_test_db!
+    tables = [:admins, :batches, :mensurations, :entries, :account_active_session_keys,
+      :account_authentication_audit_logs, :account_email_auth_keys, :account_lockouts,
+      :account_login_change_keys, :account_login_failures, :account_otp_keys,
+      :account_password_reset_keys, :account_recovery_codes, :account_session_keys,
+      :account_verification_keys, :accounts]
+    tables.each { |table| DB[table].delete }
+    tables.each { |table| DB.reset_primary_key_sequence(table) }
   end
 end
 
@@ -58,7 +40,10 @@ class CapybaraTestCase < HookedTestClass
   end
 
   def create_account!(user_name: "Alice", email: "alice@example.com", password: "foobar")
-    return existing_account if (existing_account = Account.where(email: email).first)
+    if (existing_account = Account.where(email: email).first)
+      login!(email: email, password: password)
+      return existing_account 
+    end
 
     visit "/create-account"
     fill_in "user_name", with: user_name
@@ -112,7 +97,7 @@ class CapybaraTestCase < HookedTestClass
       fill_in "password", with: password
       click_on "Login"
     end
-    Account.where(email: "alice@example.com").first
+    Account.where(email: email).first
   end
 
   def user_exist?(email: "alice@example.com")

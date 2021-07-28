@@ -3,22 +3,26 @@
 .row
   .col-10.offset-1.col-md-5.offset-md-0.col-xl-5.mb-3.bg-gray-md.py-3.rounded
     %h2.text-center.mb-3 Profile
-    .row
+    .row.mb-5
       .col-8.offset-2.col-lg-6.offset-lg-3
         %p.mb-3.text-center#user_name= @account.user_name
         %p.mb-3.text-center= @account.email
         - if @account.is_verified?
           %p.mb-3.alert.alert-success.w-100.text-center Verfied Account
         - elsif @account.is_unverified?
-          %p.mb-3.alert.alert-warning.w-100 Unverified Account
+          %p.mb-3.alert.alert-warning.w-100.text-center Unverified Account
         %a.d-block.mb-3.w-100.btn.btn-primary{href: "/batches"}= pluralize_batches(@account.batches.length)
-        %a.d-block.mb-3.w-100.btn.btn-primary{href: "/entries"}= pluralize_entries(@account.entries.length)
-        %p.small.text-center Last entry: #{@account.last_entry_date}
+        %a.d-block.mb-3.w-100.btn.btn-primary{href: "/entries"}
+          = pluralize_entries(@account.entries.length)
+          -if @account.entries.length > 0
+            %br
+            %small (Last entry: #{@account.last_entry_date})
+        %a.d-block.w-100.btn.btn-primary{href: "/mensurations"} #{@account.mensuration.height} cm
   
   .col-10.offset-1.col-md-5.offset-md-2.col-xl-5.offset-xl-2.col-xl-5.mb-3.bg-gray-md.py-3.rounded
     %h2.text-center.mb-5 Options
 
-    .mb-3.row
+    .row.mb-5
       .col-8.offset-2.col-lg-6.offset-lg-3
         %button.d-block.w-100.btn.btn-primary.mb-3{type: "button", "data-bs-toggle" => "collapse",
         "data-bs-target" => "#collapseAccountSecurityAction", "aria-expanded" => false,

@@ -1,14 +1,23 @@
 require_relative "../test_helpers"
 
 class AccountTest < HookedTestClass
-  def setup
+  def before_all
+    super
+    clean_test_db!
     @valid_params = {user_name: "Alice", email: "alice@example.com",
                      # password = 'foobar'
                      password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva"}
   end
 
-  def clean_fixtures
-    DB[:accounts].delete
+  def after_all
+    clean_test_db!
+    super
+  end
+
+  def around
+    DB.transaction(rollback: :always, savepoint: true, auto_savepoint: true) do
+      super
+    end
   end
 
   def test_has_user_name_email_pw_hash_attributes

@@ -13,11 +13,21 @@ class AdminPageTest < CapybaraTestCase
                          status_id: 3)
   end
 
-  def clean_fixtures
-    DB[:admins].delete
-    DB.reset_primary_key_sequence(:admins)
-    DB[:accounts].delete
-    DB.reset_primary_key_sequence(:accounts)
+  def before_all
+    super
+    clean_test_db!
+    load_fixtures
+  end
+
+  def after_all
+    clean_test_db!
+    super
+  end
+
+  def around
+    DB.transaction(rollback: :always, savepoint: true, auto_savepoint: true) do
+      super
+    end
   end
 
   def setup_admin

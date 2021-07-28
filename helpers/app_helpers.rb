@@ -12,10 +12,18 @@ module WeightTracker
       weight.match?(/\A\d{2,3}[\,|\.]\d\z/)
     end
 
+    def valid_height?(height)
+      height != 0 && height < 250 && height > 50
+    end
+
     def ensure_at_least_one_batch_for_account!(account_id)
       return if Batch.of_account(account_id).length > 0
 
       Account[account_id].add_batch(active: true)
+    end
+
+    def ensure_mensuration_is_setup_for_account(account_id)
+      Mensuration.create(account_id: account_id, height: "") unless Account[account_id].mensuration
     end
 
     def account_owns_batch?(account, batch_id)

@@ -129,6 +129,14 @@ Sequel.migration do
       column :target, "text", :null=>false
     end
     
+    create_table(:mensurations) do
+      primary_key :id, :type=>:Bignum
+      foreign_key :account_id, :accounts, :null=>false, :key=>[:id], :on_delete=>:cascade
+      column :height, "text", :null=>false
+      
+      index [:account_id], :unique=>true
+    end
+    
     create_table(:entries) do
       primary_key :id
       column :day, "date", :null=>false

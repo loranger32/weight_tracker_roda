@@ -1,15 +1,11 @@
 require_relative "../test_helpers"
 
-class AccountManagementTest < CapybaraTestCase
+module GenericAccountManagmentActionsTests
   def test_user_can_visit_account_page
-    create_and_verify_account!
-
-    account = Account.first
-
     visit "/account"
     assert_current_path "/account"
-    assert_content account.user_name, count: 2
-    assert_content account.email, count: 1
+    assert_content @alice_account.user_name, count: 2
+    assert_content @alice_account.email, count: 1
     assert_link "Change User Name"
     assert_link "Change Email"
     assert_link "Change Password"
@@ -20,42 +16,19 @@ class AccountManagementTest < CapybaraTestCase
   end
 
   def test_user_can_change_user_name
-    create_and_verify_account!
-
     new_user_name = "Alice In Wonderland"
     visit "/change-user-name"
     fill_in "user_name", with: new_user_name
     fill_in "password", with: "foobar"
     click_on "Change User Name"
 
-    account = Account.where(email: "alice@example.com").first
-
-    assert_equal new_user_name, account.user_name
+    assert_equal new_user_name, Account[@alice_account.id].user_name
     assert_current_path "/account"
     assert_css ".alert-success"
     assert_content new_user_name
   end
 
-  def test_user_can_change_password
-    create_and_verify_account!
-
-    new_password = "barfoo"
-    visit "/change-password"
-    fill_in "password", with: "foobar"
-    fill_in "new-password", with: new_password
-    fill_in "password-confirm", with: new_password
-    click_on "Change Password"
-
-    account = Account.first
-
-    assert BCrypt::Password.new(account.password_hash) == "barfoo"
-    assert_current_path "/account"
-    assert_css ".alert-success"
-    assert_content "Your password has been changed"
-  end
-
   def test_security_log
-    create_and_verify_account!
     logout!
 
     login!
@@ -75,15 +48,13 @@ class AccountManagementTest < CapybaraTestCase
     assert_content "Review the access to your account"
     within("table") do
       assert_content "create_account", count: 1
-      assert_content /\slogin\s/, count: 2
+      assert_content /\slogin\s/, count: 3
       assert_content "logout", count: 2
       assert_content "login_failure", count: 1
     end
   end
 
   def test_export_data_page
-    create_and_verify_account!
-
     visit "/export-data"
 
     assert_current_path "/export-data"
@@ -95,8 +66,6 @@ class AccountManagementTest < CapybaraTestCase
 
   def test_export_data_to_json
     pre_existing_data_files = Dir.glob("tmp/wt_data_Alice_*.json")
-
-    create_and_verify_account!
 
     visit "/export-data"
 
@@ -110,8 +79,6 @@ class AccountManagementTest < CapybaraTestCase
   end
 
   def test_close_account_page
-    create_and_verify_account!
-
     visit "/close-account"
     assert_current_path "/close-account"
 
@@ -128,9 +95,7 @@ class AccountManagementTest < CapybaraTestCase
   end
 
   def test_cannot_close_account_if_checkbox_is_not_checked
-    create_and_verify_account!
-
-    assert_equal 2, Account.first.status_id
+    assert_equal @test_account_status, @alice_account.status_id
 
     visit "/close-account"
 
@@ -141,14 +106,11 @@ class AccountManagementTest < CapybaraTestCase
     assert_css ".alert-danger"
     assert_content "You did not confirm you made a backup of your data"
 
-    assert_equal 2, Account.first.status_id
+    assert_equal @test_account_status, @alice_account.status_id
   end
 
   def test_can_close_account_if_checkbox_is_checked
-    create_and_verify_account!
-    account = Account.where(user_name: "Alice").first
-
-    assert_equal 2, account.status_id
+    assert_equal @test_account_status, @alice_account.status_id
 
     visit "/close-account"
 
@@ -158,7 +120,7 @@ class AccountManagementTest < CapybaraTestCase
 
     assert_current_path "/login"
 
-    assert_equal 3, account.reload.status_id
+    assert_equal 3, Account[@alice_account.id].status_id
 
     within("form#login-form") do
       fill_in "Email", with: "Alice"
@@ -169,16 +131,8 @@ class AccountManagementTest < CapybaraTestCase
     assert_current_path "/login"
     assert_css ".alert-danger"
   end
-end
-
-class AccountManagementMailTest < CapybaraTestCase
-  def setup
-    clean_mailbox
-    super
-  end
 
   def test_account_can_be_locked_out_after_10_unsuccessful_attempts
-    create_and_verify_account!
     logout!
 
     visit "/login"
@@ -210,7 +164,6 @@ class AccountManagementMailTest < CapybaraTestCase
   end
 
   def test_account_can_be_unlocked_with_magic_link
-    create_and_verify_account!
     logout!
 
     visit "/login"
@@ -232,7 +185,7 @@ class AccountManagementMailTest < CapybaraTestCase
     assert_equal 1, mails_count
 
     assert_match(/<a href='http:\/\/www\.example\.com\/unlock-account\?key=/, mail_body(0))
-    assert_equal Account.first.id, DB[:account_lockouts].first[:id]
+    assert_equal @alice_account.id, DB[:account_lockouts].first[:id]
 
     unlock_account_key = /<a href='http:\/\/www\.example\.com\/unlock-account\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
 
@@ -244,12 +197,74 @@ class AccountManagementMailTest < CapybaraTestCase
     assert_content "Your account has been unlocked"
     assert_link "Alice"
   end
+end
+
+class UnverifiedAccountManagementTest < CapybaraTestCase
+  include GenericAccountManagmentActionsTests
+
+  def before_all
+    super
+    clean_test_db!
+    @alice_account = create_account!
+    @test_account_status = 1
+  end
+
+  def after_all
+    clean_test_db!
+    super
+  end
+
+  def around
+    DB.transaction(rollback: :always, savepoint: true, auto_savepoint: true) do
+      clean_mailbox
+      login!
+      super
+    end
+  end
+
+  def test_user_unverified_user_can_change_password
+    new_password = "barfoo"
+    visit "/change-password"
+    fill_in "password", with: "foobar"
+    fill_in "new-password", with: new_password
+    fill_in "password-confirm", with: new_password
+    click_on "Change Password"
+
+    assert BCrypt::Password.new(Account[@alice_account.id].password_hash) == "barfoo"
+    assert_current_path "/account"
+    assert_css ".alert-success"
+    assert_content "Your password has been changed"
+  end
+end
+
+class VerifiedAccountManagementTest < CapybaraTestCase
+  include GenericAccountManagmentActionsTests
+
+  def before_all
+    super
+    clean_test_db!
+    @alice_account = create_and_verify_account!
+    @test_account_status = 2
+  end
+
+  def after_all
+    clean_test_db!
+    super
+  end
+
+  def around
+    DB.transaction(rollback: :always, savepoint: true, auto_savepoint: true) do
+      clean_mailbox
+      login!
+      super
+    end
+  end
 
   def test_can_verify_account
-    create_account!
+    test_account = create_account!(user_name: "test user", email: "test_user@example.com", password: "foobar")
     assert_equal 1, mails_count
     assert_match(/<a href='http:\/\/www\.example\.com\/verify-account\?key=/, mail_body(0))
-    assert_equal Account.first.id, DB[:account_verification_keys].first[:id]
+    assert_equal test_account.id, DB[:account_verification_keys].first[:id]
 
     verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
 
@@ -259,25 +274,25 @@ class AccountManagementMailTest < CapybaraTestCase
     assert_current_path "/entries/new"
     assert_css ".alert-success"
     assert_content "Your account has been verified"
-    assert_link "Alice"
+    assert_link "test user"
   end
 
   def test_send_a_new_verify_account_email_if_first_has_expired
-    create_account!
+    test_account = create_account!(user_name: "test user", email: "test_user@example.com", password: "foobar")
     assert_equal 1, mails_count
     logout!
 
     assert_equal 1, DB[:account_verification_keys].all.count
-    assert_equal Account.first.id, DB[:account_verification_keys].first[:id]
+    assert_equal test_account.id, DB[:account_verification_keys].first[:id]
     # Hack to simulate an account not verified during grace period
-    DB[:account_verification_keys].update(requested_at: Time.now - (60 * 60 * 24 * 3))
-    DB[:account_verification_keys].update(email_last_sent: Time.now - (60 * 60 * 24 * 2))
+    DB[:account_verification_keys].update(requested_at: Time.now - (60 * 60 * 24 * 4))
+    DB[:account_verification_keys].update(email_last_sent: Time.now - (60 * 60 * 24 * 3))
     hacked_email_last_sent = DB[:account_verification_keys].first[:email_last_sent]
 
     visit "/"
     assert_current_path "/login"
 
-    login!
+    login!(email: "test_user@example.com", password: "foobar")
 
     assert_css ".alert-danger"
     assert_content "The account you tried to login with is currently awaiting verification"
@@ -291,7 +306,7 @@ class AccountManagementMailTest < CapybaraTestCase
     refute_equal hacked_email_last_sent, DB[:account_verification_keys].first[:email_last_sent]
 
     assert_match(/<a href='http:\/\/www\.example\.com\/verify-account\?key=/, mail_body(1))
-    assert_equal Account.first.id, DB[:account_verification_keys].first[:id]
+    assert_equal Account[test_account.id].id, DB[:account_verification_keys].first[:id]
 
     verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(mail_body(1))[1]
 
@@ -301,10 +316,12 @@ class AccountManagementMailTest < CapybaraTestCase
     assert_current_path "/entries/new"
     assert_css ".alert-success"
     assert_content "Your account has been verified"
-    assert_link "Alice"
+    assert_link "test user"
   end
 
   def test_request_password_reset_does_not_send_email_to_unknown_account
+    logout!
+
     visit "/"
     click_on "Forgot Password?"
     assert_current_path "/reset-password-request"
@@ -318,7 +335,6 @@ class AccountManagementMailTest < CapybaraTestCase
   end
 
   def test_request_password_reset_with_valid_account
-    create_and_verify_account!
     logout!
 
     visit "/"
@@ -332,7 +348,7 @@ class AccountManagementMailTest < CapybaraTestCase
     assert_content "An Email has been sent to reset your password"
     assert_equal 1, mails_count
     assert_match(/<a href='http:\/\/www\.example\.com\/reset-password\?key=/, mail_body(0))
-    assert_equal Account.first.id, DB[:account_password_reset_keys].first[:id]
+    assert_equal @alice_account.id, DB[:account_password_reset_keys].first[:id]
 
     reset_password_key = /<a href='http:\/\/www\.example\.com\/reset-password\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
 
@@ -372,8 +388,6 @@ class AccountManagementMailTest < CapybaraTestCase
   end
 
   def test_user_get_an_email_when_changing_password
-    create_and_verify_account!
-
     new_password = "supersecret"
     visit "/change-password"
     fill_in "password", with: "foobar"
@@ -387,8 +401,6 @@ class AccountManagementMailTest < CapybaraTestCase
   end
 
   def test_user_can_change_email
-    create_and_verify_account!
-
     new_email = "aliceinwonderland@example.com"
 
     visit "/change-login"
@@ -396,9 +408,7 @@ class AccountManagementMailTest < CapybaraTestCase
     fill_in "password", with: "foobar"
     click_on "Change Email"
 
-    account = Account.where(user_name: "Alice").first
-
-    assert_equal "alice@example.com", account.email
+    assert_equal "alice@example.com", Account[@alice_account.id].email
     assert_current_path "/account"
     assert_css ".alert-success"
     assert_content "alice@example.com"
@@ -408,7 +418,7 @@ class AccountManagementMailTest < CapybaraTestCase
 
     assert_equal mail_to(0), new_email # Check email is sent to the new address
     assert_match(/<a href='http:\/\/www\.example\.com\/verify-login-change\?key=/, mail_body(0))
-    assert_equal Account.first.id, DB[:account_login_change_keys].first[:id]
+    assert_equal @alice_account.id, DB[:account_login_change_keys].first[:id]
 
     verify_login_change_key = /<a href='http:\/\/www\.example\.com\/verify-login-change\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
 
@@ -448,10 +458,25 @@ class AccountManagementMailTest < CapybaraTestCase
 end
 
 class TwoFactorAuthenticationTest < CapybaraTestCase
-  def test_can_activate_two_factor_authentication
-    create_and_verify_account!
-    account_id = Account.where(user_name: "Alice").first.id
+  def before_all
+    super
+    clean_test_db!
+    @alice_account = create_and_verify_account!
+  end
 
+  def after_all
+    clean_test_db!
+    super
+  end
+
+  def around
+    DB.transaction(rollback: :always, savepoint: true, auto_savepoint: true) do
+      login!
+      super
+    end
+  end
+
+  def test_can_activate_two_factor_authentication
     visit "/account"
 
     assert_content "Setup 2FA"
@@ -472,7 +497,7 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     fill_in "Authentication Code", with: totp.now
 
     click_on "Setup TOTP Authentication"
-    assert_equal 16, DB[:account_recovery_codes].where(id: account_id).all.size
+    assert_equal 16, DB[:account_recovery_codes].where(id: @alice_account.id).all.size
 
     assert_current_path "/entries/new"
     assert_css ".alert-success"
@@ -486,9 +511,7 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
   end
 
   def test_can_see_recovery_codes
-    create_and_verify_account!
-    account_id = Account.where(user_name: "Alice").first.id
-    setup_two_fa!(account_id)
+    setup_two_fa!(@alice_account.id)
 
     visit "/account"
     click_on "View Recovery Codes"
@@ -501,16 +524,14 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     assert_content "Print"
     assert_content "Copy"
 
-    recovery_codes = DB[:account_recovery_codes].where(id: account_id).map(:code)
+    recovery_codes = DB[:account_recovery_codes].where(id: @alice_account.id).map(:code)
     recovery_codes.each do |code|
       assert_content code
     end
   end
 
   def test_can_add_recovery_code
-    create_and_verify_account!
-    account_id = Account.where(user_name: "Alice").first.id
-    setup_two_fa!(account_id)
+    setup_two_fa!(@alice_account.id)
     logout!
     login!
 
@@ -518,12 +539,12 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     click_on "Authenticate Using Recovery Code"
     assert_current_path "/recovery-auth"
 
-    recovery_code = DB[:account_recovery_codes].where(id: account_id).first[:code]
+    recovery_code = DB[:account_recovery_codes].where(id: @alice_account.id).first[:code]
 
     fill_in "Recovery Code", with: recovery_code
     click_on "Authenticate via Recovery Code"
 
-    assert_equal 15, DB[:account_recovery_codes].where(id: account_id).all.size
+    assert_equal 15, DB[:account_recovery_codes].where(id: @alice_account.id).all.size
 
     visit "/account"
     click_on "View Recovery Codes"
@@ -539,14 +560,12 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     fill_in "Password", with: "foobar"
     click_on "Add Authentication Recovery Codes"
 
-    assert_equal 16, DB[:account_recovery_codes].where(id: account_id).all.size
+    assert_equal 16, DB[:account_recovery_codes].where(id: @alice_account.id).all.size
     assert_css ".alert-success"
     assert_content "Additional authentication recovery codes have been added"
   end
 
   def test_can_disable_two_factors_authentication
-    create_and_verify_account!
-    account_id = Account.where(user_name: "Alice").first.id
     visit "/account"
     click_on "Setup 2FA"
     secret = page.find("#otp-secret-key").text
@@ -560,7 +579,7 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
 
     click_on "Authenticate Using Recovery Code"
 
-    recovery_code = DB[:account_recovery_codes].where(id: account_id).first[:code]
+    recovery_code = DB[:account_recovery_codes].where(id: @alice_account.id).first[:code]
 
     fill_in "Recovery Code", with: recovery_code
     click_on "Authenticate via Recovery Code"
@@ -580,7 +599,7 @@ class TwoFactorAuthenticationTest < CapybaraTestCase
     assert_link "Alice", href: "#" # Bootstrap navbar collapse link
     assert_current_path "/account"
 
-    assert_equal 0, DB[:account_recovery_codes].where(id: account_id).all.size
-    assert_equal 0, DB[:account_otp_keys].where(id: account_id).all.size
+    assert_equal 0, DB[:account_recovery_codes].where(id: @alice_account.id).all.size
+    assert_equal 0, DB[:account_otp_keys].where(id: @alice_account.id).all.size
   end
 end

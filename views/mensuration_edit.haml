@@ -1,0 +1,20 @@
+- @page_title = "Edit Your Mensurations"
+
+.row
+  .col-10.offset-1.col-md-6.offset-md-3.col-lg-4.offset-lg-4
+    %a.d-block.btn.btn-secondary.w-100.mb-5{href: "/account"} Back to Account
+
+%h2.text-center.mb-4 Edit Mensurations
+
+.row
+  .col-10.offset-1.col-sm-8.offset-sm-2.col-md-6.offset-md-3.col-lg-4.offset-lg-4
+    %form{action: "/mensurations", method: :post}
+      != csrf_tag("/mensurations")
+
+      .form-group.mb-5
+        %label.form-label{for: "height"}
+          Height
+          %small (cm)
+        %input.form-control{type: :number, id: "height", name: "height", value: @mensuration.height || "0", min: 50, max: 250, step: 1, autofocus: true}
+
+      %input.form-control.btn.btn-primary{type: :submit, value: "Update"}

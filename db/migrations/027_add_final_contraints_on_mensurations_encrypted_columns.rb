@@ -1,5 +1,6 @@
 Sequel.migration do
-  alter_table(:mensurations) do
+  up do
+    alter_table(:mensurations) do
       c = Sequel[:height]
       add_constraint(:height_format, c.like("AA__A%") | c.like("Ag__A%") | c.like("AQ__A%"))
       add_constraint(:encrypted_height_length, Sequel.char_length(c) >= 88)

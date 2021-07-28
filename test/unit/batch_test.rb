@@ -2,7 +2,6 @@ require_relative "../test_helpers"
 
 class BatchBasicTest < HookedTestClass
   def load_fixtures
-    clean_fixtures
     Account.insert(user_name: "Alice", email: "alice@example.com",
                    # password = 'foobar'
                    password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva")
@@ -11,10 +10,20 @@ class BatchBasicTest < HookedTestClass
     Entry.new(day: "2020-12-02", weight: "52.0", note: "", account_id: 1, batch_id: 1).save
   end
 
-  def clean_fixtures
-    [:batches, :entries, :accounts].each do |table|
-      DB[table].delete
-      DB.reset_primary_key_sequence(table)
+  def before_all
+    super
+    clean_test_db!
+    load_fixtures
+  end
+
+  def after_all
+    clean_test_db!
+    super
+  end
+
+  def around
+    DB.transaction(rollback: :always, savepoint: true, auto_savepoint: true) do
+      super
     end
   end
 
@@ -101,7 +110,6 @@ end
 
 class BatchAdvancedTest < HookedTestClass
   def load_fixtures
-    clean_fixtures
     Account.insert(user_name: "Alice", email: "alice@example.com",
                    # password = 'foobar'
                    password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva")
@@ -119,10 +127,20 @@ class BatchAdvancedTest < HookedTestClass
     @account = Account.where(user_name: "Alice").first
   end
 
-  def clean_fixtures
-    [:batches, :entries, :accounts].each do |table|
-      DB[table].delete
-      DB.reset_primary_key_sequence(table)
+  def before_all
+    super
+    clean_test_db!
+    load_fixtures
+  end
+
+  def after_all
+    clean_test_db!
+    super
+  end
+
+  def around
+    DB.transaction(rollback: :always, savepoint: true, auto_savepoint: true) do
+      super
     end
   end
 

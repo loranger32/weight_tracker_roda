@@ -1,21 +1,36 @@
 require_relative "../test_helpers"
 
 class EntriesActionTest < CapybaraTestCase
-  def setup
-    create_and_verify_account!
-    @account_id = Account.where(user_name: "Alice").first.id
-
-    # Make sure there is no preexisting batch
-    Batch.where(account_id: @account_id).delete
-    assert_nil Batch.where(account_id: @account_id).first
+  def before_all
+    super
+    clean_test_db!
+    @alice_account = create_and_verify_account!
   end
 
-  def teardown
-    logout!
-    Batch.where(account_id: @account_id).delete
+  def after_all
+    clean_test_db!
+    super
+  end
+
+  def delete_batches(account_id)
+    Batch.each(&:destroy)
+    assert_equal 0, Batch.all.size
+  end
+
+  def around
+    # Make sure there is no preexisting batch
+    delete_batches(@alice_account.id)
+
+    DB.transaction(rollback: :always) do
+      login!
+      super
+    end
   end
 
   def test_can_create_entry_without_an_already_existing_batch
+    # artificially delete any preexisting batch for testing purpose
+    delete_batches(@alice_account.id)
+
     visit "/entries/new"
     assert_current_path "/entries/new"
     assert_content "New Entry"
@@ -33,7 +48,7 @@ class EntriesActionTest < CapybaraTestCase
     assert_content "Fri 30 Apr 2021"
     assert_content "52.0"
     # assert_content "This is my first test entry" Cannot test it without JS testing driver enabled
-    assert_equal 1, Batch.where(account_id: @account_id).all.length
+    assert_equal 1, Batch.where(account_id: @alice_account.id).all.length
 
     # Add another entry to test delta
 
@@ -49,11 +64,14 @@ class EntriesActionTest < CapybaraTestCase
     assert_content "52.0"
     assert_content "53.0"
     assert_content "+1.0"
-    assert_equal 1, Batch.where(account_id: @account_id).all.length
+    assert_equal 1, Batch.where(account_id: @alice_account.id).all.length
   end
 
   def test_can_create_entry_with_an_already_existing_active_batch
-    batch = Batch.new(account_id: @account_id, active: true, name: "Active Batch").save
+    # Beacuse of login! action called in the around hook, an active batch has already been created
+    batches = Batch.where(account_id: @alice_account.id).all
+    assert_equal 1, batches.size
+    active_batch = batches.first
 
     visit "/entries/new"
     assert_current_path "/entries/new"
@@ -73,8 +91,8 @@ class EntriesActionTest < CapybaraTestCase
     assert_content "52.0"
     # assert_content "This is my first test entry" Cannot test it without JS testing driver enabled
 
-    entry = Entry.where(day: "2021-04-30", account_id: @account_id).first
-    assert_equal batch.id, entry.batch.id
+    entry = Entry.where(day: "2021-04-30", account_id: @alice_account.id).first
+    assert_equal active_batch.id, entry.batch.id
 
     # Add another entry to test delta
 
@@ -91,13 +109,15 @@ class EntriesActionTest < CapybaraTestCase
     assert_content "53.0"
     assert_content "+1.0"
 
-    entry = Entry.where(day: "2021-05-01", account_id: @account_id).first
-    assert_equal batch.id, entry.batch.id
+    entry = Entry.where(day: "2021-05-01", account_id: @alice_account.id).first
+    assert_equal active_batch.id, entry.batch.id
   end
 
   def test_can_create_an_entry_with_many_batches_and_one_active
-    inactive_batch = Batch.new(account_id: @account_id, active: false, name: "Inactive Batch").save
-    active_batch = Batch.new(account_id: @account_id, active: true, name: "Active Batch").save
+    inactive_batch = Batch.new(account_id: @alice_account.id, active: false, name: "Inactive Batch").save
+    batches = Batch.where(account_id: @alice_account.id).all
+    assert_equal 2, batches.size
+    active_batch = Batch.where(account_id: @alice_account.id, active: true).first
 
     visit "/entries/new"
     assert_current_path "/entries/new"
@@ -117,7 +137,7 @@ class EntriesActionTest < CapybaraTestCase
     assert_content "52.0"
     # assert_content "This is my first test entry" Cannot test it without JS testing driver enabled
 
-    entry = Entry.where(day: "2021-04-30", account_id: @account_id).first
+    entry = Entry.where(day: "2021-04-30", account_id: @alice_account.id).first
     assert_equal active_batch, entry.batch
 
     # Add another entry to test delta
@@ -135,14 +155,17 @@ class EntriesActionTest < CapybaraTestCase
     assert_content "53.0"
     assert_content "+1.0"
 
-    entry = Entry.where(day: "2021-05-01", account_id: @account_id).first
+    entry = Entry.where(day: "2021-05-01", account_id: @alice_account.id).first
     assert_equal active_batch.id, entry.batch.id
 
-    assert_equal 0, inactive_batch.entries.length
+    assert_equal 0, inactive_batch.reload.entries.length
   end
 
   def test_gets_redirected_to_batches_pages_if_many_batches_but_none_active
-    Batch.new(account_id: @account_id, active: false, name: "Inactive Batch").save
+    assert_equal 1, Batch.where(account_id: @alice_account.id).all.size
+    Batch.where(account_id: @alice_account.id).first.update(active: false)
+
+    Batch.new(account_id: @alice_account.id, active: false, name: "Inactive Batch").save
 
     visit "/entries"
 
@@ -164,7 +187,7 @@ class EntriesActionTest < CapybaraTestCase
     fill_in "Weight", with: "52.0"
     click_on "Validate"
 
-    active_batch = Batch.where(account_id: @account_id).first
+    active_batch = Batch.where(account_id: @alice_account.id).first
 
     click_on "Fri 30 Apr 2021"
 
@@ -183,9 +206,9 @@ class EntriesActionTest < CapybaraTestCase
     assert_content "Sat 01 May 2021"
     assert_content "53.0"
 
-    assert_equal 1, Batch.where(account_id: @account_id).all.length
-    assert_equal 1, Entry.where(account_id: @account_id).all.length
-    assert_equal active_batch, Entry.where(account_id: @account_id).first.batch
+    assert_equal 1, Batch.where(account_id: @alice_account.id).all.length
+    assert_equal 1, Entry.where(account_id: @alice_account.id).all.length
+    assert_equal active_batch, Entry.where(account_id: @alice_account.id).first.batch
   end
 
   def test_can_delete_an_entry
@@ -195,7 +218,7 @@ class EntriesActionTest < CapybaraTestCase
     fill_in "Weight", with: "52.0"
     click_on "Validate"
 
-    active_batch = Batch.where(account_id: @account_id).first
+    active_batch = Batch.where(account_id: @alice_account.id).first
 
     click_on "Fri 30 Apr 2021"
 

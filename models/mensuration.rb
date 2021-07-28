@@ -10,11 +10,12 @@ class Mensuration < Sequel::Model
     super
     validates_presence [:account_id, :height]
     validates_integer :account_id
+    validates_unique :account_id
     validates_type String, :height
   end
 
   def before_validation
-    self.height == "0.0" if (height == "" || height.nil?)
+    self.height = "0" if (height == "" || height.nil?)
     super
   end
 end

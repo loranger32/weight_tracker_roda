@@ -2,12 +2,11 @@ require_relative "../test_helpers"
 
 class BatchManegmentTest < CapybaraTestCase
   def load_fixtures
-    clean_fixtures
-    create_and_verify_account!
+    @alice_account = create_and_verify_account!
+    #logout!
 
     # Ensure the account id is correct
-    @account = Account.where(user_name: "Alice").first
-    assert_equal 1, @account.id
+    assert_equal 1, @alice_account.id
 
     # After login, which redirects to /entries/new, a new active batch is automatically
     # created, with name "New Batch". Here we insert a second one
@@ -21,16 +20,22 @@ class BatchManegmentTest < CapybaraTestCase
     Entry.new(day: "2020-12-03", weight: "53.0", note: "", account_id: 1, batch_id: 2).save
   end
 
-  def clean_fixtures
-    [:batches, :entries, :account_active_session_keys,
-      :account_authentication_audit_logs, :accounts].each do |table|
-      DB[table].delete
-      DB.reset_primary_key_sequence(table)
-    end
+  def before_all
+    super
+    clean_test_db!
+    load_fixtures
   end
 
-  def setup
-    login!
+  def after_all
+    clean_test_db!
+    super
+  end
+
+  def around
+    DB.transaction(rollback: :always, savepoint: true, auto_savepoint: true) do
+      login!
+      super
+    end
   end
 
   def test_can_view_index_of_batches
