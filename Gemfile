@@ -14,7 +14,7 @@ gem 'roda', '~> 3.46'
 gem "roda-enhanced_logger", "~> 0.4.0"
 gem 'rodauth', '~> 2.15'
 gem "rotp", "~> 6.2"
-gem "rqrcode", "~> 1.2"
+gem 'rqrcode', '~> 2.0'
 gem "sendgrid-ruby", "~> 6.4"
 gem "sequel", "~> 5.46"
 gem "sequel_pg", "~> 1.14", require: "sequel"
