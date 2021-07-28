@@ -24,8 +24,9 @@ It's still a work in progress, [see next features](#Next-Features).
 - An entry _can_ have an associated note
 - Every entry is linked to one batch, to deal with when you stop recording your weight for a long period (one batch per period)
 - Each batch can have an associated target weight
-- Each entry has a delta to target attribute to show the remaining wieght to loose / gain
-- Every entry has the delta with the last entry
+- Each entry has a delta to target attribute to show the remaining weight to loose / gain
+- Each entry has the delta with the last entry
+- Each entry has a bmi
 - Entries are automatically assigned to the currently active batch
 - There can only be one active batch at a time
 - If you delete a batch, all related entries are permanently destroyed
@@ -81,4 +82,3 @@ Entries weight, entries note and batch target weight are encrypted before being 
 ## Next Features
 
 - Add fancy and useful charts ! Probably whit Chart.js
-- Add a BMI calculator feature
