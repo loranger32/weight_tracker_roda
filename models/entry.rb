@@ -9,7 +9,7 @@ class Entry < Sequel::Model
   many_to_one :account
   many_to_one :batch
 
-  attr_accessor :delta, :delta_to_target
+  attr_accessor :delta, :delta_to_target, :bmi
 
   dataset_module do
     def all_desc(account_id:, batch_id:)
@@ -59,6 +59,13 @@ class Entry < Sequel::Model
     end
   end
 
+  def self.add_bmi(entries, height)
+    entries.map do |entry|
+      entry.bmi = entry.compute_bmi(height)
+      entry
+    end
+  end
+
   def validate
     super
     validates_presence [:day, :weight, :account_id]
@@ -70,6 +77,10 @@ class Entry < Sequel::Model
     validates_type String, :note
     validates_max_length 600, :note
     validates_unique [:day, :account_id], message: "Can't have two entries for the same day"
+  end
+
+  def compute_bmi(height)
+    height == "0" ? "/" : (weight.to_f / (height.to_f / 100)**2).round(1)
   end
 
   def target

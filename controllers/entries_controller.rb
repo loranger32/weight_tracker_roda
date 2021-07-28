@@ -38,6 +38,8 @@ module WeightTracker
                                              batch_target: current_batch.target.to_f)
           end
 
+          Entry.add_bmi(@entries, Mensuration.where(account_id: @account_ds[:id]).first.height)
+
           view "entries_index"
         end
 

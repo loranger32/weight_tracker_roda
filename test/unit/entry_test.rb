@@ -46,6 +46,10 @@ class EntryBasicTest < HookedTestClass
     assert_respond_to(Entry.new, :delta_to_target)
   end
 
+  def test_has_a_bmi_virtual_attribute
+    assert_respond_to(Entry.new, :bmi)
+  end
+
   def test_has_an_account_association
     entry = Entry.new(@valid_params)
 
@@ -267,5 +271,19 @@ class EntryQueryingTest < HookedTestClass
     assert_equal 1.5, results[-5].delta_to_target
     assert_equal 0.1, results[-6].delta_to_target
     assert_equal(-0.5, results[-7].delta_to_target)
+  end
+
+  def test_add_bmi
+    height = "170"
+    Mensuration.new(account_id: 1, height: height).save
+    batch_id = Batch.where(account_id: 1, active: true).first.id
+    results = Entry.all_with_deltas(account_id: 1, batch_id: batch_id, batch_target: 49.0)
+    results_with_bmi = Entry.add_bmi(results, height)
+
+    assert_equal 16.8, results_with_bmi.first.bmi
+    assert_equal 17.0, results_with_bmi[1].bmi
+    assert_equal 17.5, results_with_bmi[2].bmi
+    assert_equal 17.6, results_with_bmi[3].bmi
+    assert_equal 17.3, results_with_bmi[4].bmi
   end
 end

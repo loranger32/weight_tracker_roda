@@ -20,10 +20,11 @@ module WeightTracker
         if @mensuration.valid?
           @mensuration.save
           flash["notice"] = "Mensuration successfully submitted"
+          r.redirect "/account"
         else
           flash["error"] = format_flash_error(@mensuration)
+          r.redirect
         end
-        r.redirect
       end
     end
   end

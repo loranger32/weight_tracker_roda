@@ -5,6 +5,7 @@ class EntriesActionTest < CapybaraTestCase
     super
     clean_test_db!
     @alice_account = create_and_verify_account!
+    @alice_account.mensuration.update(height: "160")
   end
 
   def after_all
@@ -47,6 +48,7 @@ class EntriesActionTest < CapybaraTestCase
     assert_current_path "/entries"
     assert_content "Fri 30 Apr 2021"
     assert_content "52.0"
+    assert_content "20.3" # BMI
     # assert_content "This is my first test entry" Cannot test it without JS testing driver enabled
     assert_equal 1, Batch.where(account_id: @alice_account.id).all.length
 
@@ -64,6 +66,8 @@ class EntriesActionTest < CapybaraTestCase
     assert_content "52.0"
     assert_content "53.0"
     assert_content "+1.0"
+    assert_content "20.3" # First BMI
+    assert_content "20.7" # Second BMI
     assert_equal 1, Batch.where(account_id: @alice_account.id).all.length
   end
 

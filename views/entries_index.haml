@@ -22,6 +22,7 @@
           %td.text-center WEIGHT
           %td.text-center + / -
           %td.text-center LEFT
+          %td.text-center BMI
         %tbody
           - @entries.each do |entry|
             %tr
@@ -31,6 +32,7 @@
               %td.text-center= entry.weight.to_f
               %td.text-center{class: weight_delta_color(entry.delta)}= format_delta(entry.delta)
               %td.text-center= @batch_info[:target] ? entry.delta_to_target : "/"
+              %td.text-center= entry.bmi
     
 
 - content_for :js, assets([:js, :bs_tooltip])
