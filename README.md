@@ -82,3 +82,8 @@ Entries weight, entries note and batch target weight are encrypted before being 
 ## Next Features
 
 - Add fancy and useful charts ! Probably whit Chart.js
+
+
+## Known Bugs
+
+- when naming your batch, only use ASCII character, because you can enconuter some issues in production. Under investigation

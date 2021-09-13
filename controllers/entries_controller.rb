@@ -11,7 +11,7 @@ module WeightTracker
 
       r.is do
         r.get do
-          # Request entries of a specific batch with its id ad query param
+          # Request entries of a specific batch with its id as query param
           if (batch_id = tp.pos_int("batch_id"))
 
             unless account_owns_batch?(Account[@account_ds[:id]], batch_id)
