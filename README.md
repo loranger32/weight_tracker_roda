@@ -12,7 +12,7 @@ and [Postgresql](https://www.postgresql.org/).
 
 It's the first time I try to integrate Rodauth, and it's been great so far.
 
-It's still a work in progress, [see next features](#Next-Features).
+It's still a work in progress, [see next features](#next-features) and [known bugs](#known-bugs)
 
 
 ## Currently supported features
