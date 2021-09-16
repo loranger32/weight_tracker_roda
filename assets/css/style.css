@@ -77,9 +77,12 @@ body {
 .rodauth-login-footer-links li {
   margin-bottom: 10px;
 }
+
 .rodauth-two-factor-auth-links {
   margin-top: 60px;
+  padding-left: 0;
 }
+
 
 .rodauth-two-factor-auth-links li {
   width: 200px;
