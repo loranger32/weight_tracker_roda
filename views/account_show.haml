@@ -8,7 +8,7 @@
         %p.mb-3.text-center#user_name= @account.user_name
         %p.mb-3.text-center= @account.email
         - if @account.is_verified?
-          %p.mb-3.alert.alert-success.w-100.text-center Verfied Account
+          %p.mb-3.alert.alert-success.w-100.text-center Verified Account
         - elsif @account.is_unverified?
           %p.mb-3.alert.alert-warning.w-100.text-center Unverified Account
         %a.d-block.mb-3.w-100.btn.btn-primary{href: "/batches"}= pluralize_batches(@account.batches.length)
