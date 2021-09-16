@@ -16,6 +16,12 @@ class Batch < Sequel::Model
     Batch.where(account_id: account_id, active: true).all
   end
 
+  def before_validation
+    self.target = "0.0" if target == "" || target.nil?
+    self.name = "New Batch" if name == "" || name.nil?
+    super
+  end
+
   def validate
     super
     validates_presence [:account_id, :active, :name, :target]
@@ -26,12 +32,6 @@ class Batch < Sequel::Model
     validates_type String, :name
     validates_type String, :target
     errors.add(:name, "must have 30 characters max") if name && name.length > 30
-  end
-
-  def before_validation
-    self.target = "0.0" if target == "" || target.nil?
-    self.name = "New Batch" if name == "" || name.nil?
-    super
   end
 
   def first_date
