@@ -147,6 +147,30 @@ class BatchManegmentTest < CapybaraTestCase
     refute_content "past batch"
   end
 
+  # Wierd behavior - OK in tests and development BUT bug in production on the entries index page only
+  # #<Encoding::CompatibilityError: incompatible character encodings: UTF-8 and ASCII-8BIT>
+  def test_can_update_a_batch_name_with_utf_8_characters
+    visit "/batches"
+
+    click_link "New Batch"
+    batch = Batch.where(name: "New Batch", account_id: 1, active: true).first
+
+    assert_current_path "/batches/#{batch.id}/edit"
+
+    fill_in "Name", with: "vacances été"
+    fill_in "Target Weight", with: "70.0"
+
+    click_on "Update Batch"
+
+    assert_current_path "/batches"
+    assert_content "vacances été"
+    refute_link "New Batch"
+
+    click_on "Entries"
+
+    assert_current_path "/entries"
+  end
+
   def test_can_update_a_batch_target_weight
     visit "/batches"
 
