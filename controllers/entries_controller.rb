@@ -11,6 +11,7 @@ module WeightTracker
 
       r.is do
         r.get do
+
           # Request entries of a specific batch with its id as query param
           if (batch_id = tp.pos_int("batch_id"))
 
@@ -30,6 +31,7 @@ module WeightTracker
             @batch_info = {name: "All Batches"}
             @entries = Entry.all_with_deltas(account_id: @account_ds[:id], batch_id: "all",
                                              batch_target: nil)
+            @all_batches = true
           
           # Request entries of the current batch - default action
           else
