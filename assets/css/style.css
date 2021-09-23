@@ -10,6 +10,10 @@ body {
   background-color: #f1f1f1;
 }
 
+.bg-gainsboro {
+  background-color: #DCDCDC;
+}
+
 @media print {
   .no-print{
     display:none;

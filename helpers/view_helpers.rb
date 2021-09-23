@@ -66,5 +66,9 @@ module WeightTracker
       word = number_of_entries == 1 ? "Entry" : "Entries"
       "#{number_of_entries} #{word}"
     end
+
+    def entry_highlight?(day)
+      day.saturday? || day.sunday?
+    end
   end
 end

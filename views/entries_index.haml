@@ -35,7 +35,7 @@
           %td.text-center BMI
         %tbody
           - @entries.each do |entry|
-            %tr
+            %tr{class: entry_highlight?(entry.day) ? "bg-gainsboro" : "bg-body"}
               %td.text-center
                 %a.no-decoration{href: "/entries/#{entry.id}/edit", "data-bs-toggle" => "tooltip",
                 "data-bs-placement" => "bottom", title: entry.note}= entry.day.strftime("%a %d %b %Y")
