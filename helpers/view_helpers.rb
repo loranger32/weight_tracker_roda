@@ -70,5 +70,9 @@ module WeightTracker
     def entry_highlight?(day)
       day.saturday? || day.sunday?
     end
+
+    def is_current_batch?(current_batch, batch_info)
+      current_batch.name == batch_info[:name]
+    end
   end
 end
