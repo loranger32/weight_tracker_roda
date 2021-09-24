@@ -2,9 +2,9 @@ module WeightTracker
   class App
     hash_branch("entries") do |r|
       # TODO - Ugly - to refactor
-      current_batch = Batch[Account[@account_ds[:id]].active_batch_id]
+      @current_batch = Batch[Account[@account_ds[:id]].active_batch_id]
 
-      unless current_batch
+      unless @current_batch
         flash["error"] = "No Active batch found, please create or one or make one active"
         r.redirect "/batches"
       end
@@ -35,9 +35,9 @@ module WeightTracker
           
           # Request entries of the current batch - default action
           else
-            @batch_info = {name: current_batch.name, target: current_batch.target || "/"}
-            @entries = Entry.all_with_deltas(account_id: @account_ds[:id], batch_id: current_batch.id,
-                                             batch_target: current_batch.target.to_f)
+            @batch_info = {name: @current_batch.name, target: @current_batch.target || "/"}
+            @entries = Entry.all_with_deltas(account_id: @account_ds[:id], batch_id: @current_batch.id,
+                                             batch_target: @current_batch.target.to_f)
           end
 
           Entry.add_bmi(@entries, Mensuration.where(account_id: @account_ds[:id]).first.height)
@@ -53,7 +53,7 @@ module WeightTracker
                        account_id: @account_ds[:id]}
 
           @entry.set(submitted)
-          @entry.set(batch_id: current_batch.id)
+          @entry.set(batch_id: @current_batch.id)
 
           if @entry.valid? && valid_weight_string?(submitted[:weight])
             @entry.save
@@ -61,7 +61,7 @@ module WeightTracker
             r.redirect
           end
 
-          @batch_info = {name: current_batch.name, target: current_batch.target || "/"}
+          @batch_info = {name: @current_batch.name, target: @current_batch.target || "/"}
 
           if !valid_weight_string?(submitted[:weight])
             flash.now["error"] = "Invalid weight, must be between 20.0 and 999.9"
@@ -76,7 +76,7 @@ module WeightTracker
       r.is "new" do
         @entry = Entry.new
         @most_recent_weight = Entry.most_recent_weight(@account_ds[:id])
-        @batch_info = {name: current_batch.name, target: current_batch.target || "/"}
+        @batch_info = {name: @current_batch.name, target: @current_batch.target || "/"}
         view "entries_new"
       end
 
