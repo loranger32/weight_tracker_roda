@@ -90,7 +90,7 @@ The follwoing data are encrypted before being saved in the database :
 
 So even if someone gains an unauthorized access to the database, all these data will be gribberisch.
 
-Note that the developer must know the key and can thus technically decrypt the data, so you'll have to trust him.
+Note that the developer must know the encryption/decryption key and can thus technically decrypt the data, so you'll have to trust him.
 
 
 ## Next Features
@@ -128,13 +128,13 @@ Note that the developer must know the key and can thus technically decrypt the d
 ## Contribution
 
 See a bug or something you want to improve ? Great :
-  - Fork the repository ;
-  - Create your own branch (git checkout -b my-new-feature) ;
-  - Make your feature addition or bug fix ;
-  - Add tests for it (important);
-  - Commit on your own branch ;
-  - Push to the branch (git push origin my-new-feature) ;
-  - Create a new pull request ;
+- Fork the repository ;
+- Create your own branch (git checkout -b my-new-feature) ;
+- Make your feature addition or bug fix ;
+- Add tests for it (important);
+- Commit on your own branch ;
+- Push to the branch (git push origin my-new-feature) ;
+- Create a new pull request ;
 
 Or simply open an issue on Github.
 
