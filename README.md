@@ -35,7 +35,7 @@ You can [review the code here](https://github.com/loranger32/weight_tracker_roda
 - Entries and batch infos can be downloaded in JSON format
 
 
-### Authentication (Roaudth features)
+### Authentication (Rodauth features)
 
 - Create Account
 - Verify Account
@@ -116,9 +116,9 @@ Note that the developer must know the encryption/decryption key and can thus tec
   - DATABASE_URL ==> The connection info to your postgresql database (same variable name for development and production)
   - TEST_DATABASE_URL ==> Connection for your test database, if you want to run the tests
   - SESSION_SECRET ==> must be a string of at least 64 bytes and should be randomly generated. More info in the [Roda::RodaPlugins::Session documentation](http://roda.jeremyevans.net/rdoc/classes/Roda/RodaPlugins/Sessions.html)
-  - SEQUEL_COLUMN_ENCRYPTION_KEY ==> Key to encrypt/decrypt the data before being saved into the database
+  - SEQUEL_COLUMN_ENCRYPTION_KEY ==> Key to encrypt/decrypt the data before being saved into the database. [More information here](http://sequel.jeremyevans.net/rdoc-plugins/classes/Sequel/Plugins/ColumnEncryption.html).
   - MY_EMAIL ==> Your email adress where admin notifications will be sent in production mode
-  - SENDRGID_API_KEY ==> to allow sending email in production mode (not needed in development and tests)
+  - SENDRGID_API_KEY ==> to allow sending email in production mode (not needed in development and tests). Ovbsiously requires a sendgrid account.s
 - In development mode, you can use the [mailcatcher gem](https://rubygems.org/gems/mailcatcher) in order to send email to a local SMTP server
 - For a development server _with_ auto relaoding feature, run `rake ds`
 - For a development server _without_ relaoding feature, run `rake s`
