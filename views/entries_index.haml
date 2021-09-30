@@ -23,6 +23,8 @@
 .row
   .col-12.col-md-10.offset-md-1.col-lg-5
     %p#chart-entries!= @chart_data.to_json
+    %button.chart_display_button#line_display_button line
+    %button.chart_display_button#bar_display_button bar
     %canvas#myChart{width: 100, height: 100}
   .col-12.col-md-10.offset-md-1.col-lg-5
     - if @entries.empty?

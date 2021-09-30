@@ -1,7 +1,14 @@
 "use strict"
 
+let myChart;
+
 const entriesChartRawData = document.querySelector("#chart-entries").innerHTML;
 const data = JSON.parse(entriesChartRawData);
+
+const barDisplayButton = document.querySelector("#bar_display_button");
+const lineDisplayButton = document.querySelector("#line_display_button");
+barDisplayButton.addEventListener('click', displayBarChart);
+lineDisplayButton.addEventListener('click', displayLineChart);
 
 const redBackGround = 'rgba(200, 0, 0, 0.2)';
 const greenBackGround = 'rgba(0, 200, 0, 0.2)';
@@ -14,6 +21,9 @@ const days = data.map(x => x.day);
 const weights = data.map(x => x.weight);
 const backgroundColors = data.map(x => chooseBackgroundColorFromDelta(x.delta))
 const borderColors = data.map(x => chooseBorderColorFromDelta(x.delta))
+
+const lineChart = 'line';
+const barChart = 'bar';
 
 function chooseBackgroundColorFromDelta(delta) {
   if (delta > 0) {
@@ -35,24 +45,46 @@ function chooseBorderColorFromDelta(delta) {
   }   
 }
 
-var ctx = document.getElementById('myChart').getContext('2d');
-var myChart = new Chart(ctx, {
-    type: 'bar',
+function displayChart(chartType) {
+  var ctx = document.getElementById('myChart').getContext('2d');
+  var myChart = new Chart(ctx, {
+    type: chartType,
     data: {
-        labels: days,
-        datasets: [{
-            label: 'weight',
-            data: weights,
-            backgroundColor: backgroundColors,
-            borderColor: borderColors,
-            borderWidth: 1
-        }]
+      labels: days,
+      datasets: [{
+        label: 'weight',
+        data: weights,
+        backgroundColor: backgroundColors,
+        borderColor: borderColors,
+        borderWidth: 1
+      }]
     },
     options: {
-        scales: {
-            y: {
-                beginAtZero: false
-            }
+      scales: {
+        y: {
+          beginAtZero: false
         }
+      }
     }
-});
+  });
+  return myChart;    
+}
+
+function displayLineChart() {
+  if (myChart) {
+    myChart.destroy();
+  }
+  myChart = displayChart('line');
+}
+
+function displayBarChart() {
+  if (myChart) {
+    myChart.destroy();
+  }
+  myChart = displayChart('bar');
+}
+
+displayLineChart();
+
+
+
