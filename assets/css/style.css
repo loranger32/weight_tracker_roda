@@ -53,6 +53,10 @@ body {
   text-decoration: none;
 }
 
+#chart-entries {
+  display: none;
+}
+
 /* RODAUTH FORMS */
 
 .rodauth {

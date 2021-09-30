@@ -41,6 +41,7 @@ module WeightTracker
           end
 
           Entry.add_bmi(@entries, Mensuration.where(account_id: @account_ds[:id]).first.height)
+          @chart_data = @entries.map { {day: _1.day, weight: _1.weight, delta: _1.delta} }.reverse
 
           view "entries_index"
         end

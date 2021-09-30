@@ -21,7 +21,10 @@
       %a.d-block.btn.btn-primary.w-75.mx-auto.mb-5{href: "/entries/new"} New Entry
 
 .row
-  .col-12.col-md-10.offset-md-1.col-lg-8.offset-lg-2.col-xl-6.offset-xl-3
+  .col-12.col-md-10.offset-md-1.col-lg-5
+    %p#chart-entries!= @chart_data.to_json
+    %canvas#myChart{width: 100, height: 100}
+  .col-12.col-md-10.offset-md-1.col-lg-5
     - if @entries.empty?
       %p.text-center No entries in this batch yet
     - else
@@ -38,11 +41,14 @@
             %tr{class: entry_highlight?(entry.day) ? "bg-gainsboro" : "bg-body"}
               %td.text-center
                 %a.no-decoration{href: "/entries/#{entry.id}/edit", "data-bs-toggle" => "tooltip",
-                "data-bs-placement" => "bottom", title: entry.note}= entry.day.strftime("%a %d %b %Y")
+                "data-bs-placement" => "bottom", title: entry.note}&= entry.day.strftime("%a %d %b %Y")
               %td.text-center= entry.weight.to_f
-              %td.text-center{class: weight_delta_color(entry.delta)}= format_delta(entry.delta)
+              %td.text-center{class: weight_delta_color(entry.delta)}&= format_delta(entry.delta)
               - unless @all_batches
                 %td.text-center= @batch_info[:target] ? entry.delta_to_target : "/"
               %td.text-center= entry.bmi
-    
+
 - content_for :js, assets([:js, :bs_tooltip])
+- content_for :js, assets([:js, :chartjs_min])
+- content_for :js, assets([:js, :chartjs_adapter])
+- content_for :js, assets([:js, :entries_index_charts])
