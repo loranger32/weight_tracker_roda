@@ -95,7 +95,7 @@ Note that the developer must know the encryption/decryption key and can thus tec
 
 ## Next Features
 
-- Add fancy and useful charts ! Probably whit Chart.js
+- Add useful stats
 
 
 ## Known Bugs
