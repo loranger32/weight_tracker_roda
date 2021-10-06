@@ -1,7 +1,7 @@
 require_relative "db/db"
 
-Dir["helpers/*.rb"].each { |f| require_relative f }
-Dir["jobs/*.rb"].each { |f| require_relative f }
+Dir["helpers/*.rb"].each { require_relative _1 }
+Dir["jobs/*.rb"].each { require_relative _1 }
 
 module WeightTracker
   class App < Roda
@@ -163,7 +163,7 @@ module WeightTracker
 
     # Routing
     plugin :hash_routes
-    Dir["controllers/*.rb"].each { |f| require_relative f }
+    Dir["controllers/*.rb"].each { require_relative _1 }
 
     plugin :status_handler
 
