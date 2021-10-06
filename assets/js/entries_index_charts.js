@@ -1,14 +1,18 @@
 "use strict"
 
 let myChart;
+let selectedDayOfWeek = 8;
 
 const entriesChartRawData = document.querySelector("#chart-entries").innerHTML;
-const data = JSON.parse(entriesChartRawData);
+const allRawDays = JSON.parse(entriesChartRawData);
 
 const barDisplayButton = document.querySelector("#bar_display_button");
 const lineDisplayButton = document.querySelector("#line_display_button");
 barDisplayButton.addEventListener('click', displayBarChart);
 lineDisplayButton.addEventListener('click', displayLineChart);
+
+const selectDayOfWeek = document.querySelector("#select_day_of_week");
+selectDayOfWeek.addEventListener("click", DisplayChartByDayOfWeek);
 
 const redBackGround = 'rgba(200, 0, 0, 0.2)';
 const greenBackGround = 'rgba(0, 200, 0, 0.2)';
@@ -16,14 +20,19 @@ const blueBackGround = 'rgba(0, 0, 200, 0.2)';
 const redBorder = 'rgba(255, 0, 0, 1)';
 const greenBorder = 'rgba(0, 255, 0, 1)';
 const blueBorder = 'rgba(0, 0, 255, 1)';
-
-const days = data.map(x => x.day);
-const weights = data.map(x => x.weight);
-const backgroundColors = data.map(x => chooseBackgroundColorFromDelta(x.delta))
-const borderColors = data.map(x => chooseBorderColorFromDelta(x.delta))
-
 const lineChart = 'line';
 const barChart = 'bar';
+let currentChartType = lineChart;
+const allDays = formatDays(allRawDays);
+
+function formatDays(rawDays) {
+  return {
+    days: rawDays.map(x => x.day),
+    weights: rawDays.map(x => x.weight),
+    backgroundColors: rawDays.map(x => chooseBackgroundColorFromDelta(x.delta)),
+    borderColors: rawDays.map(x => chooseBorderColorFromDelta(x.delta)),
+  }
+}
 
 function chooseBackgroundColorFromDelta(delta) {
   if (delta > 0) {
@@ -45,17 +54,17 @@ function chooseBorderColorFromDelta(delta) {
   }   
 }
 
-function displayChart(chartType) {
+function generateChart(chartType, days) {
   var ctx = document.getElementById('myChart').getContext('2d');
   var myChart = new Chart(ctx, {
     type: chartType,
     data: {
-      labels: days,
+      labels: days.days,
       datasets: [{
         label: 'weight',
-        data: weights,
-        backgroundColor: backgroundColors,
-        borderColor: borderColors,
+        data: days.weights,
+        backgroundColor: days.backgroundColors,
+        borderColor: days.borderColors,
         borderWidth: 1
       }]
     },
@@ -67,24 +76,51 @@ function displayChart(chartType) {
       }
     }
   });
-  return myChart;    
+  return myChart;
+}
+
+function selectDaysToDisplay(dayOfWeek) {
+  if (dayOfWeek == 8) {
+    return formatDays(allRawDays);
+  } else {
+    const selecteddays = allRawDays.filter(x => new Date(x.day).getDay() == dayOfWeek);
+    return formatDays(selecteddays);
+  }
+}
+
+function displayChart(type) {
+  if (myChart) {
+    myChart.destroy();
+  }
+  const days = selectDaysToDisplay(selectedDayOfWeek);
+  myChart = generateChart(type, days);
 }
 
 function displayLineChart() {
-  if (myChart) {
-    myChart.destroy();
-  }
-  myChart = displayChart('line');
+  currentChartType = lineChart;
+  displayChart('line');
 }
 
 function displayBarChart() {
-  if (myChart) {
-    myChart.destroy();
+  currentChartType = barChart;
+  displayChart('bar');
+}
+
+function DisplayChartByDayOfWeek(e) {
+  const selectedValue = e.target.value;
+
+  if (["0", "1", "2", "3", "4", "5", "6"].includes(selectedValue)) {
+    selectedDayOfWeek = parseInt(selectedValue);
+    if (currentChartType == lineChart) {
+      displayLineChart();
+    }
+    else if (currentChartType == barChart) {
+      displayBarChart()
+    }
+    else {
+    console.log(`Invalid day of week value. Got: ${selectedValue}`);
+    }
   }
-  myChart = displayChart('bar');
 }
 
 displayLineChart();
-
-
-
