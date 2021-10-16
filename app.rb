@@ -149,7 +149,7 @@ module WeightTracker
     plugin :content_security_policy do |csp|
       csp.default_src :none
       csp.font_src :self, "fonts.gstatic.com"
-      csp.img_src :self
+      csp.img_src :self, "data:"
       csp.object_src :none
       csp.frame_src :self
       csp.style_src :self, "fonts.googleapis.com", "stackpath.bootstrapcdn.com"
