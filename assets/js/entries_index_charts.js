@@ -12,7 +12,7 @@ barDisplayButton.addEventListener('click', displayBarChart);
 lineDisplayButton.addEventListener('click', displayLineChart);
 
 const selectDayOfWeek = document.querySelector("#select_day_of_week");
-selectDayOfWeek.addEventListener("click", DisplayChartByDayOfWeek);
+selectDayOfWeek.addEventListener("change", DisplayChartByDayOfWeek);
 
 const redBackGround = 'rgba(200, 0, 0, 0.2)';
 const greenBackGround = 'rgba(0, 200, 0, 0.2)';

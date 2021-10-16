@@ -21,7 +21,7 @@
       %a.d-block.btn.btn-primary.w-75.mx-auto.mb-5{href: "/entries/new"} New Entry
 
 .row
-  .col-12.col-md-10.offset-md-1.col-lg-5
+  .col-12.col-md-10.offset-md-1.col-lg-5.mb-5
     %p#chart-entries!= @chart_data.to_json
     %button.btn.btn-primary#line_display_button{type: "button"} Line
     %button.btn.btn-primary#bar_display_button{type: "button"} Bar
