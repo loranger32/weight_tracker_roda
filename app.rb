@@ -149,7 +149,7 @@ module WeightTracker
     plugin :content_security_policy do |csp|
       csp.default_src :none
       csp.font_src :self, "fonts.gstatic.com"
-      csp.img_src :self, "data:"
+      csp.img_src :self, "data:" # data: is required for Bootstrap 5 svg inline icons, for the moment
       csp.object_src :none
       csp.frame_src :self
       csp.style_src :self, "fonts.googleapis.com", "stackpath.bootstrapcdn.com"

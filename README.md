@@ -101,7 +101,6 @@ Note that the developer must know the encryption/decryption key and can thus tec
 ## Known Bugs
 
 - when naming your batch, only use ASCII character, because you can enconuter some issues in production. Under investigation
-- due to a fairly restrictive content security policy, icons from bootstrap do not appear. More [info here](https://github.com/twbs/bootstrap/issues/25394). Still trying to find an easy fix without weakening the csp.
 
 
 ## Installation
