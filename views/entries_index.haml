@@ -23,17 +23,20 @@
 .row
   .col-12.col-md-10.offset-md-1.col-lg-5.mb-5
     %p#chart-entries!= @chart_data.to_json
-    %button.btn.btn-primary#line_display_button{type: "button"} Line
-    %button.btn.btn-primary#bar_display_button{type: "button"} Bar
-    %select.form-select.mt-3#select_day_of_week{aria_label: "Select day of week"}
-      %option{selected: true, value: 7} Show all days
-      %option{value: 1} Monday
-      %option{value: 2} Tuesday
-      %option{value: 3} Wednesday
-      %option{value: 4} Thursday
-      %option{value: 5} Friday
-      %option{value: 6} Saturday
-      %option{value: 0} Sunday
+    .row.mb-3
+      .col-6
+        %button.btn.btn-primary#line_display_button{type: "button"} Line
+        %button.btn.btn-primary#bar_display_button{type: "button"} Bar
+      .col-5
+        %select.form-select#select_day_of_week{aria_label: "Select day of week"}
+          %option{selected: true, value: 7} Show all days
+          %option{value: 1} Monday
+          %option{value: 2} Tuesday
+          %option{value: 3} Wednesday
+          %option{value: 4} Thursday
+          %option{value: 5} Friday
+          %option{value: 6} Saturday
+          %option{value: 0} Sunday
     %canvas#myChart{width: 100, height: 100}
   .col-12.col-md-10.offset-md-1.col-lg-5
     - if @entries.empty?
