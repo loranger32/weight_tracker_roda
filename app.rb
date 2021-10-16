@@ -150,7 +150,7 @@ module WeightTracker
       csp.default_src :none
       csp.font_src :self, "fonts.gstatic.com"
       csp.img_src :self
-      csp.object_src :self
+      csp.object_src :none
       csp.frame_src :self
       csp.style_src :self, "fonts.googleapis.com", "stackpath.bootstrapcdn.com"
       csp.form_action :self
