@@ -2,13 +2,13 @@
 
 ## Weight Tracker
 
-A simple app to track your daily weight, with charts (soon).
+A simple app to track your daily weight, with charts.
 
-The goal is to allow for easy daily recording, and to see your progess on nice and useful charts.
+The goal is to allow for easy daily recording, and to see your progess on (hopefully) nice and useful charts.
 
 Developped with [Roda](http://roda.jeremyevans.net/index.html),
-[Sequel](http://sequel.jeremyevans.net/), [Rodauth](http://rodauth.jeremyevans.net/),
-[Bootstrap](https://getbootstrap.com/) and [Postgresql](https://www.postgresql.org/).
+[Sequel](http://sequel.jeremyevans.net/), [Postgresql](https://www.postgresql.org/),
+[Rodauth](http://rodauth.jeremyevans.net/),[Bootstrap](https://getbootstrap.com/) and [Chart.js](https://www.chartjs.org/).
 
 It's the first time I try to integrate Rodauth, and it's been great so far.
 
@@ -95,12 +95,13 @@ Note that the developer must know the encryption/decryption key and can thus tec
 
 ## Next Features
 
-- Add fancy and useful charts ! Probably whit Chart.js
+- Add useful stats
 
 
 ## Known Bugs
 
 - when naming your batch, only use ASCII character, because you can enconuter some issues in production. Under investigation
+- due to a fairly restrictive content security policy, icons from bootstrap do not appear. More [info here](https://github.com/twbs/bootstrap/issues/25394). Still trying to find an easy fix without weakening the csp.
 
 
 ## Installation

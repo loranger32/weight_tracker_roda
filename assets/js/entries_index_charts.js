@@ -1,7 +1,7 @@
 "use strict"
 
 let myChart;
-let selectedDayOfWeek = 8;
+let selectedDayOfWeek = 7;
 
 const entriesChartRawData = document.querySelector("#chart-entries").innerHTML;
 const allRawDays = JSON.parse(entriesChartRawData);
@@ -79,12 +79,12 @@ function generateChart(chartType, days) {
   return myChart;
 }
 
-function selectDaysToDisplay(dayOfWeek) {
-  if (dayOfWeek == 8) {
-    return formatDays(allRawDays);
+function selectDaysToDisplay() {
+  if (selectedDayOfWeek == 7) {
+    return allDays;
   } else {
-    const selecteddays = allRawDays.filter(x => new Date(x.day).getDay() == dayOfWeek);
-    return formatDays(selecteddays);
+    const selectedDays = allRawDays.filter(x => new Date(x.day).getDay() == selectedDayOfWeek);
+    return formatDays(selectedDays);
   }
 }
 
@@ -92,7 +92,7 @@ function displayChart(type) {
   if (myChart) {
     myChart.destroy();
   }
-  const days = selectDaysToDisplay(selectedDayOfWeek);
+  const days = selectDaysToDisplay();
   myChart = generateChart(type, days);
 }
 
@@ -108,8 +108,9 @@ function displayBarChart() {
 
 function DisplayChartByDayOfWeek(e) {
   const selectedValue = e.target.value;
+  console.log("triggered");
 
-  if (["0", "1", "2", "3", "4", "5", "6"].includes(selectedValue)) {
+  if (["0", "1", "2", "3", "4", "5", "6", "7"].includes(selectedValue)) {
     selectedDayOfWeek = parseInt(selectedValue);
     if (currentChartType == lineChart) {
       displayLineChart();
@@ -118,7 +119,7 @@ function DisplayChartByDayOfWeek(e) {
       displayBarChart()
     }
     else {
-    console.log(`Invalid day of week value. Got: ${selectedValue}`);
+      console.log(`Invalid day of week value. Got: ${selectedValue}`);
     }
   }
 }

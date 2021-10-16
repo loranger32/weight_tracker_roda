@@ -158,7 +158,7 @@ module WeightTracker
       csp.connect_src :self
       csp.base_uri :none
       csp.frame_ancestors :none
-      csp.upgrade_insecure_requests true
+      csp.block_all_mixed_content
     end
 
     # Routing
