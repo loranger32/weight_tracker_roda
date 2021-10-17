@@ -38,7 +38,7 @@
   .col-12.col-md-10.offset-md-1.col-lg-5.mb-5
     %p#chart-entries!= @chart_data.to_json
     .row.mb-3
-      .col-6
+      .col-6.offset-1
         %button.btn.btn-primary#line_display_button{type: "button"} Line
         %button.btn.btn-primary#bar_display_button{type: "button"} Bar
       .col-5
