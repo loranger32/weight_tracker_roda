@@ -111,7 +111,7 @@ function DisplayChartByDayOfWeek(e) {
   console.log("triggered");
 
   if (["0", "1", "2", "3", "4", "5", "6", "7"].includes(selectedValue)) {
-    selectedDayOfWeek = parseInt(selectedValue);
+    selectedDayOfWeek = parseInt(selectedValue, 10);
     if (currentChartType == lineChart) {
       displayLineChart();
     }
