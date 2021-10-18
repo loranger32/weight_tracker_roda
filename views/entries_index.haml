@@ -53,12 +53,42 @@
           %option{value: 0} Sunday
     %canvas.mb-5#myChart{width: 100, height: 100}
     %h3.text-center.mb-4 Stats
-    %p Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    %p
+      Biggest Loss / Gain : 
+      %span.badge.bg-success - 3.9
+      \/ 
+      %span.badge.bg-danger + 1.7
+    %dl
+      %dt Longest Streak of Loss / Gain : 
+      %dd.ms-3
+        %span.badge.bg-success 5 days (from XXX to XXX) -  5.8 kg
+      %dd.ms-3
+        %span.badge.bg-danger 7 days (from XXX to XXX) - 6.0 kg
+
+    %p 
+      Total Loss / Gain :
+      %span.badge.bg-success - 67.0
+      \/
+      %span.badge.bg-danger + 56.0
+
+    %p
+      Best / Worst Day of Week :
+      %span.badge.bg-success Tuesday (~ 0.7)
+      \/
+      %span.badge.bg-danger Saturday (~ 0.6)
+
+    %p
+      Number of Entries / Number of Days :
+      %span.badge.bg-info 56 / 70
+
+    %p
+      Average Loss per Day :
+      %span.badge.bg-info 0.3
+
+    %p
+      Estimated Time to Target :
+      %span.badge.bg-info 23 days
+
   .col-12.col-md-10.offset-md-1.col-lg-5
     - if @entries.empty?
       %p.text-center No entries in this batch yet
