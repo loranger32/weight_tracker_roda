@@ -55,9 +55,9 @@
     %h3.text-center.mb-4 Stats
     %p
       Biggest Loss / Gain : 
-      %span.badge.bg-success - 3.9
+      %span.badge.bg-success= @stats.biggest_loss
       \/ 
-      %span.badge.bg-danger + 1.7
+      %span.badge.bg-danger= @stats.biggest_gain
     %dl
       %dt Longest Streak of Loss / Gain : 
       %dd.ms-3
@@ -67,9 +67,9 @@
 
     %p 
       Total Loss / Gain :
-      %span.badge.bg-success - 67.0
+      %span.badge.bg-success= @stats.total_loss
       \/
-      %span.badge.bg-danger + 56.0
+      %span.badge.bg-danger= @stats.total_gain
 
     %p
       Best / Worst Day of Week :
