@@ -73,9 +73,9 @@
 
     %p
       Best / Worst Day of Week :
-      %span.badge.bg-success Tuesday (~ 0.7)
+      %span.badge.bg-success= @stats.best_day_of_week
       \/
-      %span.badge.bg-danger Saturday (~ 0.6)
+      %span.badge.bg-danger= @stats.worst_day_of_week
 
     %p
       Number of Entries / Number of Days :
@@ -83,11 +83,11 @@
 
     %p
       Average Loss per Day :
-      %span.badge.bg-info 0.3
+      %span.badge.bg-info= @stats.average_loss_per_day
 
     %p
       Estimated Time to Target :
-      %span.badge.bg-info 23 days
+      %span.badge.bg-info= @stats.estimated_time_to_target
 
   .col-12.col-md-10.offset-md-1.col-lg-5
     - if @entries.empty?
