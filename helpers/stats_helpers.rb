@@ -11,11 +11,11 @@ module WeightTracker
       @total_days = total_days
     end
 
-    def biggest_gain
+    def biggest_daily_gain
       "+ #{@deltas.max}"
     end
 
-    def biggest_loss
+    def biggest_daily_loss
       @deltas.min
     end
 

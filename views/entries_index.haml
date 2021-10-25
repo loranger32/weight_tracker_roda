@@ -54,10 +54,10 @@
     %canvas.mb-5#myChart{width: 100, height: 100}
     %h3.text-center.mb-4 Stats
     %p
-      Biggest Loss / Gain : 
-      %span.badge.bg-success= @stats.biggest_loss
+      Biggest Daily Loss / Gain : 
+      %span.badge.bg-success= @stats.biggest_daily_loss
       \/ 
-      %span.badge.bg-danger= @stats.biggest_gain
+      %span.badge.bg-danger= @stats.biggest_daily_gain
     %dl
       %dt Longest Streak of Loss / Gain : 
       %dd.ms-3
@@ -79,7 +79,7 @@
 
     %p
       Number of Entries / Number of Days :
-      %span.badge.bg-info 56 / 70
+      %span.badge.bg-info #{@entries.length} / #{@stats.total_days}
 
     %p
       Average Loss per Day :
