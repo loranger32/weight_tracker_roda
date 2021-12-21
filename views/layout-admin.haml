@@ -19,9 +19,6 @@
   %h2.text-center.mb-5 Admin Panel
   
   != partial("partials/flash")
-
-  %a.d-block.w-50.mx-auto.no-decoration.text-center{href: "/admin/accounts"}
-    .alert.alert-warning  Admin - #{@account_ds[:user_name]}
   
   .container-sm
     != yield
