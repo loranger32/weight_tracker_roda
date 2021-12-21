@@ -267,7 +267,12 @@ module WeightTracker
           file_name = "wt_data_#{@account_ds[:user_name]}_#{Time.now.strftime("%Y%m%d%H%M%S")}.json"
           data_file_path = File.join(opts[:root], "tmp", file_name)
           File.open(data_file_path, "w") do |f|
-            f.write @raw_entry_data_with_decrypted_notes.to_json + @raw_batch_data_with_decrypted_name.to_json
+            combined = "["
+            combined << @raw_entry_data_with_decrypted_notes.to_json
+            combined << ","
+            combined << @raw_batch_data_with_decrypted_name.to_json 
+            combined << "]"
+            f.write combined
           end
           send_file data_file_path, type: "application/json", filename: file_name
         end

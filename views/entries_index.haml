@@ -12,7 +12,7 @@
     -else
       .alert.alert-info.w-75.mx-auto.text-center.mb-2
         %a.d-block.no-decoration.mb-2{href: "/batches"}
-          = @batch_info[:name]
+          = @batch_info[:name].force_encoding("UTF-8")
           %br
           Target: #{@batch_info[:target]}
 
@@ -106,7 +106,7 @@
             %tr{class: entry_highlight?(entry.day) ? "bg-gainsboro" : "bg-body"}
               %td.text-center
                 %a.no-decoration{href: "/entries/#{entry.id}/edit", "data-bs-toggle" => "tooltip",
-                "data-bs-placement" => "bottom", title: entry.note}&= entry.day.strftime("%a %d %b %Y")
+                "data-bs-placement" => "bottom", title: entry.note.force_encoding("UTF-8")}&= entry.day.strftime("%a %d %b %Y")
               %td.text-center= entry.weight.to_f
               %td.text-center{class: weight_delta_color(entry.delta)}&= format_delta(entry.delta)
               - unless @all_batches

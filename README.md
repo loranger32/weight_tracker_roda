@@ -24,15 +24,15 @@ You can [review the code here](https://github.com/loranger32/weight_tracker_roda
 - One entry per user and per day
 - An entry _must_ have a date and a weight
 - An entry _can_ have an associated note
-- Every entry is linked to one batch, to allow you to separte entries into specific time periods
+- Every entry is linked to one (and only one) batch, to allow you to group entries by specific time periods
 - Each batch _can_ have an associated **target weight**
-- Each entry has a **delta to target** attribute to show the remaining weight to loose / gain
+- Each entry has a **delta to target** attribute to show the remaining weight to loose / gain before reaching target
 - Each entry has the **delta with the last entry**
-- Each entry has a **body mass index** indicator (bmi)
-- Entries are by default assigned to the currently active batch, but you can choose to assign it to another one
+- If you enter your height on the account page, each entry has a **body mass index** indicator (bmi)
+- Entries are by default assigned to the currently active batch, which is the more current scenario. If you want to record it into another batch, you must make it active first (on the batches page)
 - There can only be one active batch at a time
 - If you delete a batch, all related entries are permanently destroyed
-- Entries and batch infos can be downloaded in JSON format
+- Entries and batch infos can be downloaded in JSON format on the Account -> Export page
 
 
 ### Authentication (Rodauth features)
@@ -56,7 +56,7 @@ You can [review the code here](https://github.com/loranger32/weight_tracker_roda
 
 ### Admin features
 
-- Admin can see a list of all accounts, with the following information for each account :
+- Admin can see a list of all accounts, with the following informations for each account :
   - user name
   - email
   - account status (unverified, verified, closed)
@@ -73,12 +73,12 @@ You can [review the code here](https://github.com/loranger32/weight_tracker_roda
 - admin accounts can only be handled at the database level
 - _closing_ an account simply makes it unavailable (no login possible), but does not delete any data
 - _deleting_ an account permantly deletes all associated data
-- an admin user has NO ACCESS to individual entries and cannot see weight, notes and batch target weight
+- from the webapp, an admin user has NO ACCESS to individual entries and cannot see weight, notes and batch target weight. But see important note in the "Encryption" title hereafter.
 
 
 ### Encryption
 
-The follwoing data are encrypted before being saved in the database :
+The following data are encrypted before being saved in the database :
 
 - Entries
    - weight
@@ -100,7 +100,7 @@ Note that the developer must know the encryption/decryption key and can thus tec
 
 ## Known Bugs
 
-- when naming your batch, only use ASCII character, because you can enconuter some issues in production. Under investigation
+- For an unknown reason (at the moment), if you signup with a "hotmail" email adress, you won't recieve the "confirm your email" email. Things seems to be OK with an outlook.com email adress. I still don't know if it's a hotmail issue, a sendrgrid (configuration) issue or an issue in my own code.
 
 
 ## Installation
@@ -114,11 +114,11 @@ Note that the developer must know the encryption/decryption key and can thus tec
 - _(optionnal)_ run `rake db:seed` to insert the seed data
 - The app assumes the following environment variable are set (do not put them under version control):
   - DATABASE_URL ==> The connection info to your postgresql database (same variable name for development and production)
-  - TEST_DATABASE_URL ==> Connection for your test database, if you want to run the tests
+  - TEST_DATABASE_URL ==> Connection info to your test database, if you want to run the tests
   - SESSION_SECRET ==> must be a string of at least 64 bytes and should be randomly generated. More info in the [Roda::RodaPlugins::Session documentation](http://roda.jeremyevans.net/rdoc/classes/Roda/RodaPlugins/Sessions.html)
   - SEQUEL_COLUMN_ENCRYPTION_KEY ==> Key to encrypt/decrypt the data before being saved into the database. [More information here](http://sequel.jeremyevans.net/rdoc-plugins/classes/Sequel/Plugins/ColumnEncryption.html).
-  - MY_EMAIL ==> Your email adress where admin notifications will be sent in production mode
-  - SENDRGID_API_KEY ==> to allow sending email in production mode (not needed in development and tests). Ovbsiously requires a sendgrid account.s
+  - MY_EMAIL ==> The email adress where admin notifications will be sent in production mode
+  - SENDRGID_API_KEY ==> to allow sending email in production mode (not needed in development and tests). Ovbsiously requires a sendgrid account.
 - In development mode, you can use the [mailcatcher gem](https://rubygems.org/gems/mailcatcher) in order to send email to a local SMTP server
 - For a development server _with_ auto relaoding feature, run `rake ds`
 - For a development server _without_ relaoding feature, run `rake s`
