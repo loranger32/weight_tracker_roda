@@ -100,7 +100,7 @@ Note that the developer must know the encryption/decryption key and can thus tec
 
 ## Known Bugs
 
-- No known bugs (at the moment :-))
+- For an unknown reason (at the moment), if you signup with a "hotmail" email adress, you won't recieve the "confirm your email" email. Things seems to be OK with an outlook.com email adress. I still don't know if it's a hotmail issue, a sendrgrid (configuration) issue or an issue in my own code.
 
 
 ## Installation
