@@ -179,8 +179,8 @@ module WeightTracker
     plugin :render, engine: "haml", template_opts: {escape_html: true}
     plugin :partials
     plugin :assets,
-      css: %w[bootstrap_5_0_1.min.css style.css],
-      js: {main: "main.js", bootstrap_js: "bootstrap_5_0_1.bundle.min.js",
+      css: %w[bootstrap_5_1_3.min.css style.css],
+      js: {main: "main.js", bootstrap_js: "bootstrap_5_1_3.bundle.min.js",
            chartjs_min: "chart.min.js", chartjs_adapter: "chartjs-adapter-date-fns.bundle.js",
            close_account: "close_account.js", recovery_codes: "recovery_codes.js",
            entries_edit: "entries_edit.js", batch_index: "batch_index.js",
