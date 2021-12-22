@@ -26,9 +26,9 @@ accounts = [
 
 accounts.each { |account| Account.new(account).save }
 
-mensurations = [{account_id: 1, height: "1.92"}, {account_id: 2, height: "1.75"},
-  {account_id: 3, height: "1.89"}, {account_id: 4, height: "1.56"},
-  {account_id: 5, height: "1.75"}]
+mensurations = [{account_id: 1, height: "192"}, {account_id: 2, height: "175"},
+  {account_id: 3, height: "189"}, {account_id: 4, height: "156"},
+  {account_id: 5, height: "175"}]
 
 mensurations.each { |mensuration| Mensuration.new(mensuration).save }
 
@@ -42,9 +42,27 @@ batches.each { |batch| Batch.new(batch).save }
 
 entries = [{weight: "85.0", day: "2021-01-01", note: "First day", account_id: 1, batch_id: 1},
   {weight: "84.0", day: "2021-01-02", note: "", account_id: 1, batch_id: 1},
-  {weight: "83.5", day: "2021-01-03", note: "Great !", account_id: 1, batch_id: 2},
-  {weight: "83.2", day: "2021-01-04", note: "Keep going", account_id: 1, batch_id: 2},
-  {weight: "84.0", day: "2021-01-05", note: "Don't give up", account_id: 1, batch_id: 2},
+  {weight: "88.8", day: "2021-01-03", note: "Great !", account_id: 1, batch_id: 2},
+  {weight: "87.2", day: "2021-01-04", note: "Keep going", account_id: 1, batch_id: 2},
+  {weight: "87.9", day: "2021-01-05", note: "Don't give up", account_id: 1, batch_id: 2},
+  {weight: "88.1", day: "2021-01-06", note: "Great !", account_id: 1, batch_id: 2},
+  {weight: "87.6", day: "2021-01-07", note: "Keep going", account_id: 1, batch_id: 2},
+  {weight: "87.1", day: "2021-01-08", note: "Don't give up", account_id: 1, batch_id: 2},
+  {weight: "86.8", day: "2021-01-09", note: "Great !", account_id: 1, batch_id: 2},
+  {weight: "86.6", day: "2021-01-10", note: "Keep going", account_id: 1, batch_id: 2},
+  {weight: "87.2", day: "2021-01-12", note: "Don't give up", account_id: 1, batch_id: 2},
+  {weight: "87.0", day: "2021-01-13", note: "Great !", account_id: 1, batch_id: 2},
+  {weight: "86.3", day: "2021-01-14", note: "Keep going", account_id: 1, batch_id: 2},
+  {weight: "86.0", day: "2021-01-15", note: "Don't give up", account_id: 1, batch_id: 2},
+  {weight: "85.8", day: "2021-01-16", note: "Great !", account_id: 1, batch_id: 2},
+  {weight: "86.5", day: "2021-01-17", note: "Keep going", account_id: 1, batch_id: 2},
+  {weight: "85.9", day: "2021-01-18", note: "Don't give up", account_id: 1, batch_id: 2},
+  {weight: "85.0", day: "2021-01-19", note: "Great !", account_id: 1, batch_id: 2},
+  {weight: "84.8", day: "2021-01-20", note: "Keep going", account_id: 1, batch_id: 2},
+  {weight: "85.0", day: "2021-01-21", note: "Don't give up", account_id: 1, batch_id: 2},
+  {weight: "84.7", day: "2021-01-22", note: "Great !", account_id: 1, batch_id: 2},
+  {weight: "84.5", day: "2021-01-23", note: "Keep going", account_id: 1, batch_id: 2},
+  {weight: "84.0", day: "2021-01-24", note: "Don't give up", account_id: 1, batch_id: 2},
   {weight: "84.0", day: "2021-01-02", note: "", account_id: 5, batch_id: 3},
   {weight: "83.5", day: "2021-01-03", note: "I stop !", account_id: 5, batch_id: 3}]
 
