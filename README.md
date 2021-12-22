@@ -96,6 +96,7 @@ Note that the developer must know the encryption/decryption key and can thus tec
 ## Next Features
 
 - Add useful stats
+- Decide for each batch if you want to loose or gain weight
 
 
 ## Known Bugs
