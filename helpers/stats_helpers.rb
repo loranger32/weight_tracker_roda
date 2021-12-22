@@ -3,7 +3,7 @@ module WeightTracker
     DAYS = {0 => "Sunday", 1 => "Monday", 2 => "Tuesday", 3 => "Wednesday", 4 => "Thursday",
             5 => "Friday", 6 => "Saturday"}
 
-    attr_reader :target, :entries, :losses, :gains, :deltas # Only useful for debugging tests, must be a better way
+    attr_reader :target
 
     def initialize(entries, target)
       @entries = entries
