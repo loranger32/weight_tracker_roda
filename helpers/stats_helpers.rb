@@ -3,6 +3,8 @@ module WeightTracker
     DAYS = {0 => "Sunday", 1 => "Monday", 2 => "Tuesday", 3 => "Wednesday", 4 => "Thursday",
             5 => "Friday", 6 => "Saturday"}
 
+    attr_reader :target, :entries, :losses, :gains, :deltas # Only useful for debugging tests, must be a better way
+
     def initialize(entries, target)
       @entries = entries
       @target = target
@@ -12,19 +14,23 @@ module WeightTracker
     end
 
     def biggest_daily_gain
-      "+ #{@deltas.max}"
+      "+#{@deltas.max}"
     end
 
     def biggest_daily_loss
-      @deltas.min
+      @deltas.min.to_s
     end
 
     def total_loss
-      @losses.reduce(:+).round(1)
+      @losses.empty? ? "/" : @losses.reduce(:+).round(1).to_s
     end
 
     def total_gain
-      "+ #{@gains.reduce(:+).round(1)}"
+      if @gains.empty? || (@gains.size == 1 && @gains[0] == 0)
+        "/"
+      else
+        "+#{@gains.reduce(:+).round(1)}"
+      end
     end
 
     def best_day_of_week
@@ -40,7 +46,7 @@ module WeightTracker
     end
 
     def average_loss_per_day
-      (@deltas.reduce(:+) / @total_days).round(1)
+      (@deltas.reduce(:+) / (@entries.size - 1)).round(2)
     end
 
     def total_days
@@ -50,7 +56,11 @@ module WeightTracker
 
     # TODO : find appropriate indication when displaying all batches
     def estimated_time_to_target
-      ((@entries.first.weight.to_f - @target) / average_loss_per_day).ceil.abs.to_s + " days"
+      if @target == 0.0
+        "No target specified"
+      else
+        ((@entries.first.weight.to_f - @target) / average_loss_per_day).ceil.abs.to_s + " days"
+      end
     end
 
     private
@@ -65,7 +75,7 @@ module WeightTracker
 
       def sums_of_delta_per_day_of_week
         entries_per_day.map do |k, v|
-          {k => v.reduce(0) { |acc, entry| acc += entry.delta }}
+          {k => v.reduce(0) { |acc, entry| acc + entry.delta }}
         end
       end
   end

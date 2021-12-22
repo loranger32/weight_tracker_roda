@@ -53,41 +53,45 @@
           %option{value: 0} Sunday
     %canvas.mb-5#myChart{width: 100, height: 100}
     %h3.text-center.mb-4 Stats
-    %p
-      Biggest Daily Loss / Gain : 
-      %span.badge.bg-success= @stats.biggest_daily_loss
-      \/ 
-      %span.badge.bg-danger= @stats.biggest_daily_gain
-    %dl
-      %dt Longest Streak of Loss / Gain : 
-      %dd.ms-3
-        %span.badge.bg-success 5 days (from XXX to XXX) -  5.8 kg
-      %dd.ms-3
-        %span.badge.bg-danger 7 days (from XXX to XXX) - 6.0 kg
+    - if @stats
+      %p
+        Biggest Daily Loss / Gain : 
+        %span.badge.bg-success= @stats.biggest_daily_loss
+        \/ 
+        %span.badge.bg-danger= @stats.biggest_daily_gain
+      %dl
+        %dt Longest Streak of Loss / Gain : 
+        %dd.ms-3
+          %span.badge.bg-success Not yet implemented
+        %dd.ms-3
+          %span.badge.bg-danger Not yet implemented
 
-    %p 
-      Total Loss / Gain :
-      %span.badge.bg-success= @stats.total_loss
-      \/
-      %span.badge.bg-danger= @stats.total_gain
+      %p 
+        Total Loss / Gain :
+        %span.badge.bg-success= @stats.total_loss
+        \/
+        %span.badge.bg-danger= @stats.total_gain
 
-    %p
-      Best / Worst Day of Week :
-      %span.badge.bg-success= @stats.best_day_of_week
-      \/
-      %span.badge.bg-danger= @stats.worst_day_of_week
+      %p
+        Best / Worst Day of Week :
+        %span.badge.bg-success= @stats.best_day_of_week
+        \/
+        %span.badge.bg-danger= @stats.worst_day_of_week
 
-    %p
-      Number of Entries / Number of Days :
-      %span.badge.bg-info #{@entries.length} / #{@stats.total_days}
+      %p
+        Number of Entries / Number of Days :
+        %span.badge.bg-info #{@entries.length} / #{@stats.total_days}
 
-    %p
-      Average Loss per Day :
-      %span.badge.bg-info= @stats.average_loss_per_day
+      %p
+        Average Loss per Day :
+        %span.badge.bg-info= @stats.average_loss_per_day
 
-    %p
-      Estimated Time to Target :
-      %span.badge.bg-info= @stats.estimated_time_to_target
+      %p
+        Estimated Time to Target (#{@stats.target}):
+        %span.badge.bg-info= @stats.estimated_time_to_target
+    - else
+      %p.text-center.mb-4 Not enough entries to compute stats
+
 
   .col-12.col-md-10.offset-md-1.col-lg-5
     - if @entries.empty?
