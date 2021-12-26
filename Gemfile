@@ -1,4 +1,4 @@
-ruby "3.0.2"
+ruby "3.1.0"
 
 source "https://rubygems.org"
 
@@ -22,8 +22,9 @@ gem 'sucker_punch', '~> 3.0', '>= 3.0.1'
 
 group :development, :test do
   gem "awesome_print", "~> 1.9", ">= 1.9.2"
-  gem "dead_end", "~> 1.1", ">= 1.1.6"
+  #gem "dead_end", "~> 1.1", ">= 1.1.6"
   gem "dotenv", "~> 2.7", ">= 2.7.6"
+  gem 'net-smtp', '~> 0.3.1'
   gem "pry-byebug", "~> 3.9"
 end
 
