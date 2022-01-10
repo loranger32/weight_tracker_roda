@@ -46,7 +46,6 @@ module WeightTracker
       entry_days.first.downto(entry_days.last).count
     end
 
-    # TODO : find appropriate indication when displaying all batches
     def estimated_time_to_target
       return {content: "No target specified", class: "bg-info"} if @target == 0.0
       
