@@ -1,7 +1,6 @@
 module WeightTracker
   class App
     hash_branch("entries") do |r|
-      # TODO - Ugly - to refactor
       @current_batch = Batch[Account[@account_ds[:id]].active_batch_id]
 
       unless @current_batch

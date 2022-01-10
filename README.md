@@ -10,9 +10,7 @@ Developped with [Roda](http://roda.jeremyevans.net/index.html),
 [Sequel](http://sequel.jeremyevans.net/), [Postgresql](https://www.postgresql.org/),
 [Rodauth](http://rodauth.jeremyevans.net/),[Bootstrap](https://getbootstrap.com/) and [Chart.js](https://www.chartjs.org/).
 
-It's the first time I try to integrate Rodauth, and it's been great so far.
-
-It's still a work in progress, [see next features](#next-features) and [known bugs](#known-bugs).
+It's fully functionnal but could be updated in the future, [see next features](#next-features) and [known bugs](#known-bugs).
 
 You can [review the code here](https://github.com/loranger32/weight_tracker_roda).
 
