@@ -95,18 +95,17 @@ Note that the developer must know the encryption/decryption key and can thus tec
 
 ## Next Features
 
-- Add useful stats
 - Decide for each batch if you want to loose or gain weight
 
 
 ## Known Bugs
 
-- For an unknown reason (at the moment), if you signup with a "hotmail" email adress, you won't recieve the "confirm your email" email. Things seems to be OK with an outlook.com email adress. I still don't know if it's a hotmail issue, a sendrgrid (configuration) issue or an issue in my own code.
+- For an unknown reason (at the moment), if you signup with a "hotmail" email adress, you won't recieve the "confirm your email" email OR you will recieve it hours later. Things seems to be OK with an outlook.com email adress. I still don't know if it's a hotmail issue, a sendrgrid (configuration) issue or an issue in my own code.
 
 
 ## Installation
 
-- Install Ruby 3.0.2
+- Install Ruby 3.1.0
 - Install Postresql and create a database (and a test database if you want to run the tests)
 - Clone or download the repository
 - `cd` into it.
