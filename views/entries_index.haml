@@ -72,7 +72,7 @@
         \/
         %span.badge.bg-danger= @stats.total_gain
 
-      %p
+      %p{"data-bs-toggle" => "tooltip", "data-bs-placement" => "bottom", title: "First number : total of gains/losses for this day. Second number : average loss/gain for this day"}
         Best / Worst Day of Week :
         %span.badge.bg-success= @stats.best_day_of_week
         \/
