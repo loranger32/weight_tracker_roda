@@ -113,13 +113,18 @@ class StatsHelperLossingWeightTest < HookedTestClass
   end
 
   def test_estimated_time_to_target_when_target_is_set_and_tendence_is_good
-    assert_equal "8 days", @alice_stats.estimated_time_to_target
+    ett = @alice_stats.estimated_time_to_target
+    assert_equal "8 days", ett[:content]
+    assert_equal "bg-success", ett[:class]
   end
 
   def test_estimated_time_to_target_when_no_target_is_set
     albert = Account.where(user_name: "Albert").first
     albert_entries = Entry.all_with_deltas(account_id: 2, batch_id: 2, batch_target: 0.0)
-    albert_stats = WeightTracker::Stats.new(albert_entries, 0.0)
-    assert_equal "No target specified", albert_stats.estimated_time_to_target
+
+    ett = WeightTracker::Stats.new(albert_entries, 0.0).estimated_time_to_target
+
+    assert_equal "No target specified", ett[:content]
+    assert_equal "bg-info", ett[:class]
   end
 end

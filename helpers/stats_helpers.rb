@@ -13,17 +13,11 @@ module WeightTracker
       @total_days = total_days
     end
 
-    def biggest_daily_gain
-      "+#{@deltas.max}"
-    end
+    def biggest_daily_gain = "+#{@deltas.max}"
 
-    def biggest_daily_loss
-      @deltas.min.to_s
-    end
+    def biggest_daily_loss = @deltas.min.to_s
 
-    def total_loss
-      @losses.empty? ? "/" : @losses.reduce(:+).round(1).to_s
-    end
+    def total_loss = @losses.empty? ? "/" : @losses.reduce(:+).round(1).to_s
 
     def total_gain
       if @gains.empty? || (@gains.size == 1 && @gains[0] == 0)
@@ -45,9 +39,7 @@ module WeightTracker
       "#{DAYS[worst_day.keys[0]]} : #{worst_day.values[0].round(1)} (~ #{(min_loss / number_entries_for_day(worst_day.keys[0])).round(1)})"
     end
 
-    def average_loss_per_day
-      (@deltas.reduce(:+) / (@entries.size - 1)).round(2)
-    end
+    def average_loss_per_day = (@deltas.reduce(:+) / (@entries.size - 1)).round(2)
 
     def total_days
       entry_days = @entries.map(&:day)
@@ -65,13 +57,9 @@ module WeightTracker
 
     private
 
-      def number_entries_for_day(day)
-        entries_per_day[day].length
-      end
+      def number_entries_for_day(day) = entries_per_day[day].length
 
-      def entries_per_day
-        @entries.group_by { |entry| entry.day.wday }
-      end
+      def entries_per_day = @entries.group_by { |entry| entry.day.wday }
 
       def sums_of_delta_per_day_of_week
         entries_per_day.map do |k, v|

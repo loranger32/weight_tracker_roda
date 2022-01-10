@@ -22,13 +22,7 @@ module WeightTracker
       entry.new? ? "/entries" : "/entries/#{entry.id}"
     end
 
-    def format_delta(delta)
-      delta > 0 ? "+#{delta}" : delta.to_s
-    end
-
-    def account_cancel_link
-      rodauth.authenticated? ? "/account" : "/"
-    end
+    def format_delta(delta) = delta > 0 ? "+#{delta}" : delta.to_s
 
     def format_auth_log_action(action)
       case action
@@ -53,9 +47,7 @@ module WeightTracker
       end
     end
 
-    def truncate(str, index)
-      str.length <= index ? str : str[0..index] + "..."
-    end
+    def truncate(str, index) = str.length <= index ? str : str[0..index] + "..."
 
     def pluralize_batches(number_of_batches)
       word = number_of_batches == 1 ? "Batch" : "Batches"
@@ -67,12 +59,8 @@ module WeightTracker
       "#{number_of_entries} #{word}"
     end
 
-    def entry_highlight?(day)
-      day.saturday? || day.sunday?
-    end
+    def entry_highlight?(day) = day.saturday? || day.sunday?
 
-    def is_current_batch?(current_batch, batch_info)
-      current_batch.name == batch_info[:name]
-    end
+    def is_current_batch?(current_batch, batch_info) = current_batch.name == batch_info[:name]
   end
 end
