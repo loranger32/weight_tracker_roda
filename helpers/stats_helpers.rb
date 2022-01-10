@@ -56,11 +56,11 @@ module WeightTracker
 
     # TODO : find appropriate indication when displaying all batches
     def estimated_time_to_target
-      if @target == 0.0
-        "No target specified"
-      else
-        ((@entries.first.weight.to_f - @target) / average_loss_per_day).ceil.abs.to_s + " days"
-      end
+      return {content: "No target specified", class: "bg-info"} if @target == 0.0
+      
+      return {content: "Not losing weight", class: "bg-danger"} if average_loss_per_day > 0
+
+      {content: ((@entries.first.weight.to_f - @target) / average_loss_per_day).ceil.abs.to_s + " days", class: "bg-success"}
     end
 
     private

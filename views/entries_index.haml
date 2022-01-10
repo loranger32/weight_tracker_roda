@@ -79,16 +79,21 @@
         %span.badge.bg-danger= @stats.worst_day_of_week
 
       %p
-        Number of Entries / Number of Days :
-        %span.badge.bg-info #{@entries.length} / #{@stats.total_days}
-
-      %p
-        Average Loss per Day :
-        %span.badge.bg-info= @stats.average_loss_per_day
+        Average Loss / Gain per Day :
+        - if @stats.average_loss_per_day <= 0
+          %span.badge.bg-success= @stats.average_loss_per_day
+        - else
+          %span.badge.bg-danger +#{@stats.average_loss_per_day}
 
       %p
         Estimated Time to Target (#{@stats.target}):
-        %span.badge.bg-info= @stats.estimated_time_to_target
+        - ett = @stats.estimated_time_to_target
+        %span.badge{class: ett[:class]}= ett[:content]
+      
+      %p
+        Number of Entries / Number of Days :
+        %span.badge.bg-info #{@entries.length} / #{@stats.total_days}
+
     - else
       %p.text-center.mb-4 Not enough entries to compute stats
 

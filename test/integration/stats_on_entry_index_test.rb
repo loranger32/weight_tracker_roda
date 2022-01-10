@@ -85,7 +85,7 @@ class StatsOnEntryIndexTest < CapybaraTestCase
     assert_content "Number of Entries / Number of Days :"
     assert_content "13 / 19"
 
-    assert_content "Average Loss per Day :"
+    assert_content "Average Loss / Gain per Day :"
     assert_content "-0.25"
 
     assert_content "Estimated Time to Target"
@@ -95,5 +95,14 @@ class StatsOnEntryIndexTest < CapybaraTestCase
 
     visit "/entries"
     assert_content "8 days"
+    refute_content "No target specified"
+
+    # Test average loss per day and estimated time to target when gain is bigger than loss
+    @alice_account.add_entry(day: "2021-01-20", weight: "85.0", note: "", batch_id: 1)
+
+    visit "/entries"
+    assert_content "+1.15" # average gain per day
+
+    assert_content "Not losing weight" # estimated time to target
   end
 end
