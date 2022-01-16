@@ -71,9 +71,6 @@ class StatsOnEntryIndexTest < CapybaraTestCase
     assert_content "+1.0"
     assert_content "-1.0"
 
-    assert_content "Longest Streak of Loss / Gain :"
-    assert_content "Not yet implemented"
-
     assert_content "Total Loss / Gain :"
     assert_content "-5.0"
     assert_content "+2.0"
@@ -94,7 +91,7 @@ class StatsOnEntryIndexTest < CapybaraTestCase
     @alice_account.batches.first.update(target: "65.0")
 
     visit "/entries"
-    assert_content "8 days"
+    assert_content "8 days" # estimated time to target
     refute_content "No target specified"
 
     # Test average loss per day and estimated time to target when gain is bigger than loss
