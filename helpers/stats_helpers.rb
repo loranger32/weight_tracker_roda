@@ -49,12 +49,21 @@ module WeightTracker
     def estimated_time_to_target
       return {content: "No target specified", class: "bg-info"} if @target == 0.0
       
-      return {content: "Not losing weight", class: "bg-danger"} if average_loss_per_day > 0
+      return {content: "Not losing weight", class: "bg-danger"} if average_loss_per_day >= 0
 
-      {content: ((@entries.first.weight.to_f - @target) / average_loss_per_day).ceil.abs.to_s + " days", class: "bg-success"}
+      {content: _estimated_time_to_target.to_s + " days", class: "bg-success"}
     end
 
     private
+
+    def _estimated_time_to_target
+      # Need to work with integers to avoid FloatDomainError
+      (remaining_weight_lo_loose / (average_loss_per_day * 100).to_i).abs  
+    end
+
+    def remaining_weight_lo_loose
+      ((@entries.first.weight.to_f * 100).to_i - (@target * 100).to_i)
+    end
 
       def number_entries_for_day(day) = entries_per_day[day].length
 
