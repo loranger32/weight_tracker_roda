@@ -168,7 +168,7 @@ DEPENDENCIES
   sucker_punch (~> 3.0, >= 3.0.1)
 
 RUBY VERSION
-   ruby 3.1.0p0
+   ruby 3.1.1p18
 
 BUNDLED WITH
    2.3.3
