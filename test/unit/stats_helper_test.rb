@@ -83,6 +83,11 @@ class StatsHelperLossingWeightTest < HookedTestClass
     assert_equal "-1.0", @alice_stats.biggest_daily_loss
   end
 
+  def test_lowest_and_highest_weight
+    assert_equal "67.0", @alice_stats.min_weight
+    assert_equal "71.0", @alice_stats.max_weight
+  end
+
   def test_highest_and_lowest_bmi
     # Alice has registered her mensuration (height = 160 cm)
     assert_equal 26.2, @alice_stats.min_bmi

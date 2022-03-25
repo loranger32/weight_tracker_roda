@@ -3,12 +3,13 @@ module WeightTracker
     DAYS = {0 => "Sunday", 1 => "Monday", 2 => "Tuesday", 3 => "Wednesday", 4 => "Thursday",
             5 => "Friday", 6 => "Saturday"}
 
-    attr_reader :target, :min_bmi, :max_bmi
+    attr_reader :target, :min_bmi, :max_bmi, :min_weight, :max_weight
 
     def initialize(entries, target)
       @entries = entries
       @target = target
       @min_bmi, @max_bmi = retrieve_minmax_bmi
+      @min_weight, @max_weight = retrieve_minmax_weight
       @deltas = entries.map(&:delta)
       @losses, @gains = @deltas.partition { _1 < 0.0 }
       @total_days = total_days
@@ -75,6 +76,8 @@ module WeightTracker
       end
 
       def retrieve_minmax_bmi = @entries.map(&:bmi).minmax
+
+      def retrieve_minmax_weight = @entries.map(&:weight).minmax
 
       def sums_of_delta_per_day_of_week
         entries_per_day.map do |k, v|

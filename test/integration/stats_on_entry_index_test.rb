@@ -65,45 +65,57 @@ class StatsOnEntryIndexTest < CapybaraTestCase
 
     visit "/entries"
 
-    refute_content "Not enough entries to compute stats"
+    within("#stats") do
+      refute_content "Not enough entries to compute stats"
 
-    assert_content "Biggest Daily Loss / Gain :"
-    assert_content "+1.0"
-    assert_content "-1.0"
+      assert_content "Lowest / Highest Weight :"
+      assert_content "67.0"
+      assert_content "71.0"
 
-    assert_content "Lowest / Highest BMI :"
-    assert_content "26.2"
-    assert_content "27.7"
+      assert_content "Lowest / Highest BMI :"
+      assert_content "26.2"
+      assert_content "27.7"
 
-    assert_content "Total Loss / Gain :"
-    assert_content "-5.0"
-    assert_content "+2.0"
+      assert_content "Biggest Daily Loss / Gain :"
+      assert_content "+1.0"
+      assert_content "-1.0"
 
-    assert_content "Best / Worst Day of Week :"
-    assert_content "Tuesday : -2.0 (~ -0.7)"
-    assert_content "Thursday : 1.0 (~ 1.0)"
+      assert_content "Total Loss / Gain :"
+      assert_content "-5.0"
+      assert_content "+2.0"
 
-    assert_content "Number of Entries / Number of Days :"
-    assert_content "13 / 19"
+      assert_content "Best / Worst Day of Week :"
+      assert_content "Tuesday : -2.0 (~ -0.7)"
+      assert_content "Thursday : 1.0 (~ 1.0)"
 
-    assert_content "Average Loss / Gain per Day :"
-    assert_content "-0.25"
+      assert_content "Number of Entries / Number of Days :"
+      assert_content "13 / 19"
 
-    assert_content "Estimated Time to Target"
-    assert_content "No target specified"
+      assert_content "Average Loss / Gain per Day :"
+      assert_content "-0.25"
+
+      assert_content "Estimated Time to Target"
+      assert_content "No target specified"
+    end
 
     @alice_account.batches.first.update(target: "65.0")
 
     visit "/entries"
-    assert_content "8 days" # estimated time to target
-    refute_content "No target specified"
+
+    within("#stats") do
+      assert_content "8 days" # estimated time to target
+      refute_content "No target specified"
+    end
 
     # Test average loss per day and estimated time to target when gain is bigger than loss
     @alice_account.add_entry(day: "2021-01-20", weight: "85.0", note: "", batch_id: 1)
 
     visit "/entries"
-    assert_content "+1.15" # average gain per day
 
-    assert_content "Not losing weight" # estimated time to target
+    within("#stats") do
+      assert_content "+1.15" # average gain per day
+
+      assert_content "Not losing weight" # estimated time to target
+    end
   end
 end
