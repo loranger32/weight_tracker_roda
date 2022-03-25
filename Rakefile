@@ -156,6 +156,7 @@ namespace :db do
   task :schema do |t|
     timestamp = Time.now.strftime("%Y%m%d%H%M%S")
     destination = File.join(SCHEMA_PATH, "001_schema_#{timestamp}.rb")
+    system "rm #{SCHEMA_PATH}/*"
     system("sequel -D #{ENV["DATABASE_URL"]} > #{destination}")
     puts "Schema dumped to #{destination}"
   end

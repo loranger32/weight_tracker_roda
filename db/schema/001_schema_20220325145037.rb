@@ -119,6 +119,8 @@ Sequel.migration do
     create_table(:admins) do
       primary_key :id
       foreign_key :account_id, :accounts, :key=>[:id]
+      
+      index [:account_id], :unique=>true
     end
     
     create_table(:batches) do
