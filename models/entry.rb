@@ -59,7 +59,7 @@ class Entry < Sequel::Model
     end
   end
 
-  def self.add_bmi(entries, height)
+  def self.add_bmi!(entries, height)
     entries.map do |entry|
       entry.bmi = entry.compute_bmi(height)
       entry

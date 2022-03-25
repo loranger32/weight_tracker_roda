@@ -1,5 +1,7 @@
 == Master
 
+* add a lowest and highest bmi stats on entries index page
+
 * add the Password Reset Notify feature (from rodauth 2.22.0)
 
 Base version == 0.9.0

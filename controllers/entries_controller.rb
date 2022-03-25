@@ -39,7 +39,7 @@ module WeightTracker
                                              batch_target: @current_batch.target.to_f)
           end
 
-          Entry.add_bmi(@entries, Mensuration.where(account_id: @account_ds[:id]).first.height)
+          Entry.add_bmi!(@entries, Mensuration.where(account_id: @account_ds[:id]).first.height)
           @chart_data = @entries.map { {day: _1.day, weight: _1.weight, delta: _1.delta} }.reverse
 
           unless @entries.size < 2

@@ -278,7 +278,7 @@ class EntryQueryingTest < HookedTestClass
     Mensuration.new(account_id: 1, height: height).save
     batch_id = Batch.where(account_id: 1, active: true).first.id
     results = Entry.all_with_deltas(account_id: 1, batch_id: batch_id, batch_target: 49.0)
-    results_with_bmi = Entry.add_bmi(results, height)
+    results_with_bmi = Entry.add_bmi!(results, height)
 
     assert_equal 16.8, results_with_bmi.first.bmi
     assert_equal 17.0, results_with_bmi[1].bmi
