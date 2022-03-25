@@ -1,6 +1,6 @@
 # README
 
-## Weight Tracker (0.9.0)
+## Weight Tracker (0.10.0)
 
 A simple app to track your daily weight, with charts.
 

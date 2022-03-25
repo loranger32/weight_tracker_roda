@@ -17,6 +17,7 @@ class StatsHelperLossingWeightTest < HookedTestClass
 
     # Alice has 13 entries
     Entry.new(day: "2021-01-01", weight: "70.0", note: "", account_id: 1, batch_id: 1).save # Friday
+    # Skip 1 day
     Entry.new(day: "2021-01-03", weight: "70.5", note: "", account_id: 1, batch_id: 1).save # Sunday
     Entry.new(day: "2021-01-04", weight: "71.0", note: "", account_id: 1, batch_id: 1).save # Monday
     Entry.new(day: "2021-01-05", weight: "70.5", note: "", account_id: 1, batch_id: 1).save # Tuesday
@@ -50,10 +51,12 @@ class StatsHelperLossingWeightTest < HookedTestClass
     load_fixtures
     @alice = Account.where(user_name: "Alice").first
     @alice_entries = Entry.all_with_deltas(account_id: 1, batch_id: 1, batch_target: 65.0)
+    Entry.add_bmi!(@alice_entries, "160")
     @alice_stats = WeightTracker::Stats.new(@alice_entries, TEST_TARGET)
 
     @albert = Account.where(user_name: "Albert").first
     @albert_entries = Entry.all_with_deltas(account_id: 2, batch_id: 2, batch_target: 0.0)
+    Entry.add_bmi!(@albert_entries, "0")
     @albert_stats = WeightTracker::Stats.new(@albert_entries, 0.0)
   end
 
@@ -78,6 +81,24 @@ class StatsHelperLossingWeightTest < HookedTestClass
 
   def test_biggest_daily_loss
     assert_equal "-1.0", @alice_stats.biggest_daily_loss
+  end
+
+  def test_highest_and_lowest_bmi
+    # Alice has registered her mensuration (height = 160 cm)
+    assert_equal 26.2, @alice_stats.min_bmi
+    assert_equal 27.7, @alice_stats.max_bmi
+
+    # Albert has registered mensuration with a height of 0
+    assert_equal "/", @albert_stats.min_bmi
+    assert_equal "/", @albert_stats.max_bmi
+
+    # Bob hasn't regitered any mensuration
+    bob = Account.where(user_name: "Bob").first
+    bob_entries = Entry.all_with_deltas(account_id: 3, batch_id: 3, batch_target: 70.0)
+    bob_stats = WeightTracker::Stats.new(bob_entries, 70.0)
+
+    assert_equal "/", @albert_stats.min_bmi
+    assert_equal "/", @albert_stats.max_bmi
   end
 
   def test_total_loss_when_at_least_one_loss

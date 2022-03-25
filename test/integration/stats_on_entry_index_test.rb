@@ -71,6 +71,10 @@ class StatsOnEntryIndexTest < CapybaraTestCase
     assert_content "+1.0"
     assert_content "-1.0"
 
+    assert_content "Lowest / Highest BMI :"
+    assert_content "26.2"
+    assert_content "27.7"
+
     assert_content "Total Loss / Gain :"
     assert_content "-5.0"
     assert_content "+2.0"
