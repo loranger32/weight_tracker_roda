@@ -364,6 +364,9 @@ class VerifiedAccountManagementTest < CapybaraTestCase
     assert_content "Your password has been reset"
     assert_content "Alice"
 
+    assert_equal 2, mails_count
+    assert_match "You recently requested a password reset,", mail_body(1)
+
     logout!
 
     visit "/login"

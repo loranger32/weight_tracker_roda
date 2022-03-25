@@ -25,8 +25,8 @@ module WeightTracker
     plugin :rodauth do
       enable :login, :logout, :create_account, :change_login, :change_password,
         :change_password_notify, :close_account, :active_sessions, :audit_logging,
-        :reset_password, :verify_account, :verify_account_grace_period, :lockout,
-        :verify_login_change, :otp, :recovery_codes
+        :reset_password, :reset_password_notify, :verify_account,
+        :verify_account_grace_period, :lockout, :verify_login_change, :otp, :recovery_codes
 
       # Base
       account_password_hash_column :password_hash
@@ -118,6 +118,10 @@ module WeightTracker
       reset_password_redirect "/entries"
       reset_password_email_recently_sent_redirect "/login"
       reset_password_autologin? true
+
+      # Reset Password Notify
+      reset_password_notify_email_subject "Your Password has been reset"
+      reset_password_notify_email_body { scope.render "mails/reset-password-notify-email" }
 
       # Change Password Notify
       password_changed_email_subject { "Password Modified" }
