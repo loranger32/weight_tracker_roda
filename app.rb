@@ -207,7 +207,7 @@ module WeightTracker
     Mail.defaults { delivery_method :test } if App.test?
 
     route do |r|
-      r.public if App.production?
+      r.public
       r.assets unless App.production?
       check_csrf!
       r.rodauth

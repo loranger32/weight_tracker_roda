@@ -1,31 +1,45 @@
 !!! 5
-%head
-  %meta{ charset: 'utf-8' }
-  %meta{ 'http-equiv' => 'x-ua-compatible', content: 'ie=edge' }
-  %meta{ name: 'viewport', content: 'width=device-width, initial-scale=1, shrink-to-fit=no' }
-  %meta{ name: 'language', content: 'fr' }
-  %meta{ name: 'author', content: 'Laurent Guinotte' }
-  %link{ rel: "preconnect", href: "https://fonts.gstatic.com" }
-  %link{ href: "https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap", rel: "stylesheet" }
+%html.h-100
+  %head
+    %meta{ charset: 'utf-8' }
+    %meta{ 'http-equiv' => 'x-ua-compatible', content: 'ie=edge' }
+    %meta{ name: 'viewport', content: 'width=device-width, initial-scale=1, shrink-to-fit=no' }
+    %meta{ name: 'language', content: 'fr' }
+    %meta{ name: 'author', content: 'Laurent Guinotte' }
+    %link{ rel: 'weight scale icon', href: '/images/weight-scale.png', type: 'image/x-icon' }
+    %link{ rel: 'icon', href: '/images/weight-scale.png', type: 'image/x-icon' }
+    %link{ rel: "preconnect", href: "https://fonts.gstatic.com" }
+    %link{ href: "https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap", rel: "stylesheet" }
 
-  != assets(:css)
+    != assets(:css)
 
-  %title!= set_page_title(@page_title)
+    %title!= set_page_title(@page_title)
 
-%body
-  != partial("partials/navbar")
+  %body.d-flex.flex-column.h-100
+    %main.flex-shrink-0
+      != partial("partials/navbar")
 
-  .container-fluid
-    %h1.h2.text-center.mb-5
-      Record your daily weight
-      %br
-      %span.text-muted See your progress
-    
-    != partial("partials/flash")
+      .container-fluid
+        %h1.h2.text-center.mb-5
+          Record your daily weight
+          %br
+          %span.text-muted See your progress
+        
+        != partial("partials/flash")
 
-  .container.sm
-    != yield
+      .container.sm
+        != yield
 
-  != assets([:js, :main])
-  != assets([:js, :bootstrap_js])
-  != content_for(:js)
+    %footer.mt-auto.py-1.bg-light
+      %p.text-center
+        %img{src:"/images/weight-scale.png", alt: "Weight Tracker Logo", width: "18", height: "18", class: "d-inline-block"}
+        Weight Tracker - Created by Laurent Guinotte - 2022 - Copyright - MIT
+      %p.text-center
+        Weight scale icons created by
+        %a{href: "https://www.flaticon.com/free-icons/weight-scale", title: "weight scale icons" } Freepik - Flaticon
+        from
+        %a{ href: 'https://www.flaticon.com/', title: 'Flaticon'} www.flaticon.com
+
+    != assets([:js, :main])
+    != assets([:js, :bootstrap_js])
+    != content_for(:js)
