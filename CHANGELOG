@@ -1,5 +1,7 @@
 == Master
 
+* add pagination for the security logs page
+
 == 0.10.0
 
 * add a lowest and highest weight stats on entries index page

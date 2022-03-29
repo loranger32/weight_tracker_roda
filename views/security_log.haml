@@ -8,7 +8,9 @@
 
 .row
   .col-lg-10.offset-lg-1.col-xl-8.offset-xl-2
-    %table.table.text-center
+    != partial("partials/security_log_pagination")
+
+    %table.table.text-center.mb-5
       %thead
         %td ACTION
         %td DATE
@@ -16,10 +18,8 @@
       %tbody
         - @security_logs.each do |security_log|
           %tr
-            %td{class: format_auth_log_action(security_log[1])}!= security_log[1] 
-            %td!= security_log[0].strftime("%a %d %b %Y - %k:%M:%S")
-            %td!= JSON.parse(security_log[2])["ip"]
-
-
-
-
+            %td{class: format_auth_log_action(security_log[:message])}!= security_log[:message] 
+            %td!= security_log[:at].strftime("%a %d %b %Y - %k:%M:%S")
+            %td!= JSON.parse(security_log[:metadata])["ip"]
+    
+    != partial("partials/security_log_pagination")

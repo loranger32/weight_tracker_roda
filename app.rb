@@ -283,10 +283,13 @@ module WeightTracker
       end
 
       r.get "security-log" do
+        current_page = tp.pos_int("page", 1)
+
         @security_logs = DB[:account_authentication_audit_logs]
           .where(account_id: @account_ds[:id])
           .reverse(:id)
-          .select_map([:at, :message, :metadata])
+          .extension(:pagination)
+          .paginate(current_page, 30)
 
         view "security_log"
       end
