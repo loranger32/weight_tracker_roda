@@ -70,9 +70,7 @@ module WeightTracker
 
       # Login
       login_redirect "/"
-      after_login do
-        TruncateAuditLogsJob.perform_async(account[:id])
-      end
+      after_login { TruncateAuditLogsJob.perform_async(account[:id]) }
 
       # Change Login
       change_login_redirect { "/account" }
