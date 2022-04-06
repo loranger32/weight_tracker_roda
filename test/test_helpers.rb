@@ -4,6 +4,7 @@ require "bundler/setup"
 Bundler.require :default, :test
 require "minitest/autorun"
 require "capybara/minitest"
+require "sucker_punch/testing/inline"
 
 Dotenv.load "../.env"
 

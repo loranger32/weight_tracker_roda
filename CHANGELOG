@@ -1,5 +1,7 @@
 == Master
 
+* Add a 100 rows cap to audit logging
+
 * add pagination for the security logs page
 
 == 0.10.0

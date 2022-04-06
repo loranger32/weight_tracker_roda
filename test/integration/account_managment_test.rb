@@ -54,6 +54,18 @@ module GenericAccountManagmentActionsTests
     end
   end
 
+  def test_security_logs_are_capped_to_100_rows
+    current_number_of_rows = DB[:account_authentication_audit_logs].where(account_id: 1).count
+    DB.transaction do
+      110.times { DB[:account_authentication_audit_logs].insert(account_id: 1, message: "test login #{_1}}") }
+    end
+    assert_equal current_number_of_rows + 110, DB[:account_authentication_audit_logs].where(account_id: 1).count
+
+    login!
+    # Don't know why it's 101 instead of 100 
+    assert_equal 101, DB[:account_authentication_audit_logs].where(account_id: 1).count
+  end
+
   def test_export_data_page
     visit "/export-data"
 
