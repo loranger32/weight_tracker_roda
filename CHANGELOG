@@ -1,5 +1,7 @@
 == Master
 
+* Add a Boostrap 5 popover on the copy recovery codes button
+
 * Add a 100 rows cap to audit logging
 
 * add pagination for the security logs page
