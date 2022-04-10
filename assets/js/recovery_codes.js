@@ -6,12 +6,6 @@ var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
   return new bootstrap.Popover(popoverTriggerEl)
 })
 
-// TO FIX - Recommanded by Bootstrap 5 docs, ans it works, but generates an error
-var popover = new bootstrap.Popover(document.querySelector('.popover-dismiss'), {
-    trigger: 'focus'
-})
-
-
 // Page specific JS
 const printButton = document.querySelector("#print")
 const copyButton = document.querySelector("#copy")
