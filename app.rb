@@ -157,9 +157,9 @@ module WeightTracker
       csp.img_src :self, "data:" # data: is required for Bootstrap 5 svg inline icons, for the moment
       csp.object_src :none
       csp.frame_src :self
-      csp.style_src :self, "fonts.googleapis.com", "stackpath.bootstrapcdn.com"
+      csp.style_src :self, "fonts.googleapis.com", "stackpath.bootstrapcdn.com", "cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
       csp.form_action :self
-      csp.script_src :self
+      csp.script_src :self, "cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
       csp.connect_src :self
       csp.base_uri :none
       csp.frame_ancestors :none
@@ -184,8 +184,8 @@ module WeightTracker
     plugin :render, engine: "haml", template_opts: {escape_html: true}
     plugin :partials
     plugin :assets,
-      css: %w[bootstrap_5_1_3.min.css style.css],
-      js: {main: "main.js", bootstrap_js: "bootstrap_5_1_3.bundle.min.js",
+      css: %w[style.css],
+      js: {main: "main.js",
            chartjs_min: "chart.min.js", progress_bar: "progress-bar.js",
            close_account: "close_account.js", recovery_codes: "recovery_codes.js",
            entries_edit: "entries_edit.js", batch_index: "batch_index.js",
