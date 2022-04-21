@@ -149,7 +149,7 @@ DEPENDENCIES
   minitest-hooks (~> 1.5)
   minitest-reporters (~> 1.4, >= 1.4.3)
   net-smtp (~> 0.3.1)
-  nokogiri (~> 1.13)
+  nokogiri (>= 1.13.4)
   pg (~> 1.2, >= 1.2.3)
   pry-byebug (~> 3.9)
   puma (~> 5.6)
