@@ -210,6 +210,14 @@ module WeightTracker
     route do |r|
       r.public
       r.assets unless App.production?
+
+      r.get "about" do
+        about_text = File.read("README.md")
+        @html = Kramdown::Document.new(about_text).to_html
+
+        view "about"
+      end
+
       check_csrf!
       r.rodauth
       rodauth.check_active_session
@@ -298,13 +306,6 @@ module WeightTracker
       r.get "account" do
         @account = Account[@account_ds[:id]]
         view "account_show"
-      end
-
-      r.get "about" do
-        about_text = File.read("README.md")
-        @html = Kramdown::Document.new(about_text).to_html
-
-        view "about"
       end
     end
   end

@@ -1,6 +1,12 @@
 require_relative "../test_helpers"
 
 class AuthenticationTest < CapybaraTestCase
+    RESTRICTED_PATHES = %w[/ /account /accounts/1 /security-log /entries /entries/new
+      /entries/1 /entries/1/edit /entries/1/delete /batches /batches/1 /batches/1/edit
+      /batches/1/delete /mensurations /change-login /change-password
+      /change-user-name /export-data /close-account /admin /admin/accounts /admin/accounts/1
+      /admin/accounts/1/verify /admin/accounts/1/close /admin/accounts/1/open /admin/accounts/1/delete].freeze
+
   def before_all
     super
     clean_test_db!
@@ -17,18 +23,39 @@ class AuthenticationTest < CapybaraTestCase
     end
   end
 
-  def test_user_is_redirected_to_login_page_if_not_signed_in
-    restricted_pathes = %w[/ /accounts/1 /security-log /entries /entries/new
-      /change-login /change-password /change-user-name /export-data
-      /close-account /admin/accounts]
-
-    restricted_pathes.each do |path|
+  def test_user_is_redirected_to_login_page_if_not_signed_in_with_get_requests
+    RESTRICTED_PATHES.each do |path|
       visit path
       assert_current_path "/login"
       assert_title "WT - Login"
       assert_css ".alert-danger"
       assert_content "Please login to continue"
     end
+  end
+
+  def  test_all_post_requests_raise_invalid_token_before_authentication_begins
+    RESTRICTED_PATHES.each do |path|
+      assert_raises(Roda::RodaPlugins::RouteCsrf::InvalidToken) { post path, {} }
+    end
+  end
+
+  def test_no_authentication_required_to_access_about_page
+    # No user logged in
+    visit "/about"
+    assert_current_path "/about"
+    assert_title "WT - About"
+    refute_css ".alert-danger"
+    refute_content "Please login to continue"
+    refute_content "Alice"
+
+    # User logged in
+    create_and_verify_account!
+    visit "/about"
+    assert_current_path "/about"
+    assert_title "WT - About"
+    refute_css ".alert-danger"
+    refute_content "Please login to continue"
+    assert_content "Alice"
   end
 
   def test_user_can_create_an_account
