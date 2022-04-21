@@ -1,5 +1,11 @@
 == Master
 
+== 0.11.0
+
+* Bump ruby to 3.1.2 (from 3.1.1)
+
+* Allow visiting about page without authentication
+
 * Add a Boostrap 5 popover on the copy recovery codes button
 
 * Add a 100 rows cap to audit logging
