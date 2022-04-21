@@ -159,7 +159,7 @@ module WeightTracker
       csp.frame_src :self
       csp.style_src :self, "fonts.googleapis.com", "stackpath.bootstrapcdn.com", "cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
       csp.form_action :self
-      csp.script_src :self, "cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      csp.script_src :self, "cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js", "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"
       csp.connect_src :self
       csp.base_uri :none
       csp.frame_ancestors :none
@@ -185,8 +185,7 @@ module WeightTracker
     plugin :partials
     plugin :assets,
       css: %w[style.css],
-      js: {main: "main.js",
-           chartjs_min: "chart.min.js", progress_bar: "progress-bar.js",
+      js: {main: "main.js", progress_bar: "progress-bar.js",
            close_account: "close_account.js", recovery_codes: "recovery_codes.js",
            entries_edit: "entries_edit.js", batch_index: "batch_index.js",
            batch_edit: "batch_edit.js", admin_actions: "admin_actions.js",
