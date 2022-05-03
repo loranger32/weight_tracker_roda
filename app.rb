@@ -191,7 +191,8 @@ module WeightTracker
            batch_edit: "batch_edit.js", admin_actions: "admin_actions.js",
            bs_tooltip: "bs_tooltip.js", entries_index_charts: "entries_index_charts.js"},
       group_subdirs: false,
-      gzip: true
+      gzip: true,
+      timestamp_paths: true
     compile_assets if production?
     plugin :public, gzip: true
     plugin :flash
