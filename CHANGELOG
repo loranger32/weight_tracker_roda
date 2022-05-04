@@ -1,5 +1,9 @@
 == Master
 
+* Set session inactivity deadline to 60 hours (previously 30)
+
+* Add the timestamp_paths assets plugin option for development
+
 * use CDNs for Bootstrap 5 and Chartjs
 
 == 0.11.0

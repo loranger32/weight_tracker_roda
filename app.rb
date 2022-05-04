@@ -90,7 +90,7 @@ module WeightTracker
       end
 
       # Active Session
-      session_inactivity_deadline 129600 # 36 hours
+      session_inactivity_deadline 216000 # 60 hours
 
       # Audit Logging
       audit_log_metadata_default do
