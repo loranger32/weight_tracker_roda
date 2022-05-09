@@ -1,5 +1,9 @@
 == Master
 
+* Remove the required ruby version in Gemfile
+
+* Remove hardcoded text in custom Rodauth templates with values provided by the framework (for incoming I18n)
+
 * Set session inactivity deadline to 60 hours (previously 30)
 
 * Add the timestamp_paths assets plugin option for development

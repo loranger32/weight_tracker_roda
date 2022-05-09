@@ -103,13 +103,11 @@ Note that the developer must know the encryption/decryption key and can thus tec
 
 ## Installation
 
-- Install Ruby 3.1.0
-- Install Postresql and create a database (and a test database if you want to run the tests)
-- Clone or download the repository
+- Install latest stable ruby version (use a version manager like [rbenv](https://github.com/rbenv/rbenv), [rvm](https://rvm.io/) or [asdf](https://github.com/asdf-vm/asdf-ruby)).
+- Install Postresql and create a database (and a test database if you want to run the tests).
+- Clone or download the repository.
 - `cd` into it.
-- run `bundle install`
-- Run `rake db:migrate` to create the database tables
-- _(optionnal)_ run `rake db:seed` to insert the seed data
+- run `bundle install`.
 - The app assumes the following environment variable are set (do not put them under version control):
   - DATABASE_URL ==> The connection info to your postgresql database (same variable name for development and production)
   - TEST_DATABASE_URL ==> Connection info to your test database, if you want to run the tests
@@ -117,6 +115,9 @@ Note that the developer must know the encryption/decryption key and can thus tec
   - SEQUEL_COLUMN_ENCRYPTION_KEY ==> Key to encrypt/decrypt the data before being saved into the database. [More information here](http://sequel.jeremyevans.net/rdoc-plugins/classes/Sequel/Plugins/ColumnEncryption.html).
   - MY_EMAIL ==> The email adress where admin notifications will be sent in production mode
   - SENDRGID_API_KEY ==> to allow sending email in production mode (not needed in development and tests). Ovbsiously requires a sendgrid account.
+- Run `rake db:migrate` to create the database tables (if the `TEST_DATABASE_URL` environment variable is set, it will also create the test database).
+- _(optionnal)_ run `rake db:seed` to insert the seed data.
+- _(optionnal)_ run `rake` to run the test to confirm that everything works as expected.
 - In development mode, you can use the [mailcatcher gem](https://rubygems.org/gems/mailcatcher) in order to send email to a local SMTP server
 - For a development server _with_ auto relaoding feature, run `rake ds`
 - For a development server _without_ relaoding feature, run `rake s`

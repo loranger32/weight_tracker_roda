@@ -1,5 +1,3 @@
-ruby "3.1.2"
-
 source "https://rubygems.org"
 
 gem "bcrypt", "~> 3.1", ">= 3.1.16"
