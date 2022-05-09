@@ -17,15 +17,15 @@
         != csrf_tag(rodauth.otp_setup_path)
               
         .form-group.mb-3
-          %label{for: "password"} Password
+          %label{for: "password"}= rodauth.password_label
           %input.form-control{type: :password, id: "password", name: "password", value: "", autocomplete: "current-password", required: true}
 
         .form-group.mb-3
-          %label{for: "otp-auth-code"} Authentication Code
+          %label{for: "otp-auth-code"}= rodauth.otp_auth_label
           %input.form-control{type: :text, id: "otp-auth-code", name: "otp", value: "", autocomplete: "off", inputmode: "numeric", required: true}
 
         .form-group.mb-3
-          %input.btn.btn-primary{type: :submit, value: "Setup TOTP Authentication"}
+          %input.btn.btn-primary{type: :submit, value: rodauth.otp_setup_button }
 
       .mb-5
         %p
