@@ -31,7 +31,6 @@ module WeightTracker
         end
 
         r.on Integer do |account_id|
-          #account_id = account_id.to_i
           unless account_id > 0 && (@target_account = Account[account_id])
             response.status = 404
             r.halt
