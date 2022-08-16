@@ -18,13 +18,11 @@ end
 desc "Run tests"
 task default: :test
 
-desc "Generate random base64 string of given bytes length string, 64 by default"
-task :random, [:n] do |t, args|
+desc "Generate random base64 string of 64 bytes length"
+task :random do
   require "securerandom"
-  n = args[:n]
-  n ||= 64
-  n = n.to_i
-  puts "Random string of #{n} bytes length: #{SecureRandom.base64(n)}"
+  random_str = SecureRandom.base64(48)
+  puts "Random string of 64 bytes length: #{random_str}"
 end
 
 desc "Start interactive console"
