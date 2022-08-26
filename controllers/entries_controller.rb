@@ -10,7 +10,6 @@ module WeightTracker
 
       r.is do
         r.get do
-
           # Request entries of a specific batch with its id as query param
           if (batch_id = tp.pos_int("batch_id"))
 
@@ -23,20 +22,20 @@ module WeightTracker
 
             @batch_info = {name: batch.name, target: batch.target || "/"}
             @entries = Entry.all_with_deltas(account_id: @account_ds[:id], batch_id: batch_id,
-                                             batch_target: batch.target.to_f)
+              batch_target: batch.target.to_f)
 
           # Request all entries of all batches
           elsif tp.str("all_batches") == "true"
             @batch_info = {name: "All Batches"}
             @entries = Entry.all_with_deltas(account_id: @account_ds[:id], batch_id: "all",
-                                             batch_target: nil)
+              batch_target: nil)
             @all_batches = true
-          
+
           # Request entries of the current batch - default action
           else
             @batch_info = {name: @current_batch.name, target: @current_batch.target || "/"}
             @entries = Entry.all_with_deltas(account_id: @account_ds[:id], batch_id: @current_batch.id,
-                                             batch_target: @current_batch.target.to_f)
+              batch_target: @current_batch.target.to_f)
           end
 
           Entry.add_bmi!(@entries, Mensuration.where(account_id: @account_ds[:id]).first.height)
@@ -65,15 +64,15 @@ module WeightTracker
             r.redirect
           end
 
+          flash.now["error"] = if !valid_weight_string?(submitted[:weight])
+            "Invalid weight, must be between 20.0 and 999.9"
+          else
+            format_flash_error(@entry)
+          end
+
           @batch_info = {name: @current_batch.name, target: @current_batch.target || "/"}
 
-          if !valid_weight_string?(submitted[:weight])
-            flash.now["error"] = "Invalid weight, must be between 20.0 and 999.9"
-            view "entries_new"
-          else
-            flash.now["error"] = format_flash_error(@entry)
-            view "entries_new"
-          end
+          view "entries_new"
         end
       end
 
@@ -96,7 +95,6 @@ module WeightTracker
           response.status = 403
           r.halt
         end
-
 
         @batch_info = {name: @entry.batch.name, target: @entry.batch.target || "/"}
 

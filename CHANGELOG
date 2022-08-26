@@ -1,5 +1,7 @@
 == Master
 
+* Fix an encoding issue in new entry form partial
+
 * Bump Rack to 2.2.4
 
 * Simplify Rake task to generate random 64 bytes string
