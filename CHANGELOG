@@ -1,5 +1,9 @@
 == Master
 
+* Bump Rack to 2.2.4
+
+* Simplify Rake task to generate random 64 bytes string
+
 * Remove the required ruby version in Gemfile
 
 * Remove hardcoded text in custom Rodauth templates with values provided by the framework (for incoming I18n)
