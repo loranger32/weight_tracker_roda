@@ -57,10 +57,7 @@ class CapybaraTestCase < HookedTestClass
 
   def verify_account!(account = nil)
     account ||= Account.where(email: "alice@example.com").first
-    raise TestAccountMismatchError unless account && account.email == verify_account_mail.to[0]
-    verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(verify_account_mail_body)[1]
-    visit "/verify-account?key=#{verify_account_key}"
-    click_on "Verify Account"
+    app.rodauth.verify_account(account_id: account.id)
     clean_mailbox
     account.reload
   end
