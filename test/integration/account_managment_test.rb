@@ -62,7 +62,7 @@ module GenericAccountManagmentActionsTests
     assert_equal current_number_of_rows + 110, DB[:account_authentication_audit_logs].where(account_id: 1).count
 
     login!
-    # Don't know why it's 101 instead of 100 
+    # Don't know why it's 101 instead of 100
     assert_equal 101, DB[:account_authentication_audit_logs].where(account_id: 1).count
   end
 
@@ -274,11 +274,11 @@ class VerifiedAccountManagementTest < CapybaraTestCase
 
   def test_can_verify_account
     test_account = create_account!(user_name: "test user", email: "test_user@example.com", password: "foobar")
-    assert_equal 1, mails_count
-    assert_match(/<a href='http:\/\/www\.example\.com\/verify-account\?key=/, mail_body(0))
+    assert_equal 2, mails_count # One for the verify account and one for the admin notification of account creation
+    assert_match(/<a href='http:\/\/www\.example\.com\/verify-account\?key=/, verify_account_mail_body)
     assert_equal test_account.id, DB[:account_verification_keys].first[:id]
 
-    verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
+    verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(verify_account_mail_body)[1]
 
     visit "/verify-account?key=#{verify_account_key}"
     assert_current_path "/verify-account"
@@ -291,7 +291,7 @@ class VerifiedAccountManagementTest < CapybaraTestCase
 
   def test_send_a_new_verify_account_email_if_first_has_expired
     test_account = create_account!(user_name: "test user", email: "test_user@example.com", password: "foobar")
-    assert_equal 1, mails_count
+    assert_equal 2, mails_count # One for the verify account and one for the admin notification of account creation
     logout!
 
     assert_equal 1, DB[:account_verification_keys].all.count
@@ -310,17 +310,17 @@ class VerifiedAccountManagementTest < CapybaraTestCase
     assert_content "The account you tried to login with is currently awaiting verification"
     click_on "Send Verification Email Again"
 
-    assert_equal 2, mails_count
+    assert_equal 3, mails_count
 
     assert_current_path "/login"
     assert_css ".alert-success"
 
     refute_equal hacked_email_last_sent, DB[:account_verification_keys].first[:email_last_sent]
 
-    assert_match(/<a href='http:\/\/www\.example\.com\/verify-account\?key=/, mail_body(1))
+    assert_match(/<a href='http:\/\/www\.example\.com\/verify-account\?key=/, last_mail_body)
     assert_equal Account[test_account.id].id, DB[:account_verification_keys].first[:id]
 
-    verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(mail_body(1))[1]
+    verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(last_mail_body)[1]
 
     visit "/verify-account?key=#{verify_account_key}"
     assert_current_path "/verify-account"

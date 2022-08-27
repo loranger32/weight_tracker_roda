@@ -3,14 +3,11 @@ require_relative "../test_helpers"
 class AdminPageTest < CapybaraTestCase
   def load_fixtures
     DB[:accounts].insert(user_name: "test unverified account", email: "test.unverified@example.com",
-                         password_hash: BCrypt::Password.create("secret", cost: 2),
-                         status_id: 1)
+      password_hash: BCrypt::Password.create("secret", cost: 2), status_id: 1)
     DB[:accounts].insert(user_name: "test verified account", email: "test.verified@example.com",
-                         password_hash: BCrypt::Password.create("secret", cost: 2),
-                         status_id: 2)
+      password_hash: BCrypt::Password.create("secret", cost: 2), status_id: 2)
     DB[:accounts].insert(user_name: "test closed account", email: "test.closed@example.com",
-                         password_hash: BCrypt::Password.create("secret", cost: 2),
-                         status_id: 3)
+      password_hash: BCrypt::Password.create("secret", cost: 2), status_id: 3)
   end
 
   def before_all
@@ -31,7 +28,8 @@ class AdminPageTest < CapybaraTestCase
   end
 
   def setup_admin
-    alice_account = create_and_verify_account!
+    alice_account = create_account!
+    app.rodauth.verify_account(account_id: alice_account.id)
     setup_two_fa!(alice_account.id)
     Admin.new(account_id: alice_account.id).save
     alice_account.reload
@@ -192,7 +190,6 @@ class AdminPageTest < CapybaraTestCase
     assert_content "Cannot perform this action on admin user"
   end
 
-
   def test_admin_cannot_perform_post_actions_on_admin_accounts
     alice_account = setup_admin
     actions = %w[open close verify delete]
@@ -204,11 +201,10 @@ class AdminPageTest < CapybaraTestCase
   end
 
   def test_admin_can_delete_a_non_admin_account_with_checkbox_checked
-    soon_deleted_account = create_and_verify_account!(user_name: "soon deleted",
-                                                      email: "soondeleted@example.com")
+    soon_deleted_account = create_and_verify_account!(user_name: "soon deleted", email: "soondeleted@example.com")
     batch_id = soon_deleted_account.active_batch_id
     entry = Entry.new(weight: "60.0", day: "2021-06-01", note: "",
-                      account_id: soon_deleted_account.id, batch_id: batch_id).save
+      account_id: soon_deleted_account.id, batch_id: batch_id).save
 
     logout!
     setup_admin
@@ -244,11 +240,10 @@ class AdminPageTest < CapybaraTestCase
   end
 
   def test_admin_cannot_delete_a_non_admin_account_without_checking_confirmation_checkbox
-    not_soon_deleted_account = create_and_verify_account!(user_name: "not soon deleted",
-                                                          email: "notsoondeleted@example.com")
+    not_soon_deleted_account = create_and_verify_account!(user_name: "not soon deleted", email: "notsoondeleted@example.com")
     batch_id = not_soon_deleted_account.active_batch_id
     entry = Entry.new(weight: "60.0", day: "2021-06-01", note: "",
-                      account_id: not_soon_deleted_account.id, batch_id: batch_id).save
+      account_id: not_soon_deleted_account.id, batch_id: batch_id).save
 
     logout!
     setup_admin
@@ -257,7 +252,7 @@ class AdminPageTest < CapybaraTestCase
 
     click_link "not soon deleted", href: "/admin/accounts/#{not_soon_deleted_account.id}"
     assert_current_path "/admin/accounts/#{not_soon_deleted_account.id}"
-    
+
     click_on "Confirm Deletion"
 
     assert_current_path "/admin/accounts/#{not_soon_deleted_account.id}"
@@ -303,7 +298,7 @@ class AdminPageTest < CapybaraTestCase
     assert_content "unverified"
     assert_content "Account Summary"
     assert_content "unverified@example.com"
-    
+
     assert unverified_account.reload.is_verified?
     assert_nil DB[:account_verification_keys].where(id: unverified_account.id).first
 
@@ -341,8 +336,7 @@ class AdminPageTest < CapybaraTestCase
   end
 
   def test_admin_can_open_a_closed_non_admin_account
-    soon_reopened_account = create_and_verify_account!(user_name: "soon reopened",
-                                                       email: "soonreopened@example.com")
+    soon_reopened_account = create_and_verify_account!(user_name: "soon reopened", email: "soonreopened@example.com")
     logout!
     soon_reopened_account.update(status_id: 3)
 

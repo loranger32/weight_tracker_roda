@@ -1,11 +1,11 @@
 require_relative "../test_helpers"
 
 class AuthenticationTest < CapybaraTestCase
-    RESTRICTED_PATHES = %w[/ /account /accounts/1 /security-log /entries /entries/new
-      /entries/1 /entries/1/edit /entries/1/delete /batches /batches/1 /batches/1/edit
-      /batches/1/delete /mensurations /change-login /change-password
-      /change-user-name /export-data /close-account /admin /admin/accounts /admin/accounts/1
-      /admin/accounts/1/verify /admin/accounts/1/close /admin/accounts/1/open /admin/accounts/1/delete].freeze
+  RESTRICTED_PATHES = %w[/ /account /accounts/1 /security-log /entries /entries/new
+    /entries/1 /entries/1/edit /entries/1/delete /batches /batches/1 /batches/1/edit
+    /batches/1/delete /mensurations /change-login /change-password
+    /change-user-name /export-data /close-account /admin /admin/accounts /admin/accounts/1
+    /admin/accounts/1/verify /admin/accounts/1/close /admin/accounts/1/open /admin/accounts/1/delete].freeze
 
   def before_all
     super
@@ -68,6 +68,33 @@ class AuthenticationTest < CapybaraTestCase
     assert_current_path "/entries/new"
     assert_css ".alert-success"
     assert_content "Alice"
+  end
+
+  def test_admin_gets_email_when_new_user_signs_up
+    assert_equal 0, mails_count
+    visit "/create-account"
+    fill_in "user_name", with: "Alice"
+    fill_in "login", with: "alice@example.com"
+    fill_in "password", with: "foobar"
+    fill_in "password-confirm", with: "foobar"
+    click_on "Create Account"
+    assert_current_path "/entries/new"
+    assert_css ".alert-success"
+    assert_content "Alice"
+    assert_equal 2, mails_count
+    assert_includes last_mail_body, "A new user signed up"
+  end
+
+  def test_admin_does_not_get_email_when_signup_of_new_user_fails
+    assert_equal 0, mails_count
+    visit "/create-account"
+    fill_in "user_name", with: "Alice"
+    fill_in "login", with: "alice@example.com"
+    fill_in "password", with: "fo" # Too short password
+    fill_in "password-confirm", with: "fo"
+    click_on "Create Account"
+    assert_css ".alert-danger"
+    assert_equal 0, mails_count
   end
 
   def test_user_can_login

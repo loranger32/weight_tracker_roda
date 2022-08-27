@@ -26,7 +26,8 @@ module WeightTracker
       enable :login, :logout, :create_account, :change_login, :change_password,
         :change_password_notify, :close_account, :active_sessions, :audit_logging,
         :reset_password, :reset_password_notify, :verify_account,
-        :verify_account_grace_period, :lockout, :verify_login_change, :otp, :recovery_codes
+        :verify_account_grace_period, :lockout, :verify_login_change, :otp, :recovery_codes,
+        :internal_request
 
       # Base
       account_password_hash_column :password_hash
@@ -61,10 +62,11 @@ module WeightTracker
           subject "Weight Tracker - New User Signed Up"
           body "A new user signed up"
         end
-        case App.environment
-        when :production then SendEmailInProductionJob.perform_async(mail)
-        when :development then mail.deliver!
-        # Don't send email in tests (for the moment - complicates tests and not major feature)
+
+        if App.production? # Don't send email in tests (for the moment - complicates tests and not major feature)
+          SendEmailInProductionJob.perform_async(mail)
+        else
+          mail.deliver!
         end
       end
 

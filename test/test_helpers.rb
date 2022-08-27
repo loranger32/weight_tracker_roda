@@ -43,7 +43,7 @@ class CapybaraTestCase < HookedTestClass
   def create_account!(user_name: "Alice", email: "alice@example.com", password: "foobar")
     if (existing_account = Account.where(email: email).first)
       login!(email: email, password: password)
-      return existing_account 
+      return existing_account
     end
 
     visit "/create-account"
@@ -57,8 +57,8 @@ class CapybaraTestCase < HookedTestClass
 
   def verify_account!(account = nil)
     account ||= Account.where(email: "alice@example.com").first
-    raise TestAccountMismatchError unless account && account.email == last_mail_to_field
-    verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(last_mail_body)[1]
+    raise TestAccountMismatchError unless account && account.email == verify_account_mail.to[0]
+    verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(verify_account_mail_body)[1]
     visit "/verify-account?key=#{verify_account_key}"
     click_on "Verify Account"
     clean_mailbox
@@ -127,6 +127,18 @@ class CapybaraTestCase < HookedTestClass
 
   def last_mail_to_field
     mail_to(-1)
+  end
+
+  def verify_account_mail
+    Mail::TestMailer.deliveries[verify_account_mail_index]
+  end
+
+  def verify_account_mail_index
+    Mail::TestMailer.deliveries.map(&:subject).index("WeightTracker - Verify your account")
+  end
+
+  def verify_account_mail_body
+    verify_account_mail.body.raw_source
   end
 
   def teardown
