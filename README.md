@@ -93,6 +93,7 @@ Note that the developer must know the encryption/decryption key and can thus tec
 
 ## Next Features
 
+- Edit the batch an entry belongs to
 - Decide for each batch if you want to loose or gain weight
 
 
