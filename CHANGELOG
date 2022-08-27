@@ -1,5 +1,7 @@
 == Master
 
+== 0.11.1
+
 * Fix an encoding issue in new entry form partial
 
 * Bump Rack to 2.2.4
