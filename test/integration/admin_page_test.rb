@@ -211,7 +211,7 @@ class AdminPageTest < CapybaraTestCase
       account_id: soon_deleted_account.id, batch_id: batch_id).save
 
     logout!
-    
+
     setup_admin!
 
     visit "/admin/accounts"

@@ -72,7 +72,7 @@ class BatchManegmentTest < CapybaraTestCase
     batch = Batch.where(name: "New Batch", account_id: 1, active: true).first
     visit "/batches"
     assert_current_path "/batches"
-    assert_link "New Batch", href: "/batches/#{batch.id}/edit" 
+    assert_link "New Batch", href: "/batches/#{batch.id}/edit"
     click_link "New Batch", href: "/batches/#{batch.id}/edit"
     assert_link "View Entries", href: "/entries?batch_id=#{batch.id}"
     click_link "View Entries"
@@ -261,7 +261,7 @@ class BatchManegmentTest < CapybaraTestCase
     batch = Batch.where(name: "New Batch", account_id: 1, active: true).first
     refute_nil batch
     assert_equal 2, batch.entries.size
-    
+
     visit "/batches"
 
     click_link "New Batch", href: "/batches/#{batch.id}/edit"
@@ -284,7 +284,7 @@ class BatchManegmentTest < CapybaraTestCase
     batch = Batch.where(name: "New Batch", account_id: 1, active: true).first
     refute_nil batch
     assert_equal 2, batch.entries.size
-    
+
     visit "/batches"
 
     click_link "New Batch", href: "/batches/#{batch.id}/edit"

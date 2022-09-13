@@ -48,7 +48,7 @@ module GenericAccountManagmentActionsTests
     assert_content "Review the access to your account"
     within("table") do
       assert_content "create_account", count: 1
-      assert_content /\slogin\s/, count: 3
+      assert_content(/\slogin\s/, count: 3)
       assert_content "logout", count: 2
       assert_content "login_failure", count: 1
     end

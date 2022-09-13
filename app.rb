@@ -301,7 +301,7 @@ module WeightTracker
             combined = "["
             combined << @raw_entry_data_with_decrypted_notes.to_json
             combined << ","
-            combined << @raw_batch_data_with_decrypted_name.to_json 
+            combined << @raw_batch_data_with_decrypted_name.to_json
             combined << "]"
             f.write combined
           end

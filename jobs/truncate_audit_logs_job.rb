@@ -19,8 +19,6 @@ class TruncateAuditLogsJob
       .offset(100)
       .select_map(:id)
       .each { DB[:account_authentication_audit_logs].where(id: _1).delete }
-    #DB[:account_authentication_audit_logs].where(id: account_id){at > Time.at(Time.now - (30*60*60*24))}.order(:at).all
+    # DB[:account_authentication_audit_logs].where(id: account_id){at > Time.at(Time.now - (30*60*60*24))}.order(:at).all
   end
 end
-
-

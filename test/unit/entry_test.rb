@@ -4,11 +4,11 @@ class EntryBasicTest < HookedTestClass
   def load_fixtures
     @valid_params = {day: Date.parse("2021-01-01"), weight: "50.0", note: "A good note",
                      account_id: 1, batch_id: 1}
-    
+
     Account.new(user_name: "Alice", email: "alice@example.com",
-                # password = 'foobar'
-                password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva").save
-    
+      # password = 'foobar'
+      password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva").save
+
     Batch.new(account_id: 1, active: true, name: "Batch 1").save
   end
 
@@ -164,8 +164,8 @@ end
 class EntryQueryingTest < HookedTestClass
   def load_fixtures
     Account.insert(user_name: "Alice", email: "alice@example.com",
-                   # password = 'foobar'
-                   password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva")
+      # password = 'foobar'
+      password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva")
 
     Batch.new(account_id: 1, active: false, name: "Batch 1").save
     Batch.new(account_id: 1, active: true, name: "Batch 2", target: "49.0").save

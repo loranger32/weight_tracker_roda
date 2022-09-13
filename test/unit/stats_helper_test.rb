@@ -5,11 +5,11 @@ class StatsHelperLossingWeightTest < HookedTestClass
 
   def load_fixtures
     Account.insert(user_name: "Alice", email: "alice@example.com",
-                   password_hash: BCrypt::Password.create("foobar"))
+      password_hash: BCrypt::Password.create("foobar"))
     Account.insert(user_name: "Albert", email: "albert@example.com",
-                   password_hash: BCrypt::Password.create("helloworld"))
+      password_hash: BCrypt::Password.create("helloworld"))
     Account.insert(user_name: "Bob", email: "bob@example.com",
-                   password_hash: BCrypt::Password.create("secret"))
+      password_hash: BCrypt::Password.create("secret"))
 
     Batch.new(account_id: 1, active: true, name: "Batch 1", target: TEST_TARGET.to_s).save
     Batch.new(account_id: 2, active: true, name: "Batch 1", target: "0.0").save
@@ -135,7 +135,7 @@ class StatsHelperLossingWeightTest < HookedTestClass
 
   def test_average_loss_per_day
     # -3.0 / 12
-    assert_equal -0.25, @alice_stats.average_loss_per_day
+    assert_equal(-0.25, @alice_stats.average_loss_per_day)
   end
 
   def test_estimated_time_to_target_when_target_is_set_and_tendence_is_good

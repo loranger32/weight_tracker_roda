@@ -3,8 +3,8 @@ require_relative "../test_helpers"
 class MensurationTest < HookedTestClass
   def load_fixtures
     Account.new(user_name: "Alice", email: "alice@example.com",
-                   # password = 'foobar'
-                   password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva").save
+      # password = 'foobar'
+      password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva").save
     Batch.new(account_id: 1, active: true, name: "Batch 1", target: "50.0").save
   end
 

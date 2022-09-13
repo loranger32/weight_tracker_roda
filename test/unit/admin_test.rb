@@ -14,8 +14,8 @@ class AdminTest < HookedTestClass
   def around
     DB.transaction(rollback: :always, savepoint: true, auto_savepoint: true) do
       @alice_account = Account.new(user_name: "Alice", email: "alice@example.com",
-                                   # password = 'foobar'
-                                   password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva").save
+        # password = 'foobar'
+        password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva").save
       super
     end
   end

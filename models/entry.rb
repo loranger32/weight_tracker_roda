@@ -97,12 +97,11 @@ class Entry < Sequel::Model
     # which leads to as many queries as there are entries - TO FIX
     if batch_target.nil?
       return -(target - weight.to_f).round(1) unless target == 0.0
-      "/"
 
     # Querying all entries for a specific batch
     else
       return -(batch_target - weight.to_f).round(1) unless batch_target == 0.0
-      "/"
     end
+    "/"
   end
 end

@@ -88,7 +88,7 @@ module WeightTracker
               flash["error"] = "You did not checked the confirmation checkbox, action cancelled."
               r.redirect "/admin/accounts/#{@target_account.id}"
             end
-            
+
             if @target_account.destroy
               flash["notice"] = "Account successfully deleted"
             else

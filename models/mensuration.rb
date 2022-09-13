@@ -15,7 +15,7 @@ class Mensuration < Sequel::Model
   end
 
   def before_validation
-    self.height = "0" if (height == "" || height.nil?)
+    self.height = "0" if height == "" || height.nil?
     super
   end
 end

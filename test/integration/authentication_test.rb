@@ -33,7 +33,7 @@ class AuthenticationTest < CapybaraTestCase
     end
   end
 
-  def  test_all_post_requests_raise_invalid_token_before_authentication_begins
+  def test_all_post_requests_raise_invalid_token_before_authentication_begins
     RESTRICTED_PATHES.each do |path|
       assert_raises(Roda::RodaPlugins::RouteCsrf::InvalidToken) { post path, {} }
     end
