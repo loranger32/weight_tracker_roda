@@ -3,7 +3,8 @@ require_relative "../test_helpers"
 class BatchManegmentTest < CapybaraTestCase
   def load_fixtures
     @alice_account = create_and_verify_account!
-    #logout!
+    login! # needed to create default batch and mensuration
+    logout!
 
     # Ensure the account id is correct
     assert_equal 1, @alice_account.id

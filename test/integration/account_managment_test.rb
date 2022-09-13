@@ -273,12 +273,13 @@ class VerifiedAccountManagementTest < CapybaraTestCase
   end
 
   def test_can_verify_account
-    test_account = create_account!(user_name: "test user", email: "test_user@example.com", password: "foobar")
+    test_account = create_account!(user_name: "test user", email: "test_user@example.com")
+    login!(email: "test_user@example.com")
     assert_equal 2, mails_count # One for the verify account and one for the admin notification of account creation
-    assert_match(/<a href='http:\/\/www\.example\.com\/verify-account\?key=/, verify_account_mail_body)
+    assert_match(/<a href='https:\/\/www\.example\.com\/verify-account\?key=/, verify_account_mail_body)
     assert_equal test_account.id, DB[:account_verification_keys].first[:id]
 
-    verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(verify_account_mail_body)[1]
+    verify_account_key = /<a href='https:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)'>/i.match(verify_account_mail_body)[1]
 
     visit "/verify-account?key=#{verify_account_key}"
     assert_current_path "/verify-account"
@@ -320,7 +321,7 @@ class VerifiedAccountManagementTest < CapybaraTestCase
     assert_match(/<a href='http:\/\/www\.example\.com\/verify-account\?key=/, last_mail_body)
     assert_equal Account[test_account.id].id, DB[:account_verification_keys].first[:id]
 
-    verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)' method='post'>/i.match(last_mail_body)[1]
+    verify_account_key = /<a href='http:\/\/www\.example\.com\/verify-account\?key=([\w|-]+)'>/i.match(last_mail_body)[1]
 
     visit "/verify-account?key=#{verify_account_key}"
     assert_current_path "/verify-account"

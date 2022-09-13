@@ -41,17 +41,7 @@ class CapybaraTestCase < HookedTestClass
   end
 
   def create_account!(user_name: "Alice", email: "alice@example.com", password: "foobar")
-    if (existing_account = Account.where(email: email).first)
-      login!(email: email, password: password)
-      return existing_account
-    end
-
-    visit "/create-account"
-    fill_in "user_name", with: user_name
-    fill_in "login", with: email
-    fill_in "password", with: password
-    fill_in "password-confirm", with: password
-    click_on "Create Account"
+    app.rodauth.create_account(login: email, password: password, params: {"user_name" => user_name})
     Account.where(email: email).first
   end
 
@@ -68,6 +58,7 @@ class CapybaraTestCase < HookedTestClass
   end
 
   def setup_two_fa!(account_id)
+    # Should use internal_request#setup_otp feature, but couldn't get it to work yet.
     visit "/account"
     click_on "Setup 2FA"
     secret = page.find("#otp-secret-key").text

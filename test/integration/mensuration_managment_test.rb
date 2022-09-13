@@ -5,6 +5,7 @@ class MensurationManagementTest < CapybaraTestCase
     super
     clean_test_db!
     @alice_account = create_and_verify_account!
+    login!
   end
 
   def after_all

@@ -47,15 +47,6 @@ class AuthenticationTest < CapybaraTestCase
     refute_css ".alert-danger"
     refute_content "Please login to continue"
     refute_content "Alice"
-
-    # User logged in
-    create_and_verify_account!
-    visit "/about"
-    assert_current_path "/about"
-    assert_title "WT - About"
-    refute_css ".alert-danger"
-    refute_content "Please login to continue"
-    assert_content "Alice"
   end
 
   def test_user_can_create_an_account
@@ -99,10 +90,9 @@ class AuthenticationTest < CapybaraTestCase
 
   def test_user_can_login
     create_and_verify_account!
-    logout!
     login!
 
-    assert_current_path "/entries/new" # Test User has no entry for current day
+    assert_current_path "/entries/new"
     assert_css ".alert-success"
     assert_content "Alice"
     refute_content "Login / Signup"
@@ -110,6 +100,7 @@ class AuthenticationTest < CapybaraTestCase
 
   def test_user_can_logout
     create_and_verify_account!
+    login!
     logout!
     assert_current_path "/login"
     assert_css ".alert-success"
@@ -119,6 +110,7 @@ class AuthenticationTest < CapybaraTestCase
 
   def test_can_authenticate_with_two_factor_authentication
     create_and_verify_account!
+    login!
     account_id = Account.where(user_name: "Alice").first.id
     visit "/account"
     click_on "Setup 2FA"
@@ -157,7 +149,8 @@ class AuthenticationTest < CapybaraTestCase
 
   def test_can_authenticate_with_recovery_codes
     create_and_verify_account!
-    account_id = Account.first.id
+    login!
+    account_id = Account.where(email: "alice@example.com").first.id
     visit "/account"
     click_on "Setup 2FA"
     secret = page.find("#otp-secret-key").text

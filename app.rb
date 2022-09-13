@@ -133,7 +133,7 @@ module WeightTracker
       # Verify Account
       verify_account_email_sent_notice_flash "An email has been sent to you to verify your account"
       verify_account_email_subject "Verify your account"
-      verify_account_email_body { scope.render "mails/verify-account-email" }
+      verify_account_email_body { scope.render "mails/verify-account-email", locals: {rodauth: self} }
       verify_account_email_sent_redirect "/login"
 
       # Two Factor Base Setup
@@ -145,6 +145,16 @@ module WeightTracker
       # Recovery Codes Setup
       auto_add_recovery_codes? true
       auto_remove_recovery_codes? true
+
+      internal_request_configuration do
+        if App.production?
+          domain ENV["DOMAIN"]
+        elsif App.development?
+          domain "localhost:9292"
+        elsif App.test?
+          domain "www.example.com"
+        end
+      end
     end
 
     plugin :default_headers,
