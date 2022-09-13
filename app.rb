@@ -34,6 +34,13 @@ module WeightTracker
       hmac_secret secret
       title_instance_variable :@page_title
       login_label "Email"
+      if App.production?
+        domain ENV["DOMAIN"]
+      elsif App.development?
+        domain "localhost"
+      elsif App.test?
+        domain "www.example.com"
+      end
 
       # Email Base
       email_from "weighttracker@example.com"
