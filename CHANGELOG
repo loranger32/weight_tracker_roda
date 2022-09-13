@@ -1,5 +1,9 @@
 == Master
 
+* Set domain value in Rodauth configuration
+
+* Use Rodauth internal request create_account and verify_account features in tests
+
 * Change entries index table appearence
 
 == 0.11.1
