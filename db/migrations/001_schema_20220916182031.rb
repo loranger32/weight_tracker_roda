@@ -82,10 +82,10 @@ Sequel.migration do
       DateTime :email_last_sent, null: false, default: Sequel::CURRENT_TIMESTAMP
     end
 
-     # Used by the single session feature
+    # Used by the single session feature
     create_table(:account_session_keys) do
-      foreign_key :id, :accounts, :primary_key=>true, :type=>:Bignum
-      String :key, :null=>false
+      foreign_key :id, :accounts, primary_key: true, type: :Bignum
+      String :key, null: false
     end
 
     # Used by the active sessions feature
@@ -114,36 +114,36 @@ Sequel.migration do
 
     create_table(:admins) do
       primary_key :id
-      foreign_key :account_id, :accounts, :key=>[:id]
+      foreign_key :account_id, :accounts, key: [:id]
 
-      index [:account_id], :unique=>true
+      index [:account_id], unique: true
     end
 
     create_table(:batches) do
       primary_key :id
-      foreign_key :account_id, :accounts, :null=>false, :key=>[:id], :on_delete=>:cascade
-      column :active, "boolean", :null=>false
-      column :name, "character varying(30)", :null=>false
-      column :target, "text", :null=>false
+      foreign_key :account_id, :accounts, null: false, key: [:id], on_delete: :cascade
+      column :active, "boolean", null: false
+      column :name, "character varying(30)", null: false
+      column :target, "text", null: false
     end
 
     create_table(:mensurations) do
-      primary_key :id, :type=>:Bignum
-      foreign_key :account_id, :accounts, :null=>false, :key=>[:id], :on_delete=>:cascade
-      column :height, "text", :null=>false
+      primary_key :id, type: :Bignum
+      foreign_key :account_id, :accounts, null: false, key: [:id], on_delete: :cascade
+      column :height, "text", null: false
 
-      index [:account_id], :unique=>true
+      index [:account_id], unique: true
     end
 
     create_table(:entries) do
       primary_key :id
-      column :day, "date", :null=>false
-      foreign_key :account_id, :accounts, :null=>false, :key=>[:id], :on_delete=>:cascade
+      column :day, "date", null: false
+      foreign_key :account_id, :accounts, null: false, key: [:id], on_delete: :cascade
       column :note, "text"
-      column :weight, "text", :null=>false
-      foreign_key :batch_id, :batches, :null=>false, :key=>[:id], :on_delete=>:cascade
+      column :weight, "text", null: false
+      foreign_key :batch_id, :batches, null: false, key: [:id], on_delete: :cascade
 
-      index [:account_id, :day], :name=>:entries_day_account_id_ukey, :unique=>true
+      index [:account_id, :day], name: :entries_day_account_id_ukey, unique: true
     end
   end
 
