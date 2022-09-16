@@ -1,6 +1,24 @@
 require "bcrypt"
 require_relative "../db"
 
+tables = [:account_recovery_codes,
+  :account_otp_keys,
+  :account_session_keys,
+  :account_active_session_keys,
+  :account_email_auth_keys,
+  :account_lockouts,
+  :account_login_failures,
+  :account_login_change_keys,
+  :account_verification_keys,
+  :account_password_reset_keys,
+  :account_authentication_audit_logs,
+  :admins,
+  :entries,
+  :batches,
+  :accounts]
+
+tables.each { DB.reset_primary_key_sequence(_1) }
+
 accounts = [
   {email: "bob@example.com",
    user_name: "Bob",
