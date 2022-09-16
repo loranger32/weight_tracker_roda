@@ -87,7 +87,7 @@ class AdminPageTest < CapybaraTestCase
   end
 
   def test_admin_without_2fa_cannot_access_admin_page
-    admin_account = create_and_verify_account!(email: "admin@example.com", user_name: "test admin")
+    create_and_verify_account!(email: "admin@example.com", user_name: "test admin")
     admin = Account.where(email: "admin@example.com").first
     assert admin.is_verified?
     Admin.new(account_id: admin.id).save
@@ -101,10 +101,8 @@ class AdminPageTest < CapybaraTestCase
   end
 
   def test_admin_with_2fa_enabled_can_access_admin_page
-    logged_in_admin_account = setup_admin!
-
+    setup_admin!
     visit "/admin"
-
     assert_current_path "/admin/accounts"
     assert_content "Admin Panel"
     assert_content "Admin - admin"
