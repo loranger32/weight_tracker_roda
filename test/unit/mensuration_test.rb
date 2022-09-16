@@ -38,7 +38,7 @@ class MensurationTest < HookedTestClass
   # it raises an error if the attribute is not a string
   def test_raise_error_if_height_before_encryption_is_not_a_string
     mensuration = Mensuration.new(account_id: 1, height: 180)
-    assert_raises { refute entry.valid? }
+    assert_raises { refute mensuration.valid? }
   end
 
   def test_account_id_must_be_present
@@ -60,7 +60,7 @@ class MensurationTest < HookedTestClass
   end
 
   def test_height_is_encrypted_in_the_database
-    mensuration = Mensuration.new(account_id: 1, height: "180").save
+    Mensuration.new(account_id: 1, height: "180").save
     refute_equal "180", DB[:mensurations].where(account_id: 1).all.first[:height]
   end
 

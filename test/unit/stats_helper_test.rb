@@ -99,11 +99,11 @@ class StatsHelperLossingWeightTest < HookedTestClass
 
     # Bob hasn't regitered any mensuration
     bob = Account.where(user_name: "Bob").first
-    bob_entries = Entry.all_with_deltas(account_id: 3, batch_id: 3, batch_target: 70.0)
+    bob_entries = Entry.all_with_deltas(account_id: bob.id, batch_id: 3, batch_target: 70.0)
     bob_stats = WeightTracker::Stats.new(bob_entries, 70.0)
 
-    assert_equal "/", @albert_stats.min_bmi
-    assert_equal "/", @albert_stats.max_bmi
+    assert_equal "/", bob_stats.min_bmi
+    assert_equal "/", bob_stats.max_bmi
   end
 
   def test_total_loss_when_at_least_one_loss
@@ -120,7 +120,7 @@ class StatsHelperLossingWeightTest < HookedTestClass
 
   def test_total_gain_when_no_gain
     bob = Account.where(user_name: "Bob").first
-    bob_entries = Entry.all_with_deltas(account_id: 3, batch_id: 3, batch_target: 70.0)
+    bob_entries = Entry.all_with_deltas(account_id: bob.id, batch_id: 3, batch_target: 70.0)
     bob_stats = WeightTracker::Stats.new(bob_entries, 70.0)
     assert_equal "/", bob_stats.total_gain
   end
@@ -146,7 +146,7 @@ class StatsHelperLossingWeightTest < HookedTestClass
 
   def test_estimated_time_to_target_when_no_target_is_set
     albert = Account.where(user_name: "Albert").first
-    albert_entries = Entry.all_with_deltas(account_id: 2, batch_id: 2, batch_target: 0.0)
+    albert_entries = Entry.all_with_deltas(account_id: albert.id, batch_id: 2, batch_target: 0.0)
 
     ett = WeightTracker::Stats.new(albert_entries, 0.0).estimated_time_to_target
 
