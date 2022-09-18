@@ -1,5 +1,9 @@
 == Master
 
+== 0.12.0
+
+* Add feature to select batch to assign an entry to + can alos update the batch an existing entry belongs to
+
 * Set domain value in Rodauth configuration
 
 * Use Rodauth internal request create_account and verify_account features in tests
