@@ -102,8 +102,8 @@ class StatsHelperLossingWeightTest < HookedTestClass
     bob_entries = Entry.all_with_deltas(account_id: bob.id, batch_id: 3, batch_target: 70.0)
     bob_stats = WeightTracker::Stats.new(bob_entries, 70.0)
 
-    assert_equal "/", bob_stats.min_bmi
-    assert_equal "/", bob_stats.max_bmi
+    assert_nil bob_stats.min_bmi
+    assert_nil bob_stats.max_bmi
   end
 
   def test_total_loss_when_at_least_one_loss
