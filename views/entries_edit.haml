@@ -6,7 +6,7 @@
 
 .row.mb-5
   .col-10.offset-1.col-sm-8.offset-sm-2.col-md-6.offset-md-3.col-lg-4.offset-lg-4
-    %form{ action: "/entries/#{@entry.id}/delete", method: :post }
+    %form{action: "/entries/#{@entry.id}/delete", method: :post}
       != csrf_tag("/entries/#{@entry.id}/delete")
       %input.w-100.btn.btn-danger#delete-entry-btn{type: :submit, value: "Delete"}
 

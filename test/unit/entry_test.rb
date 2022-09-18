@@ -116,6 +116,12 @@ class EntryBasicTest < HookedTestClass
     assert entry.errors.has_key?(:batch_id)
   end
 
+  # def test_batch_id_must_reference_a_batch_of_current_account
+  #   entry = Entry.new(@valid_params.merge(batch_id: "7777777"))
+  #   refute entry.valid_batch_id?
+  #   assert entry.errors.has_key?(:invalid_batch)
+  # end
+
   def test_day_must_be_a_date
     entry = Entry.new(@valid_params.merge(day: "Not a date"))
     refute entry.valid?

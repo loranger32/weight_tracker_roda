@@ -22,6 +22,10 @@ module WeightTracker
       entry.new? ? "/entries" : "/entries/#{entry.id}"
     end
 
+    def update_action?(entry)
+      entry.new?
+    end
+
     def format_delta(delta) = delta > 0 ? "+#{delta}" : delta.to_s
 
     def format_auth_log_action(action)

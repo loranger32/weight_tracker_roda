@@ -1,6 +1,7 @@
 module WeightTracker
   class App
     hash_branch("entries") do |r|
+      @account_batches = Batch.of_account(@account_ds[:id])
       @current_batch = Batch[Account[@account_ds[:id]].active_batch_id]
 
       unless @current_batch
@@ -20,7 +21,7 @@ module WeightTracker
 
             batch = Batch[batch_id]
 
-            @batch_info = {name: batch.name, target: batch.target || "/"}
+            @batch_info = {id: batch.id, name: batch.name, target: batch.target || "/"}
             @entries = Entry.all_with_deltas(account_id: @account_ds[:id], batch_id: batch_id,
               batch_target: batch.target.to_f)
 
@@ -53,18 +54,24 @@ module WeightTracker
           submitted = {day: tp.date("day"),
                        weight: h(tp.str("weight")),
                        note: h(tp.str("note")),
+                       batch_id: tp.pos_int("batch-id"),
                        account_id: @account_ds[:id]}
 
           @entry.set(submitted)
-          @entry.set(batch_id: @current_batch.id)
 
-          if @entry.valid? && valid_weight_string?(submitted[:weight])
+          # valid_weight_string cannot be validated at the model level due to encryption
+          # account_owns_batch could be, but copmlicates the model tests
+          if @entry.valid? && valid_weight_string?(submitted[:weight]) &&
+              account_owns_batch?(Account[@account_ds[:id]], submitted[:batch_id])
+
             @entry.save
             flash["notice"] = "New entry saved"
             r.redirect
           end
 
-          flash.now["error"] = if !valid_weight_string?(submitted[:weight])
+          flash.now["error"] = if !account_owns_batch?(Account[@account_ds[:id]], submitted[:batch_id])
+            "Invalid batch id provided"
+          elsif !valid_weight_string?(submitted[:weight])
             "Invalid weight, must be between 20.0 and 999.9"
           else
             format_flash_error(@entry)
@@ -103,21 +110,28 @@ module WeightTracker
             submitted = {day: tp.date("day"),
                          weight: h(tp.str("weight")),
                          note: h(tp.str("note")),
+                         batch_id: tp.pos_int("batch-id"),
                          account_id: @account_ds[:id]}
 
             @entry.set(submitted)
 
-            if @entry.valid? && valid_weight_string?(submitted[:weight])
+            if @entry.valid? && valid_weight_string?(submitted[:weight]) &&
+                account_owns_batch?(Account[@account_ds[:id]], submitted[:batch_id])
+
               @entry.save
               flash["notice"] = "Entry has been updated"
               r.redirect "/entries"
-            elsif !valid_weight_string?(submitted[:weight])
-              flash.now["error"] = "Invalid weight, must be between 20.0 and 999.9"
-              view "entries_edit"
-            else
-              flash.now["error"] = @entry.errors.values.join("\n")
-              view "entries_edit"
             end
+
+            flash.now["error"] = if !account_owns_batch?(Account[@account_ds[:id]], submitted[:batch_id])
+              "Invalid batch id provided"
+            elsif !valid_weight_string?(submitted[:weight])
+              "Invalid weight, must be between 20.0 and 999.9"
+            else
+              format_flash_error(@entry)
+            end
+
+            view "entries_edit"
           end
         end
 

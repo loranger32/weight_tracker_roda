@@ -22,4 +22,8 @@
         %label.form-label{for: "note"} Note
         %textarea.form-control{id: "note", name: "note", rows: '5', cols: '3'}= @entry.note&.force_encoding("UTF-8")
 
+      %select.form-select.mb-3{name: "batch-id"}
+        - @account_batches.each do |batch|
+          %option{value: batch.id, selected: batch.id != @batch_info[:id]}= batch.name
+
       %input.form-control.btn.btn-primary{type: :submit, value: "Validate"}
