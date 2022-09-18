@@ -103,7 +103,7 @@ module WeightTracker
           r.halt
         end
 
-        @batch_info = {name: @entry.batch.name, target: @entry.batch.target || "/"}
+        @batch_info = {name: @entry.batch.name, target: @entry.batch.target || "/", id: @entry.batch.id}
 
         r.is do
           r.post do
