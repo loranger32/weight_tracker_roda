@@ -1,5 +1,7 @@
 == Master
 
+* Fix bug causing truncate_audit_log_job to let 101 records instead of 100
+
 == 0.12.0
 
 * Add feature to select batch to assign an entry to + can alos update the batch an existing entry belongs to

@@ -62,8 +62,8 @@ module GenericAccountManagmentActionsTests
     assert_equal current_number_of_rows + 110, DB[:account_authentication_audit_logs].where(account_id: 1).count
 
     login!
-    # Don't know why it's 101 instead of 100
-    assert_equal 101, DB[:account_authentication_audit_logs].where(account_id: 1).count
+
+    assert_equal 100, DB[:account_authentication_audit_logs].where(account_id: 1).count
   end
 
   def test_export_data_page
