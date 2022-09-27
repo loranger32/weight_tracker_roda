@@ -199,7 +199,7 @@ module GenericAccountManagmentActionsTests
     assert_match(/<a href='http:\/\/www\.example\.com\/unlock-account\?key=/, mail_body(0))
     assert_equal @alice_account.id, DB[:account_lockouts].first[:id]
 
-    unlock_account_key = /<a href='http:\/\/www\.example\.com\/unlock-account\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
+    unlock_account_key = /<a href='http:\/\/www\.example\.com\/unlock-account\?key=([\w|-]+)'>/i.match(mail_body(0))[1]
 
     visit "/unlock-account?key=#{unlock_account_key}"
     assert_current_path "/unlock-account"
@@ -363,7 +363,7 @@ class VerifiedAccountManagementTest < CapybaraTestCase
     assert_match(/<a href='http:\/\/www\.example\.com\/reset-password\?key=/, mail_body(0))
     assert_equal @alice_account.id, DB[:account_password_reset_keys].first[:id]
 
-    reset_password_key = /<a href='http:\/\/www\.example\.com\/reset-password\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
+    reset_password_key = /<a href='http:\/\/www\.example\.com\/reset-password\?key=([\w|-]+)'>/i.match(mail_body(0))[1]
 
     visit "/reset-password?key=#{reset_password_key}"
 
@@ -436,7 +436,7 @@ class VerifiedAccountManagementTest < CapybaraTestCase
     assert_match(/<a href='http:\/\/www\.example\.com\/verify-login-change\?key=/, mail_body(0))
     assert_equal @alice_account.id, DB[:account_login_change_keys].first[:id]
 
-    verify_login_change_key = /<a href='http:\/\/www\.example\.com\/verify-login-change\?key=([\w|-]+)' method='post'>/i.match(mail_body(0))[1]
+    verify_login_change_key = /<a href='http:\/\/www\.example\.com\/verify-login-change\?key=([\w|-]+)'>/i.match(mail_body(0))[1]
 
     visit "/verify-login-change?key=#{verify_login_change_key}"
 
