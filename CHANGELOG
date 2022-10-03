@@ -1,5 +1,7 @@
 == Master
 
+* Remove useless nesting of the app into the WeightTracker folder
+
 * Remove incorrect "method='post'" in custom rodauth mail templates
 
 * Fix bug causing truncate_audit_log_job to let 101 records instead of 100
