@@ -17,4 +17,4 @@ end
 
 require_relative "app"
 
-run WeightTracker::App.freeze.app
+run App.freeze.app

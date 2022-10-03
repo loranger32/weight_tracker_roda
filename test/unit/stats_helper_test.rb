@@ -52,12 +52,12 @@ class StatsHelperLossingWeightTest < HookedTestClass
     @alice = Account.where(user_name: "Alice").first
     @alice_entries = Entry.all_with_deltas(account_id: 1, batch_id: 1, batch_target: 65.0)
     Entry.add_bmi!(@alice_entries, "160")
-    @alice_stats = WeightTracker::Stats.new(@alice_entries, TEST_TARGET)
+    @alice_stats = Stats.new(@alice_entries, TEST_TARGET)
 
     @albert = Account.where(user_name: "Albert").first
     @albert_entries = Entry.all_with_deltas(account_id: 2, batch_id: 2, batch_target: 0.0)
     Entry.add_bmi!(@albert_entries, "0")
-    @albert_stats = WeightTracker::Stats.new(@albert_entries, 0.0)
+    @albert_stats = Stats.new(@albert_entries, 0.0)
   end
 
   def after_all
@@ -100,7 +100,7 @@ class StatsHelperLossingWeightTest < HookedTestClass
     # Bob hasn't regitered any mensuration
     bob = Account.where(user_name: "Bob").first
     bob_entries = Entry.all_with_deltas(account_id: bob.id, batch_id: 3, batch_target: 70.0)
-    bob_stats = WeightTracker::Stats.new(bob_entries, 70.0)
+    bob_stats = Stats.new(bob_entries, 70.0)
 
     assert_nil bob_stats.min_bmi
     assert_nil bob_stats.max_bmi
@@ -121,7 +121,7 @@ class StatsHelperLossingWeightTest < HookedTestClass
   def test_total_gain_when_no_gain
     bob = Account.where(user_name: "Bob").first
     bob_entries = Entry.all_with_deltas(account_id: bob.id, batch_id: 3, batch_target: 70.0)
-    bob_stats = WeightTracker::Stats.new(bob_entries, 70.0)
+    bob_stats = Stats.new(bob_entries, 70.0)
     assert_equal "/", bob_stats.total_gain
   end
 
@@ -148,7 +148,7 @@ class StatsHelperLossingWeightTest < HookedTestClass
     albert = Account.where(user_name: "Albert").first
     albert_entries = Entry.all_with_deltas(account_id: albert.id, batch_id: 2, batch_target: 0.0)
 
-    ett = WeightTracker::Stats.new(albert_entries, 0.0).estimated_time_to_target
+    ett = Stats.new(albert_entries, 0.0).estimated_time_to_target
 
     assert_equal "No target specified", ett[:content]
     assert_equal "bg-info", ett[:class]

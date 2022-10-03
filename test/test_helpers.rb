@@ -34,7 +34,7 @@ class CapybaraTestCase < HookedTestClass
   include Capybara::Minitest::Assertions
   include Rack::Test::Methods
 
-  Capybara.app = WeightTracker::App.freeze.app
+  Capybara.app = App.freeze.app
 
   def app
     Capybara.app
