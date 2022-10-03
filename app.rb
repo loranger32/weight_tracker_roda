@@ -187,7 +187,7 @@ module WeightTracker
 
     # Routing
     plugin :hash_routes
-    Dir["controllers/*.rb"].each { require_relative _1 }
+    Dir["routes/*.rb"].each { require_relative _1 }
 
     plugin :status_handler
 
