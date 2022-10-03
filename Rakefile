@@ -32,17 +32,17 @@ end
 
 desc "Start development server"
 task :ds do |t|
-  exec "RACK_ENV=development rerun --ignore 'test/*' rackup config.ru"
+  exec "RACK_ENV=development bundle exec rerun --ignore 'test/*' rackup config.ru"
 end
 
 desc "Start classic development server"
 task :s do |t|
-  system "RACK_ENV=development rackup config.ru"
+  system "RACK_ENV=development bundle exec rackup config.ru"
 end
 
 desc "start classic server in production mode"
 task :ps do
-  system "RACK_ENV=production rackup config.ru"
+  system "RACK_ENV=production bundle exec rackup config.ru"
 end
 
 namespace :db do
