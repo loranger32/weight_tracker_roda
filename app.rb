@@ -175,9 +175,9 @@ class App < Roda
     csp.img_src :self, "data:" # data: is required for Bootstrap 5 svg inline icons, for the moment
     csp.object_src :none
     csp.frame_src :self
-    csp.style_src :self, "fonts.googleapis.com", "stackpath.bootstrapcdn.com", "cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+    csp.style_src :self, "fonts.googleapis.com", "stackpath.bootstrapcdn.com", "cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
     csp.form_action :self
-    csp.script_src :self, "cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js", "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"
+    csp.script_src :self, "cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js", "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"
     csp.connect_src :self
     csp.base_uri :none
     csp.frame_ancestors :none
