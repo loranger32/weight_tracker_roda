@@ -190,12 +190,8 @@ class App < Roda
 
   plugin :status_handler
 
-  status_handler(404) do
-    view "error_404"
-  end
-
-  status_handler(403) do
-    view "error_403"
+  [400, 404, 403, 500].each do |error_code|
+    status_handler(error_code) { view "errors/error_#{error_code}" }
   end
 
   # Rendering
