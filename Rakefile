@@ -15,6 +15,19 @@ Rake::TestTask.new do |t|
   t.warning = false
 end
 
+def db_connection(&block)
+  require "sequel/core"
+  Sequel.connect(ENV['DATABASE_URL']) do |db|
+    block.call(db)
+  end
+
+  if ENV['TEST_DATABASE_URL']
+    Sequel.connect(ENV['TEST_DATABASE_URL']) do |db|
+      block.call(db)
+    end
+  end
+end
+
 desc "Run tests"
 task default: :test
 

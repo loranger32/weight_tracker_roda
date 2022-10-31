@@ -1,5 +1,7 @@
 == Master
 
+* Add alcohol consumption info for each enytry
+
 * Remove useless nesting of the app into the WeightTracker folder
 
 * Remove incorrect "method='post'" in custom rodauth mail templates

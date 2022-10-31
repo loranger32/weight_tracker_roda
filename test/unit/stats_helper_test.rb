@@ -16,33 +16,33 @@ class StatsHelperLossingWeightTest < HookedTestClass
     Batch.new(account_id: 3, active: true, name: "Batch 1", target: "70.0").save
 
     # Alice has 13 entries
-    Entry.new(day: "2021-01-01", weight: "70.0", note: "", account_id: 1, batch_id: 1).save # Friday
+    Entry.new(day: "2021-01-01", weight: "70.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 1).save # Friday
     # Skip 1 day
-    Entry.new(day: "2021-01-03", weight: "70.5", note: "", account_id: 1, batch_id: 1).save # Sunday
-    Entry.new(day: "2021-01-04", weight: "71.0", note: "", account_id: 1, batch_id: 1).save # Monday
-    Entry.new(day: "2021-01-05", weight: "70.5", note: "", account_id: 1, batch_id: 1).save # Tuesday
-    Entry.new(day: "2021-01-06", weight: "70.0", note: "", account_id: 1, batch_id: 1).save # Wednesday
+    Entry.new(day: "2021-01-03", weight: "70.5", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 1).save # Sunday
+    Entry.new(day: "2021-01-04", weight: "71.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 1).save # Monday
+    Entry.new(day: "2021-01-05", weight: "70.5", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 1).save # Tuesday
+    Entry.new(day: "2021-01-06", weight: "70.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 1).save # Wednesday
     # Skip 3 days
-    Entry.new(day: "2021-01-10", weight: "69.5", note: "", account_id: 1, batch_id: 1).save # Sunday
-    Entry.new(day: "2021-01-11", weight: "69.0", note: "", account_id: 1, batch_id: 1).save # Monday
-    Entry.new(day: "2021-01-12", weight: "68.5", note: "", account_id: 1, batch_id: 1).save # Tuesday
-    Entry.new(day: "2021-01-13", weight: "68.0", note: "", account_id: 1, batch_id: 1).save # Wednesday
-    Entry.new(day: "2021-01-14", weight: "69.0", note: "", account_id: 1, batch_id: 1).save # Thursday
+    Entry.new(day: "2021-01-10", weight: "69.5", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 1).save # Sunday
+    Entry.new(day: "2021-01-11", weight: "69.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 1).save # Monday
+    Entry.new(day: "2021-01-12", weight: "68.5", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 1).save # Tuesday
+    Entry.new(day: "2021-01-13", weight: "68.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 1).save # Wednesday
+    Entry.new(day: "2021-01-14", weight: "69.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 1).save # Thursday
     # Skip 2 days
-    Entry.new(day: "2021-01-17", weight: "68.5", note: "", account_id: 1, batch_id: 1).save # Sunday
-    Entry.new(day: "2021-01-18", weight: "68.0", note: "", account_id: 1, batch_id: 1).save # Monday
-    Entry.new(day: "2021-01-19", weight: "67.0", note: "", account_id: 1, batch_id: 1).save # Tuesday
+    Entry.new(day: "2021-01-17", weight: "68.5", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 1).save # Sunday
+    Entry.new(day: "2021-01-18", weight: "68.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 1).save # Monday
+    Entry.new(day: "2021-01-19", weight: "67.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 1).save # Tuesday
 
     # Albert has 5 entries, no target and no losses
-    Entry.new(day: "2021-01-01", weight: "70.0", note: "", account_id: 2, batch_id: 2).save
-    Entry.new(day: "2021-01-03", weight: "70.5", note: "", account_id: 2, batch_id: 2).save
-    Entry.new(day: "2021-01-04", weight: "71.0", note: "", account_id: 2, batch_id: 2).save
-    Entry.new(day: "2021-01-05", weight: "71.5", note: "", account_id: 2, batch_id: 2).save
-    Entry.new(day: "2021-01-06", weight: "72.0", note: "", account_id: 2, batch_id: 2).save
+    Entry.new(day: "2021-01-01", weight: "70.0", note: "", alcohol_consumption: "none", account_id: 2, batch_id: 2).save
+    Entry.new(day: "2021-01-03", weight: "70.5", note: "", alcohol_consumption: "none", account_id: 2, batch_id: 2).save
+    Entry.new(day: "2021-01-04", weight: "71.0", note: "", alcohol_consumption: "none", account_id: 2, batch_id: 2).save
+    Entry.new(day: "2021-01-05", weight: "71.5", note: "", alcohol_consumption: "none", account_id: 2, batch_id: 2).save
+    Entry.new(day: "2021-01-06", weight: "72.0", note: "", alcohol_consumption: "none", account_id: 2, batch_id: 2).save
 
     # Bob has 2 entries, a target and no gain
-    Entry.new(day: "2021-01-01", weight: "70.0", note: "", account_id: 3, batch_id: 3).save
-    Entry.new(day: "2021-01-03", weight: "69.5", note: "", account_id: 3, batch_id: 3).save
+    Entry.new(day: "2021-01-01", weight: "70.0", note: "", alcohol_consumption: "none", account_id: 3, batch_id: 3).save
+    Entry.new(day: "2021-01-03", weight: "69.5", note: "", alcohol_consumption: "none", account_id: 3, batch_id: 3).save
   end
 
   def before_all

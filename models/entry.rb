@@ -1,9 +1,12 @@
 class Entry < Sequel::Model
+  ALCOHOL_CONSUMPTION = %w[none some much].freeze
+
   plugin :validation_helpers
   plugin :json_serializer
   plugin :column_encryption do |enc|
     enc.column :note
     enc.column :weight
+    enc.column :alcohol_consumption
   end
 
   many_to_one :account
@@ -75,6 +78,8 @@ class Entry < Sequel::Model
     validates_type Date, :day
     validates_type String, :weight
     validates_type String, :note
+    validates_type String, :alcohol_consumption
+    validates_format /\A(|none|some|much)\z/i, :alcohol_consumption
     validates_max_length 600, :note
     validates_unique [:day, :account_id], message: "Can't have two entries for the same day"
   end

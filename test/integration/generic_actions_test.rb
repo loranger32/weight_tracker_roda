@@ -25,7 +25,7 @@ class GenericActionsTest < CapybaraTestCase
   end
 
   def test_when_logged_in_and_already_an_entry_for_current_day_is_redirected_to_index_page
-    @alice_account.add_entry(weight: "50.0", note: "", day: Time.now, batch_id: @alice_account.active_batch_id)
+    @alice_account.add_entry(weight: "50.0", note: "", alcohol_consumption: "", day: Time.now, batch_id: @alice_account.active_batch_id)
 
     visit "/"
     assert_current_path "/entries"

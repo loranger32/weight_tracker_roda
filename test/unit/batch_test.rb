@@ -6,8 +6,8 @@ class BatchBasicTest < HookedTestClass
       # password = 'foobar'
       password_hash: "$2a$04$xRFEJH568qcg4ycFRaUKnOgY2Nm1WQqOaFyQtkGLh95s9Fl9/GCva")
     Batch.new(account_id: 1, active: true, name: "Batch 1", target: "50.0").save
-    Entry.new(day: "2020-12-01", weight: "51.0", note: "", account_id: 1, batch_id: 1).save
-    Entry.new(day: "2020-12-02", weight: "52.0", note: "", account_id: 1, batch_id: 1).save
+    Entry.new(day: "2020-12-01", weight: "51.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 1).save
+    Entry.new(day: "2020-12-02", weight: "52.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 1).save
   end
 
   def before_all
@@ -118,11 +118,11 @@ class BatchAdvancedTest < HookedTestClass
     Batch.new(account_id: 1, active: true, name: "active one").save
 
     # Cannot use insert here beacuse of the column encryption
-    Entry.new(day: "2020-11-01", weight: "51.0", note: "", account_id: 1, batch_id: 1).save
-    Entry.new(day: "2020-11-02", weight: "54.0", note: "", account_id: 1, batch_id: 1).save
-    Entry.new(day: "2020-12-01", weight: "51.0", note: "", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2020-12-02", weight: "52.0", note: "", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2020-12-03", weight: "53.0", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2020-11-01", weight: "51.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 1).save
+    Entry.new(day: "2020-11-02", weight: "54.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 1).save
+    Entry.new(day: "2020-12-01", weight: "51.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2020-12-02", weight: "52.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2020-12-03", weight: "53.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 2).save
 
     @account = Account.where(user_name: "Alice").first
   end

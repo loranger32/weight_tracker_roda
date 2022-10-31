@@ -1,4 +1,28 @@
 module ViewHelpers
+  def alcohol_consumption_types
+    Entry::ALCOHOL_CONSUMPTION
+  end
+
+  def alcohol_select_option(type)
+    return "Unknown" unless alcohol_consumption_types.include?(type)
+
+    if type == "none"
+      "No Alcohol"
+    else
+      type.capitalize + " Alcohol"
+    end
+  end
+
+  def alcohol_sign(type)
+    case type
+    when "none" then "🟢"
+    when "some" then "🟠"
+    when "much" then "🔴"
+    else
+      "⚪"
+    end
+  end
+
   def set_page_title(title)
     if title.nil? || title.empty?
       "Weight Tracker"

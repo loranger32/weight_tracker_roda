@@ -17,8 +17,8 @@ Sequel.migration do
       primary_key :id, :type=>:Bignum
       foreign_key :status_id, :account_statuses, :default=>1, :null=>false, :key=>[:id]
       column :email, "citext", :null=>false
-      column :password_hash, "text", :null=>false
       column :user_name, "text", :null=>false
+      column :password_hash, "text", :null=>false
     end
     
     create_table(:account_active_session_keys) do
@@ -146,6 +146,7 @@ Sequel.migration do
       column :note, "text"
       column :weight, "text", :null=>false
       foreign_key :batch_id, :batches, :null=>false, :key=>[:id], :on_delete=>:cascade
+      column :alcohol_consumption, "text"
       
       index [:account_id, :day], :name=>:entries_day_account_id_ukey, :unique=>true
     end

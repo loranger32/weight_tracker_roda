@@ -52,7 +52,8 @@ class App
         @entry = Entry.new
         submitted = {day: tp.date("day"),
                       weight: h(tp.str("weight")),
-                      note: h(tp.str("note")),
+                      note: tp.str("note"),
+                      alcohol_consumption: h(tp.str("alcohol_consumption")),
                       batch_id: tp.pos_int("batch-id"),
                       account_id: @account_ds[:id]}
 
@@ -108,7 +109,8 @@ class App
         r.post do
           submitted = {day: tp.date("day"),
                         weight: h(tp.str("weight")),
-                        note: h(tp.str("note")),
+                        note: tp.str("note"),
+                        alcohol_consumption: h(tp.str("alcohol_consumption")),
                         batch_id: tp.pos_int("batch-id"),
                         account_id: @account_ds[:id]}
 

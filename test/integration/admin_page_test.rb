@@ -205,7 +205,7 @@ class AdminPageTest < CapybaraTestCase
     soon_deleted_account = create_and_verify_account!(user_name: "soon deleted", email: "soondeleted@example.com")
     login!(email: "soondeleted@example.com")
     batch_id = soon_deleted_account.active_batch_id
-    entry = Entry.new(weight: "60.0", day: "2021-06-01", note: "",
+    entry = Entry.new(weight: "60.0", day: "2021-06-01", note: "", alcohol_consumption: "none",
       account_id: soon_deleted_account.id, batch_id: batch_id).save
 
     logout!
@@ -246,7 +246,7 @@ class AdminPageTest < CapybaraTestCase
     not_soon_deleted_account = create_and_verify_account!(user_name: "not soon deleted", email: "notsoondeleted@example.com")
     login!(email: "notsoondeleted@example.com")
     batch_id = not_soon_deleted_account.active_batch_id
-    entry = Entry.new(weight: "60.0", day: "2021-06-01", note: "",
+    entry = Entry.new(weight: "60.0", day: "2021-06-01", note: "", alcohol_consumption: "none",
       account_id: not_soon_deleted_account.id, batch_id: batch_id).save
 
     logout!

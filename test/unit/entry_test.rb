@@ -3,7 +3,7 @@ require_relative "../test_helpers"
 class EntryBasicTest < HookedTestClass
   def load_fixtures
     @valid_params = {day: Date.parse("2021-01-01"), weight: "50.0", note: "A good note",
-                     account_id: 1, batch_id: 1}
+                     alcohol_consumption: "none", account_id: 1, batch_id: 1}
 
     Account.new(user_name: "Alice", email: "alice@example.com",
       # password = 'foobar'
@@ -34,6 +34,7 @@ class EntryBasicTest < HookedTestClass
     assert_respond_to(entry, :day)
     assert_respond_to(entry, :weight)
     assert_respond_to(entry, :note)
+    assert_respond_to(entry, :alcohol_consumption)
     assert_respond_to(entry, :account_id)
     assert_respond_to(entry, :batch_id)
   end
@@ -104,6 +105,33 @@ class EntryBasicTest < HookedTestClass
     assert entry.valid?
   end
 
+  def test_alcohol_consumption_can_be_empty_string
+    entry = Entry.new(@valid_params.merge(alcohol_consumption: ""))
+    assert entry.valid?
+  end
+
+  def test_alcohol_consumption_cannot_be_nil
+    entry_1 = Entry.new(@valid_params.merge(alcohol_consumption: nil))
+    refute entry_1.valid?
+
+    entry_2 = Entry.new(@valid_params.except(:alcohol_consumption))
+    refute entry_2.valid?
+  end
+
+  def test_alcohol_consumption_can_be_one_of_three_type
+    # "none" is already tested in the @valid_params
+    entry_some_alcohol = Entry.new(@valid_params.merge(alcohol_consumption: "some"))
+    assert entry_some_alcohol.valid?
+
+    entry_much_alcohol = Entry.new(@valid_params.merge(alcohol_consumption: "much"))
+    assert entry_much_alcohol.valid?
+  end
+
+  def test_alcohol_consumption_must_have_specific_value
+    entry = Entry.new(@valid_params.merge(alcohol_consumption: "blob"))
+    refute entry.valid?
+  end
+
   def test_account_id_must_be_integer
     entry = Entry.new(@valid_params.merge(account_id: "One"))
     refute entry.valid?
@@ -137,6 +165,11 @@ class EntryBasicTest < HookedTestClass
 
   def test_raise_error_if_weight_before_encryption_is_not_a_string
     entry = Entry.new(@valid_params.merge(weight: 50.6))
+    assert_raises { refute entry.valid? }
+  end
+
+  def test_raise_error_if_alcohol_consumption_is_not_a_string
+    entry = Entry.new(@valid_params.merge(alcohol_consumption: 123))
     assert_raises { refute entry.valid? }
   end
 
@@ -177,15 +210,15 @@ class EntryQueryingTest < HookedTestClass
     Batch.new(account_id: 1, active: true, name: "Batch 2", target: "49.0").save
 
     # Batch 1
-    Entry.new(day: "2020-12-01", weight: "51.0", note: "", account_id: 1, batch_id: 1).save
-    Entry.new(day: "2020-12-02", weight: "52.0", note: "", account_id: 1, batch_id: 1).save
+    Entry.new(day: "2020-12-01", weight: "51.0", alcohol_consumption: "none", note: "", account_id: 1, batch_id: 1).save
+    Entry.new(day: "2020-12-02", weight: "52.0", alcohol_consumption: "some", note: "", account_id: 1, batch_id: 1).save
 
     # Batch 2
-    Entry.new(day: "2021-01-01", weight: "50.0", note: "", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2021-01-02", weight: "51.0", note: "", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2021-01-03", weight: "50.5", note: "", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2021-01-04", weight: "49.1", note: "", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2021-01-05", weight: "48.5", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2021-01-01", weight: "50.0", alcohol_consumption: "none", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2021-01-02", weight: "51.0", alcohol_consumption: "some", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2021-01-03", weight: "50.5", alcohol_consumption: "much", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2021-01-04", weight: "49.1", alcohol_consumption: "none", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2021-01-05", weight: "48.5", alcohol_consumption: "none", note: "", account_id: 1, batch_id: 2).save
   end
 
   def before_all
