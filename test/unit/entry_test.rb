@@ -3,7 +3,7 @@ require_relative "../test_helpers"
 class EntryBasicTest < HookedTestClass
   def load_fixtures
     @valid_params = {day: Date.parse("2021-01-01"), weight: "50.0", note: "A good note",
-                     alcohol_consumption: "none", account_id: 1, batch_id: 1}
+                     alcohol_consumption: "none", sport: "none", account_id: 1, batch_id: 1}
 
     Account.new(user_name: "Alice", email: "alice@example.com",
       # password = 'foobar'
@@ -35,6 +35,7 @@ class EntryBasicTest < HookedTestClass
     assert_respond_to(entry, :weight)
     assert_respond_to(entry, :note)
     assert_respond_to(entry, :alcohol_consumption)
+    assert_respond_to(entry, :sport)
     assert_respond_to(entry, :account_id)
     assert_respond_to(entry, :batch_id)
   end
@@ -132,6 +133,33 @@ class EntryBasicTest < HookedTestClass
     refute entry.valid?
   end
 
+  def test_sport_can_be_empty_string
+    entry = Entry.new(@valid_params.merge(sport: ""))
+    assert entry.valid?
+  end
+
+  def test_sport_cannot_be_nil
+    entry_1 = Entry.new(@valid_params.merge(sport: nil))
+    refute entry_1.valid?
+
+    entry_2 = Entry.new(@valid_params.except(:sport))
+    refute entry_2.valid?
+  end
+
+  def test_sport_can_be_one_of_three_type
+    # "none" is already tested in the @valid_params
+    entry_some_sport = Entry.new(@valid_params.merge(sport: "some"))
+    assert entry_some_sport.valid?
+
+    entry_much_sport = Entry.new(@valid_params.merge(sport: "much"))
+    assert entry_much_sport.valid?
+  end
+
+  def test_sport_must_have_specific_value
+    entry = Entry.new(@valid_params.merge(sport: "blob"))
+    refute entry.valid?
+  end
+
   def test_account_id_must_be_integer
     entry = Entry.new(@valid_params.merge(account_id: "One"))
     refute entry.valid?
@@ -173,6 +201,11 @@ class EntryBasicTest < HookedTestClass
     assert_raises { refute entry.valid? }
   end
 
+  def test_raise_error_if_sport_is_not_a_string
+    entry = Entry.new(@valid_params.merge(sport: 123))
+    assert_raises { refute entry.valid? }
+  end
+
   def test_note_must_be_less_or_equal_than_600_characters
     entry = Entry.new(@valid_params.merge(note: "a" * 601))
     refute entry.valid?
@@ -191,12 +224,18 @@ class EntryBasicTest < HookedTestClass
     assert_respond_to entry, :to_json
   end
 
-  def test_entry_note_is_stored_encrypted_but_can_be_accessed_unecrypted
+  def test_entry_encrypted_attributes_are_stored_encrypted_but_can_be_accessed_unecrypted
     assert_equal 0, Entry.all.size
     Entry.new(@valid_params).save
     refute_equal @valid_params[:note], DB[:entries].first[:note]
+    refute_equal @valid_params[:alcohol_consumption], DB[:entries].first[:alcohol_consumption]
+    refute_equal @valid_params[:sport], DB[:entries].first[:sport]
     assert DB[:entries].first[:note].size >= 65
+    assert DB[:entries].first[:alcohol_consumption].size >= 65
+    assert DB[:entries].first[:sport].size >= 65
     assert_equal @valid_params[:note], Entry.first.note
+    assert_equal @valid_params[:alcohol_consumption], Entry.first.alcohol_consumption
+    assert_equal @valid_params[:sport], Entry.first.sport
   end
 end
 
@@ -210,15 +249,15 @@ class EntryQueryingTest < HookedTestClass
     Batch.new(account_id: 1, active: true, name: "Batch 2", target: "49.0").save
 
     # Batch 1
-    Entry.new(day: "2020-12-01", weight: "51.0", alcohol_consumption: "none", note: "", account_id: 1, batch_id: 1).save
-    Entry.new(day: "2020-12-02", weight: "52.0", alcohol_consumption: "some", note: "", account_id: 1, batch_id: 1).save
+    Entry.new(day: "2020-12-01", weight: "51.0", alcohol_consumption: "none", sport: "some", note: "", account_id: 1, batch_id: 1).save
+    Entry.new(day: "2020-12-02", weight: "52.0", alcohol_consumption: "some", sport: "none", note: "", account_id: 1, batch_id: 1).save
 
     # Batch 2
-    Entry.new(day: "2021-01-01", weight: "50.0", alcohol_consumption: "none", note: "", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2021-01-02", weight: "51.0", alcohol_consumption: "some", note: "", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2021-01-03", weight: "50.5", alcohol_consumption: "much", note: "", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2021-01-04", weight: "49.1", alcohol_consumption: "none", note: "", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2021-01-05", weight: "48.5", alcohol_consumption: "none", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2021-01-01", weight: "50.0", alcohol_consumption: "none", sport: "none", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2021-01-02", weight: "51.0", alcohol_consumption: "some", sport: "much", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2021-01-03", weight: "50.5", alcohol_consumption: "much", sport: "some", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2021-01-04", weight: "49.1", alcohol_consumption: "none", sport: "none", note: "", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2021-01-05", weight: "48.5", alcohol_consumption: "none", sport: "some", note: "", account_id: 1, batch_id: 2).save
   end
 
   def before_all

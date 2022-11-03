@@ -43,6 +43,7 @@ class EntriesActionTest < CapybaraTestCase
     assert_content "Day"
     assert_content "Weight"
     assert_content "Alcohol"
+    assert_content "Sport"
     assert_content "Note"
     assert_button "Validate"
 
@@ -50,26 +51,28 @@ class EntriesActionTest < CapybaraTestCase
     fill_in "Weight", with: "52.0"
     fill_in "Note", with: "This is my first test entry"
     select("No Alcohol")
+    select("No Sport")
     click_on "Validate"
 
     assert_current_path "/entries"
     assert_content "Fri 01 Jan 2021"
     assert_content "52.0"
     assert_content "20.3" # BMI
-    assert_content "🟢"
+    assert_content "🟢", count: 1
     refute_content "🟠"
-    refute_content "🔴"
+    assert_content "🔴", count: 1
     refute_content "⚪"
     # assert_content "This is my first test entry" Cannot test it without JS testing driver enabled
     assert_equal 1, Batch.where(account_id: @alice_account.id).count
 
-    # Add another entry to test delta and alcohol
+    # Add another entry to test delta, alcohol and sport
 
     visit "/entries/new"
 
     fill_in "Day", with: "02/01/2021"
     fill_in "Weight", with: "53.0"
     select("Some Alcohol")
+    select("Some Sport")
     click_on "Validate"
 
     assert_current_path "/entries"
@@ -78,40 +81,41 @@ class EntriesActionTest < CapybaraTestCase
     assert_content "52.0"
     assert_content "53.0"
     assert_content "+1.0"
-    assert_content "🟢"
-    assert_content "🟠"
-    refute_content "🔴"
+    assert_content "🟢", count: 1
+    assert_content "🟠", count: 2
+    assert_content "🔴", count: 1
     refute_content "⚪"
     assert_content "20.3" # First BMI
     assert_content "20.7" # Second BMI
     assert_equal 1, Batch.where(account_id: @alice_account.id).count
 
-    # Add a third entry to test alcohol
+    # Add a third entry to test alcohol and sport
 
     visit "/entries/new"
 
     fill_in "Day", with: "03/01/2021"
     fill_in "Weight", with: "53.0"
     select("Much Alcohol")
+    select("Much Sport")
     click_on "Validate"
 
     assert_current_path "/entries"
-    assert_content "🟢"
-    assert_content "🟠"
-    assert_content "🔴"
+    assert_content "🟢", count: 2
+    assert_content "🟠", count: 2
+    assert_content "🔴", count: 2
     refute_content "⚪"
 
     # Simulate an entry without alcohol consumption info
 
     alice_batch_id = Batch.where(account_id: @alice_account.id).first.id
     Entry.new(day: Date.parse("2021-01-04"), weight: "50.0", note: "A good note",
-      alcohol_consumption: "", account_id: 1, batch_id: alice_batch_id).save
+      alcohol_consumption: "", sport: "", account_id: 1, batch_id: alice_batch_id).save
 
     visit "/entries"
-    assert_content "🟢"
-    assert_content "🟠"
-    assert_content "🔴"
-    assert_content "⚪"
+    assert_content "🟢", count: 2
+    assert_content "🟠", count: 2
+    assert_content "🔴", count: 2
+    assert_content "⚪", count: 2
   end
 
   def test_can_create_entry_with_an_already_existing_active_batch

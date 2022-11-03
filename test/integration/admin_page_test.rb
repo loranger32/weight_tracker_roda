@@ -206,7 +206,7 @@ class AdminPageTest < CapybaraTestCase
     login!(email: "soondeleted@example.com")
     batch_id = soon_deleted_account.active_batch_id
     entry = Entry.new(weight: "60.0", day: "2021-06-01", note: "", alcohol_consumption: "none",
-      account_id: soon_deleted_account.id, batch_id: batch_id).save
+      sport: "none", account_id: soon_deleted_account.id, batch_id: batch_id).save
 
     logout!
 
@@ -247,7 +247,7 @@ class AdminPageTest < CapybaraTestCase
     login!(email: "notsoondeleted@example.com")
     batch_id = not_soon_deleted_account.active_batch_id
     entry = Entry.new(weight: "60.0", day: "2021-06-01", note: "", alcohol_consumption: "none",
-      account_id: not_soon_deleted_account.id, batch_id: batch_id).save
+      sport: "none", account_id: not_soon_deleted_account.id, batch_id: batch_id).save
 
     logout!
 

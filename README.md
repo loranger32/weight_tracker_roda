@@ -23,6 +23,7 @@ You can [review the code here](https://github.com/loranger32/weight_tracker_roda
 - An entry _must_ have a date and a weight
 - An entry _can_ have an associated note
 - An entry _can_ have an associated alcohol consumption info
+- An entry _can_ have an associated sport activity info
 - Every entry is linked to one (and only one) batch, to allow you to group entries by specific time periods
 - Each batch _can_ have an associated **target weight**
 - Each entry has a **delta to target** attribute to show the remaining weight to loose / gain before reaching target
@@ -83,6 +84,7 @@ The following data are encrypted before being saved in the database :
    - weight
    - note
    - alcohol consumption
+   - sport
 - batches
   - target weight
 - Mensuration

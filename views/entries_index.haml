@@ -115,6 +115,7 @@
             - unless @all_batches
               %td.text-center LEFT
             %td.text-center ALCOHOL
+            %td.text-center SPORT
             %td.text-center BMI
         %tbody
           - @entries.each do |entry|
@@ -127,6 +128,7 @@
               - unless @all_batches
                 %td.text-center= @batch_info[:target] ? entry.delta_to_target : "/"
               %td.text-center= alcohol_sign(entry.alcohol_consumption)
+              %td.text-center= sport_sign(entry.sport)
               %td.text-center= entry.bmi
 
 - content_for :js, assets([:js, :bs_tooltip])

@@ -14,11 +14,16 @@ class BatchManegmentTest < CapybaraTestCase
     Batch.new(account_id: 1, active: false, name: "past batch", target: "50.0").save
 
     # Cannot use insert here beacuse of the column encryption
-    Entry.new(day: "2020-11-01", weight: "51.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 1).save
-    Entry.new(day: "2020-11-02", weight: "54.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 1).save
-    Entry.new(day: "2020-12-01", weight: "51.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2020-12-02", weight: "52.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 2).save
-    Entry.new(day: "2020-12-03", weight: "53.0", note: "", alcohol_consumption: "none", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2020-11-01", weight: "51.0", note: "", alcohol_consumption: "none",
+       sport: "none", account_id: 1, batch_id: 1).save
+    Entry.new(day: "2020-11-02", weight: "54.0", note: "", alcohol_consumption: "none",
+       sport: "none", account_id: 1, batch_id: 1).save
+    Entry.new(day: "2020-12-01", weight: "51.0", note: "", alcohol_consumption: "none",
+       sport: "none", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2020-12-02", weight: "52.0", note: "", alcohol_consumption: "none",
+       sport: "none", account_id: 1, batch_id: 2).save
+    Entry.new(day: "2020-12-03", weight: "53.0", note: "", alcohol_consumption: "none",
+       sport: "none", account_id: 1, batch_id: 2).save
   end
 
   def before_all

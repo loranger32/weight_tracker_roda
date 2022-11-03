@@ -1,10 +1,10 @@
 module ViewHelpers
-  def alcohol_consumption_types
-    Entry::ALCOHOL_CONSUMPTION
+  def activity_types
+    Entry::ACTIVITY_TYPE
   end
 
   def alcohol_select_option(type)
-    return "Unknown" unless alcohol_consumption_types.include?(type)
+    return "Unknown" unless Entry::ACTIVITY_TYPE.include?(type)
 
     if type == "none"
       "No Alcohol"
@@ -28,6 +28,26 @@ module ViewHelpers
       "Weight Tracker"
     else
       "WT - #{title}"
+    end
+  end
+
+  def sport_select_option(type)
+    return "Unknown" unless Entry::ACTIVITY_TYPE.include?(type)
+
+    if type == "none"
+      "No Sport"
+    else
+      type.capitalize + " Sport"
+    end
+  end
+
+  def sport_sign(type)
+    case type
+    when "none" then "🔴"
+    when "some" then "🟠"
+    when "much" then "🟢"
+    else
+      "⚪"
     end
   end
 

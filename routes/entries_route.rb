@@ -54,6 +54,7 @@ class App
                       weight: h(tp.str("weight")),
                       note: tp.str("note"),
                       alcohol_consumption: h(tp.str("alcohol_consumption")),
+                      sport: h(tp.str("sport")),
                       batch_id: tp.pos_int("batch-id"),
                       account_id: @account_ds[:id]}
 
@@ -111,6 +112,7 @@ class App
                         weight: h(tp.str("weight")),
                         note: tp.str("note"),
                         alcohol_consumption: h(tp.str("alcohol_consumption")),
+                        sport: h(tp.str("sport")),
                         batch_id: tp.pos_int("batch-id"),
                         account_id: @account_ds[:id]}
 
