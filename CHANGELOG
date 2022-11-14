@@ -1,8 +1,11 @@
 == Master
 
-* Add sport activity info for each enytry
 
-* Add alcohol consumption info for each enytry
+== 0.13.0 
+
+* Add sport activity info for each enytry (DB migration needed)
+
+* Add alcohol consumption info for each enytry (DB migration needed)
 
 * Remove useless nesting of the app into the WeightTracker folder
 
