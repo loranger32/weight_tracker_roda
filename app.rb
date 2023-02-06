@@ -273,7 +273,7 @@ class App < Roda
       r.post do
         @raw_entry_data = Entry.where(account_id: @account_ds[:id])
           .order(:id)
-          .select(:day, :weight, :note, :batch_id)
+          .select(:day, :weight, :note, :batch_id, :alcohol_consumption, :sport)
         @raw_batch_data = Batch.where(account_id: @account_ds[:id])
           .order(:id)
           .select(:id, :name, :target)
