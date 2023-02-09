@@ -22,7 +22,7 @@
           - @account_ds ||= rodauth.account_from_session
           %a.nav-link.dropdown-toggle#navbarDropdownMenuLink{href: "#", role: "button", "data-bs-toggle" => "dropdown",
             "aria-expanded" => false}= @account_ds[:user_name]
-          %ul.dropdown-menu{"aria-labelledby" => "navbarDropdownMenuLink"}
+          %ul.dropdown-menu.dropdown-menu-md-end{"aria-labelledby" => "navbarDropdownMenuLink"}
             %li
               %a.dropdown-item{href: "/account"} Account
             - if Account[@account_ds[:id]].is_admin?
