@@ -63,6 +63,7 @@ class App
       end
 
       r.is "edit" do
+        @entries_count = @batch.entries.count
         view "batch_edit"
       end
 

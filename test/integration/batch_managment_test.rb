@@ -75,12 +75,13 @@ class BatchManegmentTest < CapybaraTestCase
 
   def test_link_to_batch_related_entries_in_batch_edit_page
     batch = Batch.where(name: "New Batch", account_id: 1, active: true).first
+    entries_count = batch.entries.count
     visit "/batches"
     assert_current_path "/batches"
     assert_link "New Batch", href: "/batches/#{batch.id}/edit"
     click_link "New Batch", href: "/batches/#{batch.id}/edit"
-    assert_link "View Entries", href: "/entries?batch_id=#{batch.id}"
-    click_link "View Entries"
+    assert_link "View #{entries_count} Entries", href: "/entries?batch_id=#{batch.id}"
+    click_link "View #{entries_count} Entries"
     assert_current_path "/entries?batch_id=#{batch.id}"
   end
 

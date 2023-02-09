@@ -12,7 +12,7 @@
     .alert.alert-info.mb-3
       %p.text-center First Entry: #{@batch.first_date || "/"}
       %p.text-center Last Entry: #{@batch.last_date || "/"}
-      %a.d-block.btn.btn-secondary.w-75.mx-auto.mb-4{href: "/entries?batch_id=#{@batch.id}"} View Entries
+      %a.d-block.btn.btn-secondary.w-75.mx-auto.mb-4{href: "/entries?batch_id=#{@batch.id}"} View #{@entries_count} Entries
 
     %form{action: update_form_action, method: :post, role: "forme"}
       != csrf_tag(update_form_action)
