@@ -23,6 +23,11 @@ module ViewHelpers
     end
   end
 
+  def batch_link(current_batch)
+    return "/entries/index" unless current_batch
+    "/entries?batch_id=#{current_batch.id}"
+  end
+
   def set_page_title(title)
     if title.nil? || title.empty?
       "Weight Tracker"
@@ -83,11 +88,6 @@ module ViewHelpers
     else
       "bg-secondary"
     end
-  end
-
-  def batch_link(current_batch)
-    return "/entries/index" unless current_batch
-    "/entries?batch_id=#{current_batch.id}"
   end
 
   def entries_index_batch_badge_infos(batch_info)

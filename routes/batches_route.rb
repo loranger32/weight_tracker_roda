@@ -6,6 +6,7 @@ class App
     r.is do
       r.get do
         @batches = Account[@account_ds[:id]].batches
+        @entries_count = @current_batch.entries.count if @current_batch
         view "batch_index"
       end
 

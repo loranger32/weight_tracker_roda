@@ -4,11 +4,11 @@
 
 .row
   .col-10.offset-1.col-sm-8.offset-sm-2.col-md-6.offset-md-3.col-lg-4.offset-lg-4
-    %a.d-block.no-decoration.alert.alert-info.w-75.mx-auto.text-center.mb-3{href: batch_link(@current_batch)}
+    .alert.alert-info.w-75.mx-auto.text-center.mb-3
       - if @current_batch
-        = @current_batch.name
-        %br
-        Target: #{@current_batch.target}
+        %p.mb-3 #{@current_batch.name} ----- #{@current_batch.target} Kg
+        %a.d-block.btn.btn-secondary.w-75.mx-auto.mb-2{href: "/entries?batch_id=#{@current_batch.id}"}
+          %small View #{@entries_count} Entries
       - else 
         No Active Batch
 
