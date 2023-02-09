@@ -7,11 +7,11 @@
     .alert.alert-info.w-75.mx-auto.text-center.mb-5
       - if @all_batches
         %p.mb-3 All batches
-        %a.d-block.rounded.no-decoration.bg-warning.text-white.w-50.mx-auto.mb-2{href: "/entries"}
+        %a.d-block.rounded.no-decoration.bg-warning.text-white.w-50.mx-auto.mb-4.mb-md-2{href: "/entries"}
           %small Current Batch's Entries
       -else
         %p.mb-3 #{@batch_info[:name]} ----- #{@batch_info[:target]} Kg
-        %a.d-block.rounded.no-decoration.bg-warning.text-white.w-50.mx-auto.mb-2{href: "/entries?all_batches=true"}
+        %a.d-block.rounded.no-decoration.bg-warning.text-white.w-50.mx-auto.mb-4.mb-md-2{href: "/entries?all_batches=true"}
           %small All Entries
 
       %a.d-block.rounded.no-decoration.bg-secondary.text-white.w-50.mx-auto.text-center.mb-2{href: "/batches"}
