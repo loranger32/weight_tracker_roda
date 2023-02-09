@@ -5,7 +5,7 @@ class EntriesActionTest < CapybaraTestCase
     super
     clean_test_db!
     @alice_account = create_and_verify_account!
-    login! # Creates a default batch and menusration for account
+    login! # Creates a default batch and mensuration for account
     @alice_account.mensuration.update(height: "160")
     logout!
   end
@@ -279,7 +279,7 @@ class EntriesActionTest < CapybaraTestCase
     assert_equal 2, Batch.where(account_id: @alice_account.id).count
 
     visit "/entries/new"
-    
+
     fill_in "Day", with: "08/01/2021"
     fill_in "Weight", with: "53.0"
     fill_in "note", with: "Valid note"
@@ -310,6 +310,47 @@ class EntriesActionTest < CapybaraTestCase
     visit "/entries"
     assert_link href: "/batches"
     assert_content "Target: 0.0"
+  end
+
+  def test_back_to_entries_button_on_new_entry_form_redirects_to_entries_of_active_batch
+    visit "/entries/new"
+    assert_link href: "/entries"
+  end
+
+  def test_back_to_entries_button_on_update_entry_from_active_batch_redirects_to_entries_of_active_batch
+    # Create an entry in the currently active batch
+    visit "/entries/new"
+    fill_in "Day", with: "09/01/2021" # It's a saturday
+    fill_in "Weight", with: "53.0"
+    fill_in "note", with: "Valid note 1"
+    click_on "Validate"
+
+    # Create a second batch, which will be active by default
+    visit "/batches"
+    fill_in "Batch Name", with: "Test Batch"
+    fill_in "Target Weight", with: "80,0"
+    click_on "Create"
+
+    # Create two new entries on new batch
+    visit "/entries/new"
+    fill_in "Day", with: "10/01/2021"
+    fill_in "Weight", with: "53.5"
+    fill_in "note", with: "Valid note 2"
+    click_on "Validate"
+
+    visit "/entries/new"
+    fill_in "Day", with: "11/01/2021"
+    fill_in "Weight", with: "54.0"
+    fill_in "note", with: "Valid note 3"
+    click_on "Validate"
+
+    assert_current_path "/entries"
+    click_on "See All"
+    assert_current_path "/entries?all_batches=true"
+    click_on "Sat 09 Jan 2021"    # Entry from first batch
+    entry = Entry.where(day: "2021-01-09").first
+    assert_current_path "/entries/#{entry.id}/edit"
+    assert_link "Back to entries", href: "/entries?batch_id=#{entry.batch_id}"
   end
 
   def test_can_update_an_entry_with_valid_params

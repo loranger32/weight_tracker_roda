@@ -3,11 +3,13 @@
     %form{action: create_or_update_entry_action(@entry), method: :post}
       != csrf_tag(create_or_update_entry_action(@entry))
 
-      %a.no-decoration.mb-3{href: "/batches"}
-        .alert.alert-info.w-75.mx-auto.text-center
-          = @batch_info[:name]
-          %br
-          Target: #{@batch_info[:target]}
+      -# %a.no-decoration.mb-3{href: "/batches"}
+      -#   .alert.alert-info.w-75.mx-auto.text-center
+      -#     = @batch_info[:name]
+      -#     %br
+      -#     Target: #{@batch_info[:target]}
+
+      %a.d-block.btn.btn-secondary.w-100.mb-5{href: create_or_update_back_to_entries_link(@entry)} Back to entries
 
       .form-group.mb-3
         %label.form-label{for: "day"} Day

@@ -65,6 +65,10 @@ module ViewHelpers
     entry.new? ? "/entries" : "/entries/#{entry.id}"
   end
 
+  def create_or_update_back_to_entries_link(entry)
+    entry.new? ? "/entries" : "/entries?batch_id=#{entry.batch_id}"
+  end
+
   def update_action?(entry)
     entry.new?
   end
