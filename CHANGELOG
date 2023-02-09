@@ -1,27 +1,32 @@
 == Master
 
+* Improve UI on entries and batches index pages - clarify info boxes
+
+* Fix layout of the login / logout / account management dropdown menu
+
+* Add a 'back to entries' link on entry new and edit pages
 
 == 0.13.0 
 
-* Add sport activity info for each enytry (DB migration needed)
+* Add sport activity info for each entry (DB migration needed)
 
-* Add alcohol consumption info for each enytry (DB migration needed)
+* Add alcohol consumption info for each entry (DB migration needed)
 
 * Remove useless nesting of the app into the WeightTracker folder
 
-* Remove incorrect "method='post'" in custom rodauth mail templates
+* Remove incorrect "method='post'" in custom Rodauth mail templates
 
 * Fix bug causing truncate_audit_log_job to let 101 records instead of 100
 
 == 0.12.0
 
-* Add feature to select batch to assign an entry to + can alos update the batch an existing entry belongs to
+* Add feature to select batch to assign an entry to + can also update the batch an existing entry belongs to
 
 * Set domain value in Rodauth configuration
 
 * Use Rodauth internal request create_account and verify_account features in tests
 
-* Change entries index table appearence
+* Change entries index table display
 
 == 0.11.1
 
@@ -60,6 +65,6 @@
 
 * add a lowest and highest bmi stats on entries index page
 
-* add the Password Reset Notify feature (from rodauth 2.22.0)
+* add the Password Reset Notify feature (from Rodauth 2.22.0)
 
 Base version == 0.9.0
