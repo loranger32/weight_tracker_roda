@@ -20,7 +20,7 @@ class App
 
           batch = Batch[batch_id]
 
-          @batch_info = {id: batch.id, name: batch.name, target: batch.target || "/"}
+          @batch_info = {id: batch.id, name: batch.name.force_encoding("UTF-8"), target: batch.target || "/"}
           @entries = Entry.all_with_deltas(account_id: @account_ds[:id], batch_id: batch_id,
             batch_target: batch.target.to_f)
 
@@ -33,7 +33,7 @@ class App
 
         # Request entries of the current batch - default action
         else
-          @batch_info = {name: @current_batch.name, target: @current_batch.target || "/"}
+          @batch_info = {name: @current_batch.name.force_encoding("UTF-8"), target: @current_batch.target || "/"}
           @entries = Entry.all_with_deltas(account_id: @account_ds[:id], batch_id: @current_batch.id,
             batch_target: @current_batch.target.to_f)
         end

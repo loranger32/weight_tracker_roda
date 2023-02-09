@@ -4,24 +4,23 @@
 
 .row
   .col-10.offset-1.col-sm-8.offset-sm-2.col-md-6.offset-md-3.col-lg-4.offset-lg-4
-    - if @all_batches
-      .alert.alert-info.w-75.mx-auto.text-center.mb-5
-        %a.d-block.no-decoration.mb-2{href: "/batches"} All batches
-        %a.d-block.rounded.no-decoration.bg-warning.text-white.w-50.mx-auto.mb-1{href: "/entries"}
-          %small See Current
-    -else
-      .alert.alert-info.w-75.mx-auto.text-center.mb-2
-        %a.d-block.no-decoration.mb-2{href: "/batches"}
-          = @batch_info[:name].force_encoding("UTF-8")
-          %br
-          Target: #{@batch_info[:target]}
+    .alert.alert-info.w-75.mx-auto.text-center.mb-5
+      - if @all_batches
+        %p.mb-3 All batches
+        %a.d-block.rounded.no-decoration.bg-warning.text-white.w-50.mx-auto.mb-2{href: "/entries"}
+          %small Current Batch's Entries
+      -else
+        %p.mb-3 #{@batch_info[:name]} ----- #{@batch_info[:target]} Kg
+        %a.d-block.rounded.no-decoration.bg-warning.text-white.w-50.mx-auto.mb-2{href: "/entries?all_batches=true"}
+          %small All Entries
 
-        %a.d-block.rounded.no-decoration.bg-warning.text-white.w-50.mx-auto.mb-1{href: "/entries?all_batches=true"}
-          %small See All
-      %a.d-block.btn.btn-primary.w-75.mx-auto.mb-5{href: "/entries/new"}
-        %svg{xmlns: "http://www.w3.org/2000/svg", width: "20", height: "20", fill: "currentColor", class: "bi bi-plus-circle-fill", viewBox: "0 0 16 16"}
-          %path{d: "M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"}
-        New Entry
+      %a.d-block.rounded.no-decoration.bg-secondary.text-white.w-50.mx-auto.text-center.mb-2{href: "/batches"}
+        %small Switch Batch
+
+    %a.d-block.btn.btn-primary.w-75.mx-auto.mb-5{href: "/entries/new"}
+      %svg{xmlns: "http://www.w3.org/2000/svg", width: "20", height: "20", fill: "currentColor", class: "bi bi-plus-circle-fill", viewBox: "0 0 16 16"}
+        %path{d: "M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"}
+      New Entry
 
 - unless @all_batches
   .row.mb-4

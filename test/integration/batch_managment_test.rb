@@ -46,8 +46,8 @@ class BatchManegmentTest < CapybaraTestCase
 
   def test_can_view_index_of_batches
     visit "/entries"
-    assert_link "New Batch", href: "/batches"
-    click_on "New Batch"
+    assert_link "Switch Batch", href: "/batches"
+    click_on "Switch Batch"
 
     assert_current_path "/batches"
     assert_content "Batches"

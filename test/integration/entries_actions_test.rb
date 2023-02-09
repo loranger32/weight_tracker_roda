@@ -308,8 +308,8 @@ class EntriesActionTest < CapybaraTestCase
 
   def test_link_to_batches_page_on_entries_index_page
     visit "/entries"
-    assert_link href: "/batches"
-    assert_content "Target: 0.0"
+    assert_link "Switch Batch", href: "/batches"
+    assert_content "0.0 Kg"
   end
 
   def test_back_to_entries_button_on_new_entry_form_redirects_to_entries_of_active_batch
@@ -345,7 +345,7 @@ class EntriesActionTest < CapybaraTestCase
     click_on "Validate"
 
     assert_current_path "/entries"
-    click_on "See All"
+    click_on "All Entries"
     assert_current_path "/entries?all_batches=true"
     click_on "Sat 09 Jan 2021"    # Entry from first batch
     entry = Entry.where(day: "2021-01-09").first
@@ -408,8 +408,9 @@ class EntriesActionTest < CapybaraTestCase
 
     visit "/batches"
     click_on "test batch"
-    assert_current_path "/batches/#{Batch.where(name: "test batch").first.id}/edit"
-    click_on "View Entries"
+    test_batch = Batch.where(name: "test batch").first
+    assert_current_path "/batches/#{test_batch.id}/edit"
+    click_on "View #{test_batch.entries.count} Entries"
     assert_content "Sun 10 Jan 2021"
   end
 
