@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 gem "bcrypt", "~> 3.1", ">= 3.1.18"
-gem "haml", "~> 5.2", ">= 5.2.2"
+gem "haml", "~> 6.1", ">= 6.1.2"
 gem "kramdown", "~> 2.4"
 gem "mail", "~> 2.8", ">= 2.8.1"
 gem "net-smtp", "~> 0.3", ">= 0.3.3"

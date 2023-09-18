@@ -1,6 +1,8 @@
 == Master
 
-* Update all gems (except haml, still 5.2.2)
+== 0.14.0
+
+* Update all gems
 
 * Improve UI on entries and batches index pages - clarify info boxes
 
