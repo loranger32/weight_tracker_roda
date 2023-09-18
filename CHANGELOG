@@ -1,5 +1,7 @@
 == Master
 
+* Update all gems (except haml, still 5.2.2)
+
 * Improve UI on entries and batches index pages - clarify info boxes
 
 * Fix layout of the login / logout / account management dropdown menu
