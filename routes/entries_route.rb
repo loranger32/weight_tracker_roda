@@ -73,7 +73,7 @@ class App
         flash.now["error"] = if !account_owns_batch?(Account[@account_ds[:id]], submitted[:batch_id])
           "Invalid batch id provided"
         elsif !valid_weight_string?(submitted[:weight])
-          "Invalid weight, must be between 20.0 and 999.9"
+          "Invalid weight, must be between 0.0 and 999.9"
         else
           format_flash_error(@entry)
         end
@@ -129,7 +129,7 @@ class App
           flash.now["error"] = if !account_owns_batch?(Account[@account_ds[:id]], submitted[:batch_id])
             "Invalid batch id provided"
           elsif !valid_weight_string?(submitted[:weight])
-            "Invalid weight, must be between 20.0 and 999.9"
+            "Invalid weight, must be between 0.0 and 999.9"
           else
             format_flash_error(@entry)
           end

@@ -257,7 +257,7 @@ class EntriesActionTest < CapybaraTestCase
 
     assert_current_path "/entries"
     assert_css ".alert-danger"
-    assert_content "Invalid weight, must be between 20.0 and 999.9"
+    assert_content "Invalid weight, must be between 0.0 and 999.9"
     assert_equal 1, Entry.where(account_id: @alice_account.id).count
 
     # Try to create entry with too long note
@@ -471,7 +471,7 @@ class EntriesActionTest < CapybaraTestCase
 
     assert_current_path "/entries/#{first_test_entry.id}"
     assert_css ".alert-danger"
-    assert_content "Invalid weight, must be between 20.0 and 999.9"
+    assert_content "Invalid weight, must be between 0.0 and 999.9"
 
     # Try to update entry with too long note
     visit "/entries"
