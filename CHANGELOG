@@ -1,5 +1,15 @@
 == Master
 
+* Bump Puma from 6.3.1 to 6.4.0
+
+* Allow weight from 0 (html form)
+
+* Refactor #valid_height?
+
+* Use #set_fields instead of #set in entry model mass assignment (create and update)
+
+* Add tests for #valid_height? and #valid_weight_string?
+
 == 0.14.0
 
 * Update all gems
