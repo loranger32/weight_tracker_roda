@@ -58,10 +58,10 @@ class App
                       batch_id: tp.pos_int("batch-id"),
                       account_id: @account_ds[:id]}
 
-        @entry.set(submitted)
+        @entry.set_fields(submitted, [:day, :weight, :note, :alcohol_consumption, :sport, :batch_id, :account_id])
 
         # valid_weight_string cannot be validated at the model level due to encryption
-        # account_owns_batch could be, but copmlicates the model tests
+        # account_owns_batch could be, but complicates the model tests
         if @entry.valid? && valid_weight_string?(submitted[:weight]) &&
             account_owns_batch?(Account[@account_ds[:id]], submitted[:batch_id])
 
@@ -116,7 +116,7 @@ class App
                         batch_id: tp.pos_int("batch-id"),
                         account_id: @account_ds[:id]}
 
-          @entry.set(submitted)
+          @entry.set_fields(submitted, [:day, :weight, :note, :alcohol_consumption, :sport, :batch_id, :account_id])
 
           if @entry.valid? && valid_weight_string?(submitted[:weight]) &&
               account_owns_batch?(Account[@account_ds[:id]], submitted[:batch_id])
