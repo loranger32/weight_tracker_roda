@@ -9,7 +9,7 @@ module AppHelpers
 
   def valid_weight_string?(weight) = weight.match?(/\A\d{2,3}[\,|\.]\d\z/)
 
-  def valid_height?(height) = height != 0 && height < 250 && height > 50
+  def valid_height?(height) = (1...300) === height
 
   def ensure_at_least_one_batch_for_account!(account_id)
     return if Batch.of_account(account_id).length > 0
