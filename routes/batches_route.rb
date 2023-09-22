@@ -1,11 +1,10 @@
 class App
   hash_branch("batches") do |r|
-    # TODO - Ugly - to refactor
-    @current_batch = Batch[Account[@account_ds[:id]].active_batch_id]
+    @current_batch = Batch.active_for_account(@account_ds[:id]).first
 
     r.is do
       r.get do
-        @batches = Account[@account_ds[:id]].batches
+        @batches = Batch.of_account(@account_ds[:id])
         @entries_count = @current_batch.entries.count if @current_batch
         view "batch_index"
       end

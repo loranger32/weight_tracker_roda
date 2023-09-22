@@ -8,12 +8,14 @@ class Batch < Sequel::Model
   one_to_many :entries
   many_to_one :account
 
-  def self.of_account(account_id)
-    Batch.where(account_id: account_id).all
-  end
+  dataset_module do
+    def of_account(account_id)
+      Batch.where(account_id: account_id).all
+    end
 
-  def self.active_for_account(account_id)
-    Batch.where(account_id: account_id, active: true).all
+    def active_for_account(account_id)
+      Batch.where(account_id: account_id, active: true).all
+    end
   end
 
   def before_validation
