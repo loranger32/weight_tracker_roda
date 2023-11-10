@@ -203,7 +203,8 @@ class App < Roda
          close_account: "close_account.js", recovery_codes: "recovery_codes.js",
          entries_edit: "entries_edit.js", batch_index: "batch_index.js",
          batch_edit: "batch_edit.js", admin_actions: "admin_actions.js",
-         bs_tooltip: "bs_tooltip.js", entries_index_charts: "entries_index_charts.js"},
+         bs_tooltip: "bs_tooltip.js", entries_index_charts: "entries_index_charts.js",
+         htmx: "htmx_1_9_6.js"},
     group_subdirs: false,
     gzip: true,
     timestamp_paths: true

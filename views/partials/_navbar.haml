@@ -16,7 +16,7 @@
         %li.nav-item
           %a.nav-link{href: "/batches"} Batches
         %li.nav-item
-          %a.nav-link{href: "/about"} About
+          %a.nav-link{href: "/about", "hx-boost" => "true"} About
       .nav-item.dropdown
         - if rodauth.authenticated?
           - @account_ds ||= rodauth.account_from_session
