@@ -1,5 +1,9 @@
 == Master
 
+* Change the email from email address
+
+* Integrate HTMX and begin with some hx boost links
+
 * Refactor Batch query in routes and model
 
 * Bump Puma from 6.3.1 to 6.4.0
