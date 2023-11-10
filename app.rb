@@ -42,7 +42,7 @@ class App < Roda
     end
 
     # Email Base
-    email_from "weighttracker@example.com"
+    email_from ENV["MY_EMAIL"]
     email_subject_prefix "WeightTracker - "
     send_email { |mail| SendEmailInProductionJob.perform_async(mail) } if App.production?
 
@@ -63,7 +63,7 @@ class App < Roda
 
     after_create_account do
       mail = Mail.new do
-        from "weighttracker@example.com"
+        from ENV["MY_EMAIL"]
         to ENV["MY_EMAIL"]
         subject "WeightTracker - New User Signed Up"
         body "A new user signed up"
