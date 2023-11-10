@@ -34,7 +34,7 @@
       %p#target-weight= @batch_info[:target]
 
 .row
-  .col-12.col-md-10.offset-md-1.col-lg-5.col-xl-6.offset-xl-0.mb-5
+  .col-12.col-md-8
     %p#chart-entries!= @chart_data.to_json
     .row.mb-3
       .col-6.offset-1
@@ -50,58 +50,58 @@
           %option{value: 5} Friday
           %option{value: 6} Saturday
           %option{value: 0} Sunday
-    %canvas.mb-5#myChart{width: 100, height: 100}
-    #stats
-      %h3.text-center.mb-4 Stats
-      - if @stats
-        %p
-          Lowest / Highest Weight : 
-          %span.badge.bg-success= @stats.min_weight
-          \/ 
-          %span.badge.bg-danger= @stats.max_weight
-        %p
-          Lowest / Highest BMI :
-          %span.badge.bg-success= @stats.min_bmi
-          \/
-          %span.badge.bg-danger= @stats.max_bmi
-        %p
-          Biggest Daily Loss / Gain : 
-          %span.badge.bg-success= @stats.biggest_daily_loss
-          \/ 
-          %span.badge.bg-danger= @stats.biggest_daily_gain
-        %p
-          Total Loss / Gain :
-          %span.badge.bg-success= @stats.total_loss
-          \/
-          %span.badge.bg-danger= @stats.total_gain
+    %canvas.mb-5#myChart{width: 150, height: 100}
+  .col-12.col-md-3.offset-md-1#stats
+    %h3.text-center.mb-4.mt-5 Stats
+    - if @stats
+      %p
+        Lowest / Highest Weight :
+        %span.badge.bg-success= @stats.min_weight
+        \/
+        %span.badge.bg-danger= @stats.max_weight
+      %p
+        Lowest / Highest BMI :
+        %span.badge.bg-success= @stats.min_bmi
+        \/
+        %span.badge.bg-danger= @stats.max_bmi
+      %p
+        Biggest Daily Loss / Gain :
+        %span.badge.bg-success= @stats.biggest_daily_loss
+        \/
+        %span.badge.bg-danger= @stats.biggest_daily_gain
+      %p
+        Total Loss / Gain :
+        %span.badge.bg-success= @stats.total_loss
+        \/
+        %span.badge.bg-danger= @stats.total_gain
 
-        %p{"data-bs-toggle" => "tooltip", "data-bs-placement" => "bottom", title: "First number : total of gains/losses for this day. Second number : average loss/gain for this day"}
-          Best / Worst Day of Week :
-          %span.badge.bg-success= @stats.best_day_of_week
-          \/
-          %span.badge.bg-danger= @stats.worst_day_of_week
+      %p{"data-bs-toggle" => "tooltip", "data-bs-placement" => "bottom", title: "First number : total of gains/losses for this day. Second number : average loss/gain for this day"}
+        Best / Worst Day of Week :
+        %span.badge.bg-success= @stats.best_day_of_week
+        \/
+        %span.badge.bg-danger= @stats.worst_day_of_week
 
-        %p
-          Average Loss / Gain per Day :
-          - if @stats.average_loss_per_day <= 0
-            %span.badge.bg-success= @stats.average_loss_per_day
-          - else
-            %span.badge.bg-danger +#{@stats.average_loss_per_day}
+      %p
+        Average Loss / Gain per Day :
+        - if @stats.average_loss_per_day <= 0
+          %span.badge.bg-success= @stats.average_loss_per_day
+        - else
+          %span.badge.bg-danger +#{@stats.average_loss_per_day}
 
-        %p
-          Estimated Time to Target (#{@stats.target}):
-          - ett = @stats.estimated_time_to_target
-          %span.badge{class: ett[:class]}= ett[:content]
-        
-        %p
-          Number of Entries / Number of Days :
-          %span.badge.bg-info #{@entries.length} / #{@stats.total_days}
+      %p
+        Estimated Time to Target (#{@stats.target}):
+        - ett = @stats.estimated_time_to_target
+        %span.badge{class: ett[:class]}= ett[:content]
 
-      - else
-        %p.text-center.mb-4 Not enough entries to compute stats
+      %p
+        Number of Entries / Number of Days :
+        %span.badge.bg-info #{@entries.length} / #{@stats.total_days}
+
+    - else
+      %p.text-center.mb-4 Not enough entries to compute stats
 
 
-  .col-12.col-md-10.offset-md-1.col-lg-5
+  .col-12.col-md-10.offset-md-1
     - if @entries.empty?
       %p.text-center No entries in this batch yet
     - else
