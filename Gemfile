@@ -5,7 +5,7 @@ gem "haml", "~> 6.1", ">= 6.1.2"
 gem "kramdown", "~> 2.4"
 gem "mail", "~> 2.8", ">= 2.8.1"
 gem "net-smtp", "~> 0.3", ">= 0.3.3"
-gem "nokogiri", "~> 1.15", ">= 1.15.4"
+gem "nokogiri", "~> 1.16", ">= 1.16.2"
 gem 'pg', '~> 1.5', '>= 1.5.4'
 gem "puma", "~> 6.3", ">= 6.3.1"
 gem "rackup", "~> 2.1"
