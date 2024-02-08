@@ -1,4 +1,8 @@
-== Master
+== 0.14.1
+
+* Bump Puma to 6.4.2 (from 6.4.0) to address [CVE-2024-21647](https://www.cve.org/CVERecord?id=CVE-2024-21647)
+
+* Bump Nokogiri to 1.16.2 (from 1.15.4) to address [CVE-2024-25062](https://www.cve.org/CVERecord?id=CVE-2024-25062)
 
 * Change the email from email address
 
