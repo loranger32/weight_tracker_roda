@@ -1,5 +1,7 @@
 == MAIN
 
+- Use local versions of Bootstrap and Charts.js instead of CDN
+
 - Use local Ubuntu font files instead of fonts.google.apis.com
 
 - GEMFILE - Gemfile.lock - Bump Roda to 3.77 (from 3.72), Rodauth to 2.33 (from 2.31) and Sequel to 5.77 (from 5.72)

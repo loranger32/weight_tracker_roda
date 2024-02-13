@@ -198,13 +198,13 @@ class App < Roda
   plugin :render, engine: "haml", template_opts: {escape_html: true}
   plugin :partials
   plugin :assets,
-    css: %w[fonts.css style.css],
+    css: %w[fonts.css bootstrap_5_3_2.min.css style.css],
     js: {main: "main.js", progress_bar: "progress-bar.js",
          close_account: "close_account.js", recovery_codes: "recovery_codes.js",
          entries_edit: "entries_edit.js", batch_index: "batch_index.js",
          batch_edit: "batch_edit.js", admin_actions: "admin_actions.js",
          bs_tooltip: "bs_tooltip.js", entries_index_charts: "entries_index_charts.js",
-         htmx: "htmx_1_9_6.js"},
+         chartjs_min: "chart.min.js", htmx: "htmx_1_9_6.js", bootstrap: "bootstrap_5_3_2.bundle.min.js"},
     group_subdirs: false,
     gzip: true,
     timestamp_paths: true
