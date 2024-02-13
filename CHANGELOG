@@ -1,5 +1,7 @@
 == MAIN
 
+- Update ChartJs to 4.4.1 (from 3.5.1)
+
 - Use local versions of Bootstrap and Charts.js instead of CDN
 
 - Use local Ubuntu font files instead of fonts.google.apis.com

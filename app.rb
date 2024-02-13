@@ -204,7 +204,7 @@ class App < Roda
          entries_edit: "entries_edit.js", batch_index: "batch_index.js",
          batch_edit: "batch_edit.js", admin_actions: "admin_actions.js",
          bs_tooltip: "bs_tooltip.js", entries_index_charts: "entries_index_charts.js",
-         chartjs_min: "chart.min.js", htmx: "htmx_1_9_6.js", bootstrap: "bootstrap_5_3_2.bundle.min.js"},
+         chartjs: "chartjs_4_4_1.min.js", htmx: "htmx_1_9_6.js", bootstrap: "bootstrap_5_3_2.bundle.min.js"},
     group_subdirs: false,
     gzip: true,
     timestamp_paths: true
