@@ -171,7 +171,7 @@ class App < Roda
 
   plugin :content_security_policy do |csp|
     csp.default_src :none
-    csp.font_src :self, "fonts.gstatic.com"
+    csp.font_src :self
     csp.img_src :self, "data:" # data: is required for Bootstrap 5 svg inline icons, for the moment
     csp.object_src :none
     csp.frame_src :self
@@ -198,7 +198,7 @@ class App < Roda
   plugin :render, engine: "haml", template_opts: {escape_html: true}
   plugin :partials
   plugin :assets,
-    css: %w[style.css],
+    css: %w[fonts.css style.css],
     js: {main: "main.js", progress_bar: "progress-bar.js",
          close_account: "close_account.js", recovery_codes: "recovery_codes.js",
          entries_edit: "entries_edit.js", batch_index: "batch_index.js",
