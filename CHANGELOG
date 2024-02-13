@@ -1,3 +1,7 @@
+== MAIN
+
+- GEMFILE - Gemfile.lock - Bump Roda to 3.77 (from 3.72), Rodauth to 2.33 (from 2.31) and Sequel to 5.77 (from 5.72)
+
 == 0.14.1
 
 * Bump Puma to 6.4.2 (from 6.4.0) to address [CVE-2024-21647](https://www.cve.org/CVERecord?id=CVE-2024-21647)
