@@ -1,5 +1,7 @@
 source "https://rubygems.org"
 
+ruby "3.4.1"
+
 gem "base64", "~> 0.2.0"
 gem "bcrypt", "~> 3.1", ">= 3.1.20"
 gem "haml", "~> 6.1", ">= 6.1.2"
