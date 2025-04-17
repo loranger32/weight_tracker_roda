@@ -1,5 +1,11 @@
 == MAIN
 
+- Bump rackup to 2.2.1 to remove dependency on webrick (fix [CVE-2024-47220](https://www.cve.org/CVERecord?id=CVE-2024-47220))
+
+- Bump nokogiri to 1.18.6 to fix [CVE-2025-24855](https://www.cve.org/CVERecord?id=CVE-2025-24855) and [CVE 2024-55549](https://www.cve.org/CVERecord?id=CVE-2024-55549)
+
+- various gem updates (rodauth, roda, bcrypt, pg, minitest)
+
 - Update ChartJs to 4.4.1 (from 3.5.1)
 
 - Use local versions of Bootstrap and Charts.js instead of CDN
