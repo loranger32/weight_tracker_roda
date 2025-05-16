@@ -1,5 +1,9 @@
 == MAIN
 
+== 0.14.2
+
+- Bumpr Ruby to version 3.4.4
+
 - Bump rack to 3.1.14 to fix [CVE-2025-46727](https://www.cve.org/CVERecord?id=CVE-2025-46727)
 
 - Bump rackup to 2.2.1 to remove dependency on webrick (fix [CVE-2024-47220](https://www.cve.org/CVERecord?id=CVE-2024-47220))
