@@ -1,6 +1,6 @@
 # README
 
-## Weight Tracker (0.14.2)
+## Weight Tracker (0.15.0)
 
 A simple app to track your daily weight, with charts.
 
@@ -95,15 +95,6 @@ So even if someone gains an unauthorized access to the database, all these data 
 Note that the developer must know the encryption/decryption key and can thus technically decrypt the data, so you'll have to trust him.
 
 
-## Next Features
-
-- Decide for each batch if you want to loose or gain weight
-
-## Known Bugs
-
-- For an unknown reason (at the moment), if you signup with a "Hotmail" email address, you won't receive the "confirm your email" email OR you will receive it hours later. Things seems to be OK with an outlook.com email address. I still don't know if it's a Hotmail issue, a Sendgrid (configuration) issue or an issue in my own code.
-
-
 ## Installation
 
 - Install latest stable ruby version (use a version manager like [rbenv](https://github.com/rbenv/rbenv), [rvm](https://rvm.io/) or [asdf](https://github.com/asdf-vm/asdf-ruby)).
@@ -116,8 +107,9 @@ Note that the developer must know the encryption/decryption key and can thus tec
   - TEST_DATABASE_URL ==> Connection info to your test database, if you want to run the tests
   - SESSION_SECRET ==> must be a string of at least 64 bytes and should be randomly generated. More info in the [Roda::RodaPlugins::Session documentation](http://roda.jeremyevans.net/rdoc/classes/Roda/RodaPlugins/Sessions.html)
   - SEQUEL_COLUMN_ENCRYPTION_KEY ==> Key to encrypt/decrypt the data before being saved into the database. [More information here](http://sequel.jeremyevans.net/rdoc-plugins/classes/Sequel/Plugins/ColumnEncryption.html).
+  - WT_EMAIL ==> The email address the app will send from
   - MY_EMAIL ==> The email address where admin notifications will be sent in production mode
-  - SENDRGID_API_KEY ==> to allow sending email in production mode (not needed in development and tests). Obviously requires a Sendgrid account.
+  - SMTP_PORT, SMTP_DOMAIN, SMTP_ADDRESS, SMTP_USERNAME and SMTP_PASSWORD for your SMTP provider
 - Run `rake db:migrate` to create the database tables (if the `TEST_DATABASE_URL` environment variable is set, it will also create the test database).
 - _(optional)_ run `rake db:seed` to insert the seed data.
 - _(optional)_ run `rake` to run the test to confirm that everything works as expected.

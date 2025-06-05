@@ -1,5 +1,9 @@
 == MAIN
 
+== 0.15.0
+
+- Remove the Sendgrid dependency and use a generic SMTP relay method for sending emails
+
 == 0.14.2
 
 - Bumpr Ruby to version 3.4.4

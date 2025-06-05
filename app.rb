@@ -42,9 +42,8 @@ class App < Roda
     end
 
     # Email Base
-    email_from ENV["MY_EMAIL"]
+    email_from ENV["WT_EMAIL"]
     email_subject_prefix "WeightTracker - "
-    send_email { |mail| SendEmailInProductionJob.perform_async(mail) } if App.production?
 
     # Login Password Requirements Base
     password_hash_cost(App.test? ? 2 : 12)
@@ -61,17 +60,16 @@ class App < Roda
       account[:user_name] = user_name
     end
 
-    after_create_account do
-      mail = Mail.new do
-        from ENV["MY_EMAIL"]
-        to ENV["MY_EMAIL"]
-        subject "WeightTracker - New User Signed Up"
-        body "A new user signed up"
-      end
+    # Send email to admin when a new user signs up (not in test - complicates tests and not major feature)
+    unless App.test?
+      after_create_account do
+        mail = Mail.new do
+          from ENV["WT_EMAIL"]
+          to ENV["MY_EMAIL"]
+          subject "WeightTracker - New User Signed Up"
+          body "A new user signed up"
+        end
 
-      if App.production? # Don't send email in tests (for the moment - complicates tests and not major feature)
-        SendEmailInProductionJob.perform_async(mail)
-      else
         mail.deliver!
       end
     end
@@ -218,8 +216,31 @@ class App < Roda
   alias_method :tp, :typecast_params
   plugin :sinatra_helpers
 
-  Mail.defaults { delivery_method :smtp, address: "localhost", port: 1025 } if App.development?
-  Mail.defaults { delivery_method :test } if App.test?
+  # Mail
+  production_smtp_options = {
+    address: ENV["SMTP_ADDRESS"],
+    port: ENV["SMTP_PORT"],
+    domain: ENV["SMTP_DOMAIN"],
+    user_name: ENV["SMTP_USERNAME"],
+    password: ENV["SMTP_PASSWORD"],
+    authentication: :plain,
+    enable_starttls: true,
+  }
+
+  development_smtp_options = {
+    address: "localhost",
+    port: 1025
+  }
+
+  Mail.defaults do
+    if App.production?
+      delivery_method :smtp, production_smtp_options
+    elsif App.development?
+      delivery_method :smtp, development_smtp_options
+    elsif App.test?
+      delivery_method :test
+    end
+  end
 
   route do |r|
     r.public
