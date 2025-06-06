@@ -44,6 +44,7 @@ class App < Roda
     # Email Base
     email_from ENV["WT_EMAIL"]
     email_subject_prefix "WeightTracker - "
+    send_email { SendEmailJob.perform_async(_1) } if App.production?
 
     # Login Password Requirements Base
     password_hash_cost(App.test? ? 2 : 12)
@@ -69,8 +70,7 @@ class App < Roda
           subject "WeightTracker - New User Signed Up"
           body "A new user signed up"
         end
-
-        mail.deliver!
+        SendEmailJob.perform_async(mail)
       end
     end
 

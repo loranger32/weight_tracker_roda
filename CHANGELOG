@@ -1,5 +1,9 @@
 == MAIN
 
+== 0.15.1
+
+- Reintroducue a job for async mail processing
+
 == 0.15.0
 
 - Remove the Sendgrid dependency and use a generic SMTP relay method for sending emails
